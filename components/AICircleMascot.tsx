@@ -38,16 +38,24 @@ export const FloatingMascotLogo = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="fixed bottom-8 right-8 z-50 cursor-pointer group">
-      <div className="
-        relative w-16 h-16 
-        transition-transform duration-300 ease-out 
-        group-hover:scale-105 group-hover:-translate-y-1
-      ">
+    <div 
+      ref={containerRef} 
+      className="fixed bottom-8 right-8 z-50 cursor-pointer group"
+      style={{ overflow: 'hidden', border: 'none', outline: 'none' }}
+    >
+      <div 
+        className="
+          relative w-16 h-16 
+          transition-transform duration-300 ease-out 
+          group-hover:scale-105 group-hover:-translate-y-1
+        "
+        style={{ overflow: 'hidden', borderRadius: '50%', border: 'none', outline: 'none' }}
+      >
         <svg 
           viewBox="0 0 100 100" 
           className="w-full h-full"
           xmlns="http://www.w3.org/2000/svg"
+          style={{ overflow: 'hidden', border: 'none', outline: 'none', margin: 0, padding: 0, display: 'block' }}
         >
           <defs>
             {/* 1. Deep Blue/Indigo Jelly Gradient */}
@@ -156,14 +164,7 @@ export const FloatingMascotLogo = () => {
             />
           </g>
           
-          {/* DIAMOND SPARKLE (Bottom Right) */}
-          <path 
-            d="M 80 70 L 83 77 L 90 80 L 83 83 L 80 90 L 77 83 L 70 80 L 77 77 Z" 
-            fill="white" 
-            opacity="0.8"
-            filter="drop-shadow(0 0 4px rgba(255,255,255,0.8))"
-            className="animate-pulse"
-          />
+          {/* DIAMOND SPARKLE REMOVED */}
 
         </svg>
 

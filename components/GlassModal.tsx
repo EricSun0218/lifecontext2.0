@@ -38,13 +38,17 @@ export const GlassModal: React.FC<GlassModalProps> = ({ insight, onClose }) => {
   const Icon = typeConfig.icon;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8">
+    <motion.div 
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.3, ease: "easeInOut" }}
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8"
+    >
       {/* Backdrop (Subtle Dim to keep context visible) */}
       <motion.div 
         initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
+        animate={{ opacity: 1 }}
+        // exit={{ opacity: 0 }} // Managed by parent wrapper exit
+        transition={{ duration: 0.3, ease: "easeInOut" }}
         onClick={onClose}
         className="absolute inset-0 bg-[#0f0c29]/40 backdrop-blur-[2px]"
       />
@@ -52,6 +56,10 @@ export const GlassModal: React.FC<GlassModalProps> = ({ insight, onClose }) => {
       {/* Main Modal Card - Vertical Expansion Only (Matching List Card Width) */}
       <motion.div 
         layoutId={insight.id}
+        initial={false}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        transition={{ duration: 0.3, ease: "easeInOut" }}
         className="relative w-full max-w-[720px] max-h-[85vh] flex flex-col rounded-3xl border border-blue-400/15 border-t-blue-400/30 shadow-[0_0_50px_-12px_rgba(96,165,250,0.25)] overflow-hidden"
         style={{
             // THE BLUE-PURPLE GRADIENT GLASS
@@ -88,7 +96,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({ insight, onClose }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }} // Added exit transition
+          transition={{ duration: 0.3, delay: 0.1 }}
           className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar scrollbar-thumb-blue-500/20 pb-12"
         >
            {/* Markdown Content Renderer */}
@@ -116,6 +124,6 @@ export const GlassModal: React.FC<GlassModalProps> = ({ insight, onClose }) => {
         {/* FOOTER REMOVED */}
 
       </motion.div>
-    </div>
+    </motion.div>
   );
 };

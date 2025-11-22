@@ -22,13 +22,13 @@ const App: React.FC = () => {
       {/* --- STATIC BACKGROUND LAYERS (No Animation) --- */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         
-        {/* 1. Purple Glow (Top Left) - Reduced Opacity */}
+        {/* 1. Purple Glow (Top Left) - Reduced Opacity (15%) */}
         <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-purple-700/15 blur-[120px]"></div>
         
-        {/* 2. Blue/Cyan Glow (Top Right) - Increased Opacity for Balance */}
+        {/* 2. Blue/Cyan Glow (Top Right) - Increased Opacity (15%) */}
         <div className="absolute top-[-10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-blue-600/15 blur-[100px]"></div>
         
-        {/* 3. Pink/Fuchsia Glow (Bottom) - Significantly Reduced */}
+        {/* 3. Pink/Fuchsia Glow (Bottom) - Significantly Reduced (8%) */}
         <div className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[40vw] rounded-full bg-fuchsia-900/8 blur-[120px]"></div>
         
         {/* Micro-Noise Overlay (Texture Only) */}
@@ -110,9 +110,10 @@ const App: React.FC = () => {
       <FloatingMascotLogo />
 
       {/* Immersive Detail Modal Layer */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {selectedInsight && (
           <GlassModal 
+            key={selectedInsight.id}
             insight={selectedInsight} 
             onClose={() => setSelectedInsight(null)} 
           />
