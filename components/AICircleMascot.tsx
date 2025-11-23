@@ -40,53 +40,24 @@ export const FloatingMascotLogo = () => {
   return (
     <div 
       ref={containerRef} 
-      className="fixed bottom-8 right-8 z-50 cursor-pointer group"
+      className="fixed bottom-8 right-8 z-50 cursor-pointer group !bg-transparent !border-none !outline-none !shadow-none !appearance-none !m-0 !p-3 select-none"
       style={{ 
-        overflow: 'visible', 
-        border: 'none !important', 
-        outline: 'none !important', 
-        padding: '12px', /* Padding prevents clipping during scale */
-        background: 'transparent !important', 
-        backgroundColor: 'transparent !important',
-        boxShadow: 'none !important', 
         WebkitTapHighlightColor: 'transparent',
-        userSelect: 'none',
-        margin: 0,
-        appearance: 'none',
-        textDecoration: 'none'
       }}
     >
       <div 
         className="
-          relative w-16 h-16 
+          relative w-24 h-24 
           transition-transform duration-300 ease-out 
           group-hover:scale-110 group-hover:-translate-y-1
+          !bg-transparent !border-none !outline-none !shadow-none !appearance-none !rounded-none
         "
-        style={{ 
-          border: 'none !important', 
-          outline: 'none !important', 
-          background: 'transparent !important', 
-          backgroundColor: 'transparent !important',
-          boxShadow: 'none !important', 
-          overflow: 'visible', 
-          borderRadius: '0',
-          appearance: 'none'
-        }}
       >
         <svg 
           viewBox="0 0 100 100" 
-          className="w-full h-full"
+          className="w-full h-full !bg-transparent !border-none !outline-none !shadow-none !block !m-0 !p-0"
           xmlns="http://www.w3.org/2000/svg"
-          style={{ 
-            overflow: 'visible', 
-            border: 'none !important', 
-            outline: 'none !important', 
-            margin: 0, 
-            padding: 0, 
-            display: 'block', 
-            background: 'transparent !important',
-            boxShadow: 'none !important'
-          }}
+          style={{ overflow: 'visible' }}
         >
           <defs>
             {/* 1. Deep Blue/Indigo Jelly Gradient */}
@@ -97,7 +68,7 @@ export const FloatingMascotLogo = () => {
             </radialGradient>
 
             {/* 2. Subtle Outer Glow Filter (Blue Tinted) */}
-            <filter id="subtleGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <filter id="subtleGlow" x="-100%" y="-100%" width="300%" height="300%">
               <feGaussianBlur in="SourceAlpha" stdDeviation="4" />
               <feFlood floodColor="rgba(96, 165, 250, 0.35)" result="glowColor" />
               <feComposite in="glowColor" in2="blur" operator="in" result="softGlow" />
@@ -112,8 +83,8 @@ export const FloatingMascotLogo = () => {
               <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
             </filter>
 
-            {/* 4. Inner Rim Glow Filter (Blue Edge Definition) */}
-            <filter id="rimGlow">
+            {/* 4. Inner Rim Glow Filter (Blue Edge Definition) - EXPANDED REGION */}
+            <filter id="rimGlow" x="-100%" y="-100%" width="300%" height="300%">
               <feMorphology operator="erode" radius="1.5" in="SourceAlpha" result="eroded" />
               <feComposite operator="out" in="SourceAlpha" in2="eroded" result="outline" />
               <feGaussianBlur in="outline" stdDeviation="1.5" result="blurredOutline" />
@@ -126,7 +97,7 @@ export const FloatingMascotLogo = () => {
             </filter>
 
             {/* 5. Eye Glow (Blue Tint) */}
-            <filter id="eyeGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <filter id="eyeGlow" x="-100%" y="-100%" width="300%" height="300%">
               <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="blur" />
               <feFlood floodColor="rgba(191, 219, 254, 0.5)" result="glowColor" />
               <feComposite in="glowColor" in2="blur" operator="in" result="coloredBlur" />
@@ -143,56 +114,61 @@ export const FloatingMascotLogo = () => {
             </linearGradient>
           </defs>
 
-          {/* --- LAYERS --- */}
-
-          {/* OUTER GLOW & BODY GROUP */}
-          <g filter="url(#subtleGlow)">
-            {/* THE BODY: Blue Jelly Sphere with Rim Light */}
-            <circle cx="50" cy="50" r="48" fill="url(#blueJellyGrad)" filter="url(#rimGlow)" />
-          </g>
-
-          {/* WET HIGHLIGHT: Top-Left Reflection (Low Opacity) */}
-          <path 
-            d="M 25 25 Q 50 15 75 25" 
-            fill="none" 
-            stroke="white" 
-            strokeWidth="3" 
-            strokeLinecap="round" 
-            opacity="0.25" 
-            filter="url(#wetBlur)" 
-          />
-          <ellipse cx="35" cy="30" rx="18" ry="10" fill="white" opacity="0.15" transform="rotate(-20 35 30)" filter="url(#wetBlur)" />
-
-          {/* BLUSH SPOTS (Soft Pink/Blue mix) */}
-          <ellipse cx="25" cy="55" rx="6" ry="3" fill="#f472b6" opacity="0.2" filter="url(#wetBlur)" />
-          <ellipse cx="75" cy="55" rx="6" ry="3" fill="#f472b6" opacity="0.2" filter="url(#wetBlur)" />
-
-          {/* THE EYES: Glowing Vertical Pills - Slightly Top-Left */}
-          <g 
-            className="eyes transition-transform duration-100 ease-out" 
-            style={{ transform: `translate(${eyePos.x}px, ${eyePos.y}px)` }}
-          >
-            {/* Left Pill */}
-            <rect 
-              x="29" y="39" width="10" height="20" rx="5" 
-              fill="url(#eyeGrad)" 
-              filter="url(#eyeGlow)" 
-            />
-            {/* Right Pill */}
-            <rect 
-              x="55" y="39" width="10" height="20" rx="5" 
-              fill="url(#eyeGrad)" 
-              filter="url(#eyeGlow)" 
-            />
+          {/* --- SCALED CONTENT GROUP --- 
+              Scaling down to 0.8 creates "padding" inside the SVG viewBox,
+              allowing the glow filters to fade out naturally without hitting the edge. 
+          */}
+          <g transform="translate(10, 10) scale(0.8)">
             
-            {/* Tiny Smile (Centered between eyes: Center X = 47) */}
+            {/* OUTER GLOW & BODY GROUP */}
+            <g filter="url(#subtleGlow)">
+              {/* THE BODY: Blue Jelly Sphere with Rim Light */}
+              <circle cx="50" cy="50" r="48" fill="url(#blueJellyGrad)" filter="url(#rimGlow)" />
+            </g>
+
+            {/* WET HIGHLIGHT: Top-Left Reflection (Low Opacity) */}
             <path 
-               d="M 42 60 Q 47 63 52 60" 
-               fill="none" 
-               stroke="rgba(255,255,255,0.6)" 
-               strokeWidth="1.5" 
-               strokeLinecap="round"
+              d="M 25 25 Q 50 15 75 25" 
+              fill="none" 
+              stroke="white" 
+              strokeWidth="3" 
+              strokeLinecap="round" 
+              opacity="0.25" 
+              filter="url(#wetBlur)" 
             />
+            <ellipse cx="35" cy="30" rx="18" ry="10" fill="white" opacity="0.15" transform="rotate(-20 35 30)" filter="url(#wetBlur)" />
+
+            {/* BLUSH SPOTS (Soft Pink/Blue mix) */}
+            <ellipse cx="25" cy="55" rx="6" ry="3" fill="#f472b6" opacity="0.2" filter="url(#wetBlur)" />
+            <ellipse cx="75" cy="55" rx="6" ry="3" fill="#f472b6" opacity="0.2" filter="url(#wetBlur)" />
+
+            {/* THE EYES: Glowing Vertical Pills - Slightly Top-Left */}
+            <g 
+              className="eyes transition-transform duration-100 ease-out" 
+              style={{ transform: `translate(${eyePos.x}px, ${eyePos.y}px)` }}
+            >
+              {/* Left Pill */}
+              <rect 
+                x="29" y="39" width="10" height="20" rx="5" 
+                fill="url(#eyeGrad)" 
+                filter="url(#eyeGlow)" 
+              />
+              {/* Right Pill */}
+              <rect 
+                x="55" y="39" width="10" height="20" rx="5" 
+                fill="url(#eyeGrad)" 
+                filter="url(#eyeGlow)" 
+              />
+              
+              {/* Tiny Smile (Centered between eyes: Center X = 47) */}
+              <path 
+                 d="M 42 60 Q 47 63 52 60" 
+                 fill="none" 
+                 stroke="rgba(255,255,255,0.6)" 
+                 strokeWidth="1.5" 
+                 strokeLinecap="round"
+              />
+            </g>
           </g>
           
         </svg>
