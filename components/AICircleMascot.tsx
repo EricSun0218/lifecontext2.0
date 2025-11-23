@@ -1,13 +1,21 @@
 
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, BellOff, Camera, Globe, Ban, Link2, Check, X } from 'lucide-react';
+import { Bell, BellOff, Camera, Globe, Ban, Link2, Check, X, Home, Filter, TrendingUp, List, Plus, Mic } from 'lucide-react';
 
-export const FloatingMascotLogo = () => {
+interface FloatingMascotProps {
+  setActiveTab?: (tab: string) => void;
+}
+
+export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [eyePos, setEyePos] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+
+  // Dialog State
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [inputValue, setInputValue] = useState("");
 
   // Settings State
   const [isCaptureEnabled, setIsCaptureEnabled] = useState(true);
@@ -64,6 +72,12 @@ export const FloatingMascotLogo = () => {
     localStorage.setItem('lc_notify_enabled', String(newState));
   };
 
+  const handleGoHome = () => {
+    if (setActiveTab) {
+      setActiveTab('home');
+    }
+  };
+
   const handleBlockDomain = () => {
     const domain = window.location.hostname;
     if (!blockedDomains.includes(domain)) {
@@ -111,9 +125,8 @@ export const FloatingMascotLogo = () => {
 
   return (
     <div 
-      ref={containerRef}
       className={`
-        fixed bottom-8 right-8 z-50 flex flex-col items-end justify-end 
+        fixed bottom-8 right-8 z-50 flex items-end justify-end 
         transition-all duration-300 ease-out
         !border-none !outline-none
         ${isHovered ? 'w-56 h-64 pointer-events-auto' : 'w-12 h-12 pointer-events-none'}
@@ -121,46 +134,38 @@ export const FloatingMascotLogo = () => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => { setIsHovered(false); setActiveMenu(null); }}
     >
-      {/* --- SATELLITE BUTTONS CONTAINER --- */}
-      <div className="absolute inset-0 pointer-events-auto">
-         <AnimatePresence>
-            {isHovered && (
-              <>
-                {/* 1. NOTIFICATION TOGGLE (Left-Bottom Cluster) */}
-                <motion.div
-                   initial={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
-                   animate={{ opacity: 1, x: -48, y: 14, scale: 1 }} // Position: Left & slightly down
-                   exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
-                   transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.05 }}
-                   className="absolute bottom-3 right-3"
-                >
-                   <button
-                     onClick={toggleNotification}
-                     className={`
-                       w-8 h-8 rounded-full flex items-center justify-center 
-                       backdrop-blur-xl transition-all duration-300 shadow-lg group/btn relative
-                       !border-none !outline-none
-                       bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
-                     `}
-                   >
-                     {isNotificationEnabled ? <Bell className="w-3.5 h-3.5" /> : <BellOff className="w-3.5 h-3.5" />}
-                     
-                     {/* Tooltip */}
-                     <span className="absolute right-full mr-3 px-2 py-1 bg-slate-900/90 border border-white/10 text-[10px] text-white rounded-md opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                       {isNotificationEnabled ? 'Notifications On' : 'Notifications Off'}
-                     </span>
-                   </button>
-                </motion.div>
+      {/* --- CHAT DIALOG WINDOW --- */}
+      <AnimatePresence>
+        {isDialogOpen && (
+          <MascotDialog 
+            onClose={() => setIsDialogOpen(false)} 
+            inputValue={inputValue}
+            setInputValue={setInputValue}
+          />
+        )}
+      </AnimatePresence>
 
-                {/* 2. CAPTURE CONTROL (Left-Top Cluster) */}
+      {/* --- EXPANDED INTERACTION ZONE (Invisible Bridge) --- */}
+      {/* This container ensures mouse can travel to buttons without leaving the component */}
+      <div 
+        ref={containerRef}
+        className="absolute bottom-0 right-0 pointer-events-auto transition-all duration-300"
+        style={{
+          width: isHovered ? '200px' : '48px',
+          height: isHovered ? '200px' : '48px',
+        }}
+      >
+         <AnimatePresence>
+            {isHovered && !isDialogOpen && (
+              <>
+                {/* 1. MASTER SWITCH (Capture) - Position: Direct Left (-180deg), Closer (r=58) */}
                 <motion.div
                    initial={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
-                   animate={{ opacity: 1, x: -48, y: -22, scale: 1 }} // Position: Left & slightly up
+                   animate={{ opacity: 1, x: -58, y: 0, scale: 1 }}
                    exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                   className="absolute bottom-3 right-3"
+                   className="absolute bottom-2 right-2 z-10"
                    onMouseEnter={() => setActiveMenu('capture')}
-                   // Note: onMouseLeave is handled by the parent container or menu exit logic
                 >
                    <button
                      className={`
@@ -173,14 +178,15 @@ export const FloatingMascotLogo = () => {
                      {isCaptureEnabled ? <Camera className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
                    </button>
 
-                   {/* --- CAPTURE MENU (Dropdown) --- */}
+                   {/* --- CAPTURE MENU (Dropdown) - Repositioned to LEFT and UPWARDS --- */}
                    <AnimatePresence>
                      {activeMenu === 'capture' && (
                        <motion.div
-                         initial={{ opacity: 0, y: 5, scale: 0.95 }}
-                         animate={{ opacity: 1, y: -5, scale: 1 }}
-                         exit={{ opacity: 0, y: 0, scale: 0.95 }}
-                         className="absolute bottom-full mb-2 right-[-20px] w-48 bg-[#0f0c29]/95 backdrop-blur-2xl border border-blue-400/20 rounded-xl shadow-[0_0_30px_-5px_rgba(0,0,0,0.5)] overflow-hidden p-1 flex flex-col gap-0.5 z-[60]"
+                         initial={{ opacity: 0, x: 10, scale: 0.95 }}
+                         animate={{ opacity: 1, x: 0, scale: 1 }}
+                         exit={{ opacity: 0, x: 10, scale: 0.95 }}
+                         // Changed bottom-[-50px] to bottom-0 to ensure menu grows UPWARDS and stays on screen
+                         className="absolute bottom-0 right-full mr-3 w-48 bg-[#0f0c29]/95 backdrop-blur-2xl border border-blue-400/20 rounded-xl shadow-[0_0_30px_-5px_rgba(0,0,0,0.5)] overflow-hidden p-1 flex flex-col gap-0.5 z-[60]"
                        >
                           {/* Item 1: Toggle Master Switch */}
                           <div 
@@ -231,6 +237,58 @@ export const FloatingMascotLogo = () => {
                      )}
                    </AnimatePresence>
                 </motion.div>
+
+                {/* 2. NOTIFICATION TOGGLE - Position: Up-Left (~145deg), Wider Spread */}
+                <motion.div
+                   initial={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                   animate={{ opacity: 1, x: -48, y: -38, scale: 1 }}
+                   exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                   transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.05 }}
+                   className="absolute bottom-2 right-2 z-10"
+                >
+                   <button
+                     onClick={toggleNotification}
+                     className={`
+                       w-8 h-8 rounded-full flex items-center justify-center 
+                       backdrop-blur-xl transition-all duration-300 shadow-lg group/btn relative
+                       !border-none !outline-none
+                       bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
+                     `}
+                   >
+                     {isNotificationEnabled ? <Bell className="w-3.5 h-3.5" /> : <BellOff className="w-3.5 h-3.5" />}
+                     
+                     {/* Tooltip */}
+                     <span className="absolute right-full mr-3 px-2 py-1 bg-slate-900/90 border border-white/10 text-[10px] text-white rounded-md opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                       {isNotificationEnabled ? 'Notifications On' : 'Notifications Off'}
+                     </span>
+                   </button>
+                </motion.div>
+
+                {/* 3. HOME BUTTON - Position: Top (~100deg), Wider Spread */}
+                <motion.div
+                   initial={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                   animate={{ opacity: 1, x: -20, y: -58, scale: 1 }}
+                   exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                   transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
+                   className="absolute bottom-2 right-2 z-10"
+                >
+                   <button
+                     onClick={handleGoHome}
+                     className={`
+                       w-8 h-8 rounded-full flex items-center justify-center 
+                       backdrop-blur-xl transition-all duration-300 shadow-lg group/btn relative
+                       !border-none !outline-none
+                       bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
+                     `}
+                   >
+                     <Home className="w-3.5 h-3.5" />
+                     
+                     {/* Tooltip */}
+                     <span className="absolute right-full mr-3 px-2 py-1 bg-slate-900/90 border border-white/10 text-[10px] text-white rounded-md opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                       Go Home
+                     </span>
+                   </button>
+                </motion.div>
               </>
             )}
          </AnimatePresence>
@@ -238,8 +296,10 @@ export const FloatingMascotLogo = () => {
 
       {/* --- MASCOT SPHERE --- */}
       <div 
+        onClick={() => setIsDialogOpen(!isDialogOpen)}
         className="
-          relative w-12 h-12 pointer-events-auto
+          absolute bottom-0 right-0
+          w-12 h-12 pointer-events-auto cursor-pointer
           rounded-full
           transition-transform duration-300 ease-out 
           hover:scale-110 hover:-translate-y-1
@@ -353,3 +413,81 @@ export const FloatingMascotLogo = () => {
     </div>
   );
 };
+
+// --- DIALOG COMPONENT ---
+interface MascotDialogProps {
+  onClose: () => void;
+  inputValue: string;
+  setInputValue: (val: string) => void;
+}
+
+const MascotDialog: React.FC<MascotDialogProps> = ({ onClose, inputValue, setInputValue }) => {
+    // Quick Actions Data
+    const quickActions = [
+        { icon: Filter, title: "Filter Content", subtitle: "What might I like best here?", prompt: "Filter content based on my preferences" },
+        { icon: TrendingUp, title: "Analyze Trends", subtitle: "What are the genre trends?", prompt: "Analyze current trends on this site" },
+        { icon: List, title: "Draft Watchlist", subtitle: "Draft a list for this site.", prompt: "Draft a watchlist from this content" }
+    ];
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ type: "spring", duration: 0.5 }}
+            className="fixed bottom-28 right-8 z-[60] w-[400px] flex flex-col gap-4 p-6 rounded-3xl bg-[#0f0c29]/95 backdrop-blur-3xl border border-blue-400/20 shadow-2xl origin-bottom-right"
+        >
+             {/* Header / Close */}
+             <div className="absolute top-4 right-4 z-10">
+                 <button onClick={onClose} className="p-2 rounded-full hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                     <X className="w-5 h-5" />
+                 </button>
+             </div>
+
+             {/* Quick Actions */}
+             <div className="flex flex-col gap-3 mt-2">
+                 {quickActions.map((action, i) => (
+                     <button 
+                        key={i}
+                        onClick={() => setInputValue(action.prompt)}
+                        className="flex items-start gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-blue-400/30 transition-all text-left group"
+                     >
+                        <div className="p-2 rounded-lg bg-blue-500/10 text-blue-300 group-hover:text-blue-200 group-hover:bg-blue-500/20 transition-colors">
+                            <action.icon className="w-5 h-5" />
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-semibold text-white group-hover:text-blue-100">{action.title}</h3>
+                            <p className="text-xs text-white/50 group-hover:text-white/70">{action.subtitle}</p>
+                        </div>
+                     </button>
+                 ))}
+             </div>
+
+             {/* Input Area */}
+             <div className="mt-2">
+                 {/* Context Info */}
+                 <div className="flex items-center gap-2 mb-3 pl-1">
+                     <Globe className="w-3 h-3 text-blue-400" />
+                     <span className="text-xs font-medium text-blue-400/80 tracking-wide">{window.location.hostname || 'localhost'}</span>
+                 </div>
+                 
+                 {/* Input Box */}
+                 <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/5 border border-blue-400/20 focus-within:bg-white/10 focus-within:border-blue-400/40 transition-all">
+                    <button className="p-2.5 rounded-xl hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                        <Plus className="w-5 h-5" />
+                    </button>
+                    <input 
+                        type="text" 
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        placeholder="Ask anything..."
+                        className="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder-white/30 h-10"
+                    />
+                    <button className="p-2.5 rounded-xl hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                        <Mic className="w-5 h-5" />
+                    </button>
+                 </div>
+             </div>
+        </motion.div>
+    )
+}

@@ -107,7 +107,7 @@ const App: React.FC = () => {
       </div>
 
       {/* AI Companion Mascot Logo (SVG) */}
-      <FloatingMascotLogo />
+      <FloatingMascotLogo setActiveTab={setActiveTab} />
 
       {/* Immersive Detail Modal Layer */}
       <AnimatePresence mode="wait">
