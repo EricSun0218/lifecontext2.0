@@ -209,7 +209,7 @@ const initialSources = [
   { id: 'security', name: 'Security', active: true },
 ];
 
-export const Home: React.FC = () => {
+export const DailyPicks: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sources, setSources] = useState(initialSources);
   
@@ -245,16 +245,16 @@ export const Home: React.FC = () => {
   });
 
   return (
-    <div className="w-full">
+    <div className="w-full animate-fade-in">
       {/* --- Header --- */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 border-b border-blue-400/10 pb-8">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
           <h2 className="text-blue-400 font-mono text-xs tracking-widest uppercase mb-2">Overview</h2>
           <h1 className="text-5xl font-bold text-white tracking-tight">
-            Good Morning, Alex
+            Daily Picks
           </h1>
           <p className="text-white/50 text-lg font-light mt-2">
-            Here's what's happening in your network today.
+            Curated highlights from your digital network.
           </p>
         </motion.div>
 

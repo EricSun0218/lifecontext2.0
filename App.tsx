@@ -1,21 +1,18 @@
 
 import React, { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
-import { TimelineCard } from './components/TimelineCard';
-import { FloatingMascotLogo } from './components/AICircleMascot'; // Updated Import
-import { DASHBOARD_DATA } from './constants';
-import { ChevronDown, Sparkles, Book } from 'lucide-react';
-import { Insight } from './types';
-import { AnimatePresence, motion } from 'framer-motion';
-import { GlassModal } from './components/GlassModal';
-import { Home } from './components/Home';
+import { FloatingMascotLogo } from './components/AICircleMascot'; 
+import { Book } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { DailyPicks } from './components/DailyPicks';
+import { Insights } from './components/Insights';
 import { Chat } from './components/Chat';
 import { Settings } from './components/Settings';
 import { FADE_IN_UP_ITEM } from './constants/animations';
 
 const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState('timeline'); // Default tab
-  const [selectedInsight, setSelectedInsight] = useState<Insight | null>(null);
+  // Default to 'insights' as the main landing
+  const [activeTab, setActiveTab] = useState('insights');
 
   return (
     <div className="min-h-screen w-full bg-[#0f0c29] overflow-x-hidden text-slate-200 selection:bg-blue-500/30 font-sans relative">
@@ -46,59 +43,14 @@ const App: React.FC = () => {
           {/* Expanded Center Container */}
           <div className="max-w-7xl mx-auto w-full flex flex-col">
 
-            {/* --- DAILY PICKS VIEW (Was Home) --- */}
-            {activeTab === 'home' && <Home />}
+            {/* --- DAILY PICKS VIEW --- */}
+            {activeTab === 'daily_picks' && <DailyPicks />}
             
             {/* --- CHAT VIEW --- */}
             {activeTab === 'chat' && <Chat />}
 
-            {/* --- TIMELINE VIEW (New Home) --- */}
-            {activeTab === 'timeline' && (
-              <>
-                {/* Timeline Header */}
-                <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-32 border-b border-blue-400/10 pb-12 animate-fade-in">
-                   <div className="max-w-2xl">
-                      <div className="flex items-center gap-3 mb-4">
-                         <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
-                            <Sparkles className="w-4 h-4 text-blue-400" />
-                         </div>
-                         <span className="text-blue-400/80 font-mono text-xs tracking-widest uppercase">AI-Powered Analysis</span>
-                      </div>
-                      <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tight mb-6">
-                        Insight Dashboard
-                      </h1>
-                      <p className="text-white/50 text-xl font-light leading-relaxed">
-                        Translating your raw digital footprint into actionable intelligence.
-                      </p>
-                   </div>
-
-                   {/* Date Picker */}
-                   <button className="mt-8 md:mt-0 flex items-center gap-3 px-6 py-3 rounded-2xl bg-white/5 backdrop-blur-xl border border-blue-400/15 hover:bg-white/10 hover:border-blue-400/30 transition-all cursor-pointer group">
-                      <span className="text-white/80 font-medium group-hover:text-white">Today, Oct 24</span>
-                      <ChevronDown className="w-4 h-4 text-white/50 group-hover:text-white transition-colors" />
-                   </button>
-                </div>
-
-                {/* Timeline Grid Stream */}
-                <div className="w-full">
-                  <div className="flex flex-col">
-                    {DASHBOARD_DATA.map((entry, index) => (
-                      <TimelineCard 
-                        key={entry.id} 
-                        entry={entry} 
-                        isLast={index === DASHBOARD_DATA.length - 1} 
-                        onInsightClick={setSelectedInsight}
-                      />
-                    ))}
-                  </div>
-                </div>
-
-                {/* End of Stream Indicator */}
-                <div className="flex items-center justify-center py-24 opacity-30">
-                   <div className="h-1 w-24 rounded-full bg-blue-400/20"></div>
-                </div>
-              </>
-            )}
+            {/* --- INSIGHTS VIEW (Timeline) --- */}
+            {activeTab === 'insights' && <Insights />}
 
             {/* --- KNOWLEDGE BASE VIEW (Placeholder) --- */}
             {activeTab === 'knowledge' && (
@@ -130,17 +82,6 @@ const App: React.FC = () => {
 
       {/* AI Companion Mascot Logo (SVG) - Hidden when on Chat tab to allow local mascot instance */}
       {activeTab !== 'chat' && <FloatingMascotLogo setActiveTab={setActiveTab} />}
-
-      {/* Immersive Detail Modal Layer */}
-      <AnimatePresence>
-        {selectedInsight && (
-          <GlassModal 
-            key={selectedInsight.id}
-            insight={selectedInsight} 
-            onClose={() => setSelectedInsight(null)} 
-          />
-        )}
-      </AnimatePresence>
 
     </div>
   );
