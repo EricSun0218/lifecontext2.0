@@ -22,7 +22,6 @@ export const FloatingMascotLogo = () => {
       const angle = Math.atan2(dy, dx);
 
       // Calculate distance (clamped to max 6px movement so eyes stay on face)
-      // Division by 15 dampens the movement so it requires moving mouse further to reach edge
       const maxMove = 6;
       const distance = Math.min(maxMove, Math.hypot(dx, dy) / 15);
 
@@ -40,96 +39,75 @@ export const FloatingMascotLogo = () => {
   return (
     <div 
       ref={containerRef} 
-      className="fixed bottom-8 right-8 z-50 cursor-pointer group !bg-transparent !border-none !outline-none !shadow-none !appearance-none !m-0 !p-3 select-none"
-      style={{ 
-        WebkitTapHighlightColor: 'transparent',
-        // CRITICAL FIX: CSS Mask to physically cut off any square container artifacts
-        maskImage: 'radial-gradient(circle at center, black 70%, transparent 100%)',
-        WebkitMaskImage: 'radial-gradient(circle at center, black 70%, transparent 100%)'
-      }}
+      className="fixed bottom-8 right-8 z-50 cursor-pointer group select-none"
+      style={{ WebkitTapHighlightColor: 'transparent' }}
     >
       <div 
         className="
           relative w-24 h-24 
+          rounded-full
           transition-transform duration-300 ease-out 
           group-hover:scale-110 group-hover:-translate-y-1
-          !bg-transparent !border-none !outline-none !shadow-none !appearance-none !rounded-none
+          /* CSS GLOW: GPU accelerated and strictly circular, avoiding SVG box artifacts */
+          shadow-[0_0_25px_-5px_rgba(96,165,250,0.6)]
         "
       >
-        <svg 
-          viewBox="0 0 100 100" 
-          className="w-full h-full !bg-transparent !border-none !outline-none !shadow-none !block !m-0 !p-0"
-          xmlns="http://www.w3.org/2000/svg"
-          style={{ overflow: 'visible' }}
-        >
-          <defs>
-            {/* 1. Deep Blue/Indigo Jelly Gradient */}
-            <radialGradient id="blueJellyGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-              <stop offset="0%" stopColor="#60a5fa" />   {/* Blue 400 Highlight */}
-              <stop offset="85%" stopColor="#1e3a8a" />  {/* Blue 900 Body */}
-              <stop offset="100%" stopColor="#172554" /> {/* Deep Indigo Edge */}
-            </radialGradient>
+        {/* CLIPPING CONTAINER: Ensures SVG stays perfectly round */ }
+        <div className="w-full h-full rounded-full overflow-hidden bg-transparent">
+          <svg 
+            viewBox="0 0 100 100" 
+            className="w-full h-full block"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              {/* 1. Deep Blue/Indigo Jelly Gradient */}
+              <radialGradient id="blueJellyGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                <stop offset="0%" stopColor="#60a5fa" />   {/* Blue 400 Highlight */}
+                <stop offset="85%" stopColor="#1e3a8a" />  {/* Blue 900 Body */}
+                <stop offset="100%" stopColor="#172554" /> {/* Deep Indigo Edge */}
+              </radialGradient>
 
-            {/* 2. Subtle Outer Glow Filter (Blue Tinted) */}
-            <filter id="subtleGlow" x="-100%" y="-100%" width="300%" height="300%">
-              <feGaussianBlur in="SourceAlpha" stdDeviation="4" />
-              <feFlood floodColor="rgba(96, 165, 250, 0.35)" result="glowColor" />
-              <feComposite in="glowColor" in2="blur" operator="in" result="softGlow" />
-              <feMerge>
-                <feMergeNode in="softGlow" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
+              {/* 2. Wet Surface Highlight Filter (Smoother) */}
+              <filter id="wetBlur" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
+              </filter>
 
-            {/* 3. Wet Surface Highlight Filter (Smoother) */}
-            <filter id="wetBlur" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
-            </filter>
+              {/* 3. Inner Rim Glow Filter (Blue Edge Definition) */}
+              <filter id="rimGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feMorphology operator="erode" radius="1.5" in="SourceAlpha" result="eroded" />
+                <feComposite operator="out" in="SourceAlpha" in2="eroded" result="outline" />
+                <feGaussianBlur in="outline" stdDeviation="1.5" result="blurredOutline" />
+                <feFlood floodColor="rgba(147, 197, 253, 0.4)" result="glowColor" />
+                <feComposite operator="in" in="glowColor" in2="blurredOutline" result="finalGlow" />
+                <feMerge>
+                  <feMergeNode in="SourceGraphic" />
+                  <feMergeNode in="finalGlow" />
+                </feMerge>
+              </filter>
 
-            {/* 4. Inner Rim Glow Filter (Blue Edge Definition) - EXPANDED REGION */}
-            <filter id="rimGlow" x="-100%" y="-100%" width="300%" height="300%">
-              <feMorphology operator="erode" radius="1.5" in="SourceAlpha" result="eroded" />
-              <feComposite operator="out" in="SourceAlpha" in2="eroded" result="outline" />
-              <feGaussianBlur in="outline" stdDeviation="1.5" result="blurredOutline" />
-              <feFlood floodColor="rgba(147, 197, 253, 0.4)" result="glowColor" />
-              <feComposite operator="in" in="glowColor" in2="blurredOutline" result="finalGlow" />
-              <feMerge>
-                <feMergeNode in="SourceGraphic" />
-                <feMergeNode in="finalGlow" />
-              </feMerge>
-            </filter>
+              {/* 4. Eye Glow (Blue Tint) */}
+              <filter id="eyeGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="blur" />
+                <feFlood floodColor="rgba(191, 219, 254, 0.5)" result="glowColor" />
+                <feComposite in="glowColor" in2="blur" operator="in" result="coloredBlur" />
+                <feMerge>
+                  <feMergeNode in="coloredBlur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+              
+              {/* 5. Eye Gradient (Cool White) */}
+              <linearGradient id="eyeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#ffffff" />
+                <stop offset="100%" stopColor="#dbeafe" />
+              </linearGradient>
+            </defs>
 
-            {/* 5. Eye Glow (Blue Tint) */}
-            <filter id="eyeGlow" x="-100%" y="-100%" width="300%" height="300%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="blur" />
-              <feFlood floodColor="rgba(191, 219, 254, 0.5)" result="glowColor" />
-              <feComposite in="glowColor" in2="blur" operator="in" result="coloredBlur" />
-              <feMerge>
-                <feMergeNode in="coloredBlur" />
-                <feMergeNode in="SourceGraphic" />
-              </feMerge>
-            </filter>
-            
-            {/* 6. Eye Gradient (Cool White) */}
-            <linearGradient id="eyeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff" />
-              <stop offset="100%" stopColor="#dbeafe" />
-            </linearGradient>
-          </defs>
+            {/* THE BODY: Blue Jelly Sphere with Rim Light */}
+            {/* r=50 fills the overflow-hidden container exactly */}
+            <circle cx="50" cy="50" r="50" fill="url(#blueJellyGrad)" filter="url(#rimGlow)" />
 
-          {/* --- SCALED CONTENT GROUP --- 
-              Scaling down to 0.8 creates "padding" inside the SVG viewBox,
-              allowing the glow filters to fade out naturally without hitting the edge. 
-          */}
-          <g transform="translate(10, 10) scale(0.8)">
-            
-            {/* OUTER GLOW & BODY GROUP */}
-            <g filter="url(#subtleGlow)">
-              {/* THE BODY: Blue Jelly Sphere with Rim Light */}
-              <circle cx="50" cy="50" r="48" fill="url(#blueJellyGrad)" filter="url(#rimGlow)" />
-            </g>
-
-            {/* WET HIGHLIGHT: Top-Left Reflection (Low Opacity) */}
+            {/* WET HIGHLIGHT: Top-Left Reflection */}
             <path 
               d="M 25 25 Q 50 15 75 25" 
               fill="none" 
@@ -172,9 +150,8 @@ export const FloatingMascotLogo = () => {
                  strokeLinecap="round"
               />
             </g>
-          </g>
-          
-        </svg>
+          </svg>
+        </div>
 
         {/* Hover Tooltip */}
         <div className="absolute bottom-full mb-3 right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none whitespace-nowrap">
