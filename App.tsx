@@ -110,7 +110,7 @@ const App: React.FC = () => {
       <FloatingMascotLogo setActiveTab={setActiveTab} />
 
       {/* Immersive Detail Modal Layer */}
-      <AnimatePresence mode="wait">
+      <AnimatePresence>
         {selectedInsight && (
           <GlassModal 
             key={selectedInsight.id}

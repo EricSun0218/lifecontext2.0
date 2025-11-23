@@ -13,7 +13,8 @@
     "react-dom": "^19.2.0",
     "lucide-react": "^0.554.0",
     "framer-motion": "^12.0.0",
-    "react-markdown": "9"
+    "react-markdown": "9",
+    "@radix-ui/react-tooltip": "1.0.7"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

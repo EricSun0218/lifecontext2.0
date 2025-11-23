@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Home, MessageSquare, Layers, Settings, Hexagon } from 'lucide-react';
+import { GlassTooltip } from './ui/GlassTooltip';
 
 interface SidebarProps {
   activeTab: string;
@@ -27,27 +28,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
         {menuItems.map((item) => {
           const isActive = activeTab === item.id;
           return (
-            <button
-              key={item.id}
-              onClick={() => setActiveTab(item.id)}
-              className={`
-                relative group flex items-center justify-center w-full aspect-square rounded-2xl transition-all duration-300 ease-out
-                ${isActive 
-                  ? 'bg-blue-500/20 shadow-[0_0_20px_rgba(59,130,246,0.2)] border border-blue-400/30' 
-                  : 'hover:bg-blue-500/10 border border-transparent'}
-              `}
-              aria-label={item.label}
-            >
-              <item.icon 
-                className={`w-6 h-6 transition-colors duration-300 ${isActive ? 'text-white' : 'text-white/70 group-hover:text-white'}`} 
-                strokeWidth={isActive ? 2.5 : 2}
-              />
-              
-              {/* Tooltip */}
-              <span className="absolute left-full ml-4 px-2 py-1 bg-slate-900/90 border border-white/10 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md whitespace-nowrap pointer-events-none z-50">
-                {item.label}
-              </span>
-            </button>
+            <GlassTooltip key={item.id} content={item.label} side="right">
+              <button
+                onClick={() => setActiveTab(item.id)}
+                className={`
+                  relative group flex items-center justify-center w-full aspect-square rounded-2xl transition-all duration-300 ease-out
+                  ${isActive 
+                    ? 'bg-blue-500/20 shadow-[0_0_20px_rgba(59,130,246,0.2)] border border-blue-400/30' 
+                    : 'hover:bg-blue-500/10 border border-transparent'}
+                `}
+                aria-label={item.label}
+              >
+                <item.icon 
+                  className={`w-6 h-6 transition-colors duration-300 ${isActive ? 'text-white' : 'text-white/70 group-hover:text-white'}`} 
+                  strokeWidth={isActive ? 2.5 : 2}
+                />
+              </button>
+            </GlassTooltip>
           );
         })}
       </nav>

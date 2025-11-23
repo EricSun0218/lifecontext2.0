@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, BellOff, Camera, Globe, Ban, Link2, Check, X, Home, Filter, TrendingUp, List, Plus, Mic, MessageSquare } from 'lucide-react';
+import { GlassTooltip } from './ui/GlassTooltip';
 
 interface FloatingMascotProps {
   setActiveTab?: (tab: string) => void;
@@ -164,16 +165,18 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
                          className="absolute bottom-2 right-2 z-10"
                          onMouseEnter={() => setActiveMenu('capture')}
                       >
-                         <button
-                           className={`
-                             w-8 h-8 rounded-full flex items-center justify-center 
-                             backdrop-blur-xl transition-all duration-300 shadow-lg relative
-                             !border-none !outline-none
-                             bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
-                           `}
-                         >
-                           {isCaptureEnabled ? <Camera className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
-                         </button>
+                        <GlassTooltip content={isCaptureEnabled ? "Capture On" : "Capture Off"} side="left">
+                           <button
+                             className={`
+                               w-8 h-8 rounded-full flex items-center justify-center 
+                               backdrop-blur-xl transition-all duration-300 shadow-lg relative
+                               !border-none !outline-none
+                               bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
+                             `}
+                           >
+                             {isCaptureEnabled ? <Camera className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
+                           </button>
+                         </GlassTooltip>
 
                          {/* --- CAPTURE MENU --- */}
                          <AnimatePresence>
@@ -238,17 +241,19 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
                          transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.05 }}
                          className="absolute bottom-2 right-2 z-10"
                       >
-                         <button
-                           onClick={toggleNotification}
-                           className={`
-                             w-8 h-8 rounded-full flex items-center justify-center 
-                             backdrop-blur-xl transition-all duration-300 shadow-lg group/btn relative
-                             !border-none !outline-none
-                             bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
-                           `}
-                         >
-                           {isNotificationEnabled ? <Bell className="w-3.5 h-3.5" /> : <BellOff className="w-3.5 h-3.5" />}
-                         </button>
+                         <GlassTooltip content={isNotificationEnabled ? "Mute Notifications" : "Enable Notifications"} side="top">
+                           <button
+                             onClick={toggleNotification}
+                             className={`
+                               w-8 h-8 rounded-full flex items-center justify-center 
+                               backdrop-blur-xl transition-all duration-300 shadow-lg group/btn relative
+                               !border-none !outline-none
+                               bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
+                             `}
+                           >
+                             {isNotificationEnabled ? <Bell className="w-3.5 h-3.5" /> : <BellOff className="w-3.5 h-3.5" />}
+                           </button>
+                         </GlassTooltip>
                       </motion.div>
 
                       {/* 3. HOME BUTTON */}
@@ -259,17 +264,19 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
                          transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
                          className="absolute bottom-2 right-2 z-10"
                       >
-                         <button
-                           onClick={handleGoHome}
-                           className={`
-                             w-8 h-8 rounded-full flex items-center justify-center 
-                             backdrop-blur-xl transition-all duration-300 shadow-lg group/btn relative
-                             !border-none !outline-none
-                             bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
-                           `}
-                         >
-                           <Home className="w-3.5 h-3.5" />
-                         </button>
+                         <GlassTooltip content="Go Home" side="top">
+                           <button
+                             onClick={handleGoHome}
+                             className={`
+                               w-8 h-8 rounded-full flex items-center justify-center 
+                               backdrop-blur-xl transition-all duration-300 shadow-lg group/btn relative
+                               !border-none !outline-none
+                               bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
+                             `}
+                           >
+                             <Home className="w-3.5 h-3.5" />
+                           </button>
+                         </GlassTooltip>
                       </motion.div>
                     </>
                   )}

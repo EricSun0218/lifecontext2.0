@@ -31,7 +31,6 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ entry, isLast, onIns
     >
       
       {/* --- THE CENTRAL SPINE (Desktop Only) --- */}
-      {/* Positioned in the center of the 12 (3rem=48px) gap. Left 300px + ml-6 (24px) = 324px */}
       <div className="hidden md:block absolute left-[300px] ml-6 top-2 bottom-0 w-px bg-blue-400/10 shadow-[0_0_8px_rgba(99,102,241,0.2)]">
           {/* Glowing Dot at Start */}
           <div className="absolute -top-1 -left-[5px] w-3 h-3 rounded-full bg-blue-400 shadow-[0_0_12px_rgba(96,165,250,0.8)] z-10" />
@@ -117,6 +116,8 @@ const InsightCard: React.FC<{ insight: Insight; onClick: () => void }> = ({ insi
     <motion.div 
       layoutId={insight.id}
       onClick={onClick}
+      whileHover={{ scale: 1.01, y: -4 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
       className={`
         w-full max-w-[720px]
         group relative p-8 rounded-3xl backdrop-blur-xl
@@ -126,11 +127,9 @@ const InsightCard: React.FC<{ insight: Insight; onClick: () => void }> = ({ insi
         shadow-[0_0_20px_rgba(59,130,246,0.05)]
         
         /* --- UNIFIED HOVER EFFECT (Premium Blue-Purple Glow) --- */
-        transition-all duration-300
         hover:bg-white/10
         hover:shadow-[0_0_40px_-10px_rgba(96,165,250,0.4)]
         hover:border-blue-400/30
-        hover:-translate-y-1
       `}
     >
       {/* Header Row */}
