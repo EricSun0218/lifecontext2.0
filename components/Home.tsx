@@ -1,8 +1,17 @@
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { SlidersHorizontal, X, ExternalLink, Clock, ArrowUpRight } from 'lucide-react';
 import * as Switch from '@radix-ui/react-switch';
+import { 
+  FAST_CASCADE_CONTAINER, 
+  FAST_FADE_UP_ITEM, 
+  HOVER_ACTION, 
+  HOVER_CARD_GLOW, 
+  MODAL_BACKDROP, 
+  MODAL_CONTENT,
+  SPRING_TIGHT 
+} from '../constants/animations';
 
 // --- Updated Data for Grid Layout (Standardized) ---
 const newsItems = [
@@ -201,21 +210,6 @@ const initialSources = [
   { id: 'security', name: 'Security', active: true },
 ];
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.05
-    }
-  }
-};
-
-const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 30 } }
-};
-
 export const Home: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sources, setSources] = useState(initialSources);
@@ -228,7 +222,7 @@ export const Home: React.FC = () => {
     <div className="w-full">
       {/* --- Header --- */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 border-b border-blue-400/10 pb-8">
-        <div>
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
           <h2 className="text-blue-400 font-mono text-xs tracking-widest uppercase mb-2">Overview</h2>
           <h1 className="text-5xl font-bold text-white tracking-tight">
             Good Morning, Alex
@@ -236,12 +230,14 @@ export const Home: React.FC = () => {
           <p className="text-white/50 text-lg font-light mt-2">
             Here's what's happening in your network today.
           </p>
-        </div>
+        </motion.div>
 
         <motion.button 
           onClick={() => setIsSettingsOpen(true)}
-          whileHover={{ scale: 1.02, backgroundColor: "rgba(255, 255, 255, 0.1)", borderColor: "rgba(96, 165, 250, 0.3)" }}
-          whileTap={{ scale: 0.98 }}
+          variants={HOVER_ACTION}
+          initial="initial"
+          whileHover="hover"
+          whileTap="tap"
           className="mt-6 md:mt-0 flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-blue-400/15 backdrop-blur-md text-white/80 group"
         >
           <SlidersHorizontal className="w-4 h-4" />
@@ -249,9 +245,9 @@ export const Home: React.FC = () => {
         </motion.button>
       </div>
 
-      {/* --- Masonry Layout (Staggered/Waterfall) --- */}
+      {/* --- Masonry Layout (CSS Columns) --- */}
       <motion.div 
-        variants={containerVariants}
+        variants={FAST_CASCADE_CONTAINER}
         initial="hidden"
         animate="visible"
         className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6"
@@ -259,7 +255,7 @@ export const Home: React.FC = () => {
         {newsItems.map((item) => (
           <motion.div
             key={item.id}
-            variants={cardVariants}
+            variants={FAST_FADE_UP_ITEM}
             className="break-inside-avoid mb-6"
           >
             <NewsCard item={item} />
@@ -272,16 +268,18 @@ export const Home: React.FC = () => {
         {isSettingsOpen && (
           <>
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
+              variants={MODAL_BACKDROP}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
               onClick={() => setIsSettingsOpen(false)}
               className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-md"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              variants={MODAL_CONTENT}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
               className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none"
             >
               <div className="bg-[#0f0c29]/90 backdrop-blur-2xl border border-blue-400/15 rounded-3xl p-8 w-full max-w-lg pointer-events-auto shadow-2xl">
@@ -315,7 +313,7 @@ export const Home: React.FC = () => {
                                layout
                                className="block w-5 h-5 bg-white rounded-full shadow-md"
                                animate={{ x: source.active ? 20 : 0 }}
-                               transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                               transition={SPRING_TIGHT}
                              />
                           </Switch.Thumb>
                         </Switch.Root>
@@ -325,8 +323,10 @@ export const Home: React.FC = () => {
                  
                  <div className="mt-8">
                    <motion.button 
-                     whileHover={{ scale: 1.02 }}
-                     whileTap={{ scale: 0.98 }}
+                     variants={HOVER_ACTION}
+                     initial="initial"
+                     whileHover="hover"
+                     whileTap="tap"
                      onClick={() => setIsSettingsOpen(false)} 
                      className="w-full py-3 rounded-xl bg-blue-600 text-white font-medium"
                    >
@@ -343,23 +343,23 @@ export const Home: React.FC = () => {
 };
 
 const NewsCard: React.FC<{ item: any }> = ({ item }) => {
-  // Logic to vary image heights for masonry effect
-  const imageHeight = item.id % 3 === 0 ? 'h-64' : 'h-48';
-
   return (
     <motion.div 
-      whileHover={{ y: -4, scale: 1.01, boxShadow: "0 0 40px -10px rgba(96,165,250,0.5)", borderColor: "rgba(96, 165, 250, 0.3)" }}
-      className="group flex flex-col relative overflow-hidden rounded-3xl bg-white/5 backdrop-blur-md border border-blue-400/15 cursor-pointer"
+      initial="initial"
+      whileHover="hover"
+      whileTap="tap"
+      variants={HOVER_CARD_GLOW}
+      className="group flex flex-col w-full relative overflow-hidden rounded-3xl backdrop-blur-md border cursor-pointer bg-white/[0.02]"
     >
       
-      {/* Image Section - Variable Height for Masonry */}
+      {/* Image Section */}
       {item.type.includes('image') && (
-        <div className={`${imageHeight} w-full overflow-hidden relative shrink-0`}>
+        <div className="w-full overflow-hidden relative shrink-0">
            <div className="absolute inset-0 bg-gradient-to-t from-[#0f0c29] via-transparent to-transparent opacity-60 z-10" />
            <motion.img 
              src={item.imgUrl} 
              alt={item.title} 
-             className="w-full h-full object-cover"
+             className="w-full h-auto object-cover"
              whileHover={{ scale: 1.1 }}
              transition={{ duration: 0.7 }}
            />

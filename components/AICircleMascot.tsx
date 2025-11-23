@@ -5,6 +5,7 @@ import { Bell, BellOff, Camera, Globe, Ban, Link2, Check, X, Home, Filter, Trend
 import { GlassTooltip } from './ui/GlassTooltip';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useForm } from 'react-hook-form';
+import { HOVER_CARD_GLOW, HOVER_ACTION } from '../constants/animations';
 
 interface FloatingMascotProps {
   setActiveTab?: (tab: string) => void;
@@ -467,15 +468,15 @@ const RightFloatingChat: React.FC<RightFloatingChatProps> = ({ onClose }) => {
                  {/* Quick Actions */}
                  <div className="flex flex-col gap-3">
                      {quickActions.map((action, i) => (
-                         <button 
+                         <motion.button 
                             key={i}
                             onClick={() => setValue('query', action.prompt)}
+                            variants={HOVER_CARD_GLOW}
+                            initial="initial"
+                            whileHover="hover"
+                            whileTap="tap"
                             className="
                               flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 text-left group
-                              transition-all duration-300 
-                              hover:shadow-[0_0_40px_-10px_rgba(96,165,250,0.5)] 
-                              hover:border-blue-400/30 
-                              hover:-translate-y-1
                             "
                          >
                             <div className="p-2 rounded-xl bg-blue-500/10 text-blue-300 group-hover:text-blue-200 group-hover:bg-blue-500/20 transition-colors">
@@ -485,7 +486,7 @@ const RightFloatingChat: React.FC<RightFloatingChatProps> = ({ onClose }) => {
                                 <h3 className="text-sm font-semibold text-white group-hover:text-blue-100">{action.title}</h3>
                                 <p className="text-xs text-white/50 group-hover:text-white/70 mt-0.5">{action.subtitle}</p>
                             </div>
-                         </button>
+                         </motion.button>
                      ))}
                  </div>
 

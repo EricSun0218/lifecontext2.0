@@ -6,6 +6,7 @@ import {
   ArrowRight, Zap, AlertTriangle, Book
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { HOVER_CARD_GLOW, FADE_IN_UP_ITEM } from '../constants/animations';
 
 interface TimelineCardProps {
   entry: DashboardEntry;
@@ -21,12 +22,11 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ entry, isLast, onIns
   
   return (
     // --- SCROLL REVEAL ANIMATION ---
-    // Grid Layout: 300px Context | Gap (Spine) | Fluid Insight
     <motion.div 
-      initial={{ opacity: 0, y: 60 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial="hidden"
+      whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
-      transition={{ type: "spring", bounce: 0.3, duration: 0.8 }}
+      variants={FADE_IN_UP_ITEM}
       className="relative grid grid-cols-1 md:grid-cols-[300px_1fr] gap-8 md:gap-12 mb-24 group"
     >
       
@@ -50,8 +50,11 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ entry, isLast, onIns
 
           {/* Context Card (Metadata Style) */}
           <motion.div 
-            whileHover={{ y: -2, backgroundColor: "rgba(255, 255, 255, 0.1)", borderColor: "rgba(96, 165, 250, 0.3)", boxShadow: "0 0 40px -10px rgba(96,165,250,0.4)" }}
-            className="w-full md:w-[280px] bg-white/5 rounded-2xl p-5 backdrop-blur-sm border border-blue-400/15 shadow-[0_0_20px_rgba(59,130,246,0.05)] cursor-default"
+            initial="initial"
+            whileHover="hover"
+            whileTap="tap"
+            variants={HOVER_CARD_GLOW}
+            className="w-full md:w-[280px] rounded-2xl p-5 backdrop-blur-sm border cursor-default"
           >
             <div className="mb-3 opacity-50">
                 <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-blue-200">
@@ -119,15 +122,16 @@ const InsightCard: React.FC<{ insight: Insight; onClick: () => void }> = ({ insi
     <motion.div 
       layoutId={insight.id}
       onClick={onClick}
-      whileHover={{ scale: 1.01, y: -4, backgroundColor: "rgba(255, 255, 255, 0.1)", boxShadow: "0 0 40px -10px rgba(96,165,250,0.4)", borderColor: "rgba(96, 165, 250, 0.3)" }}
-      transition={{ type: "spring", stiffness: 400, damping: 17 }}
+      initial="initial"
+      whileHover="hover"
+      whileTap="tap"
+      variants={HOVER_CARD_GLOW}
       className={`
         w-full max-w-[720px]
         group relative p-8 rounded-3xl backdrop-blur-xl
-        bg-white/5 border border-blue-400/15
+        border 
         cursor-pointer
         flex flex-col gap-4
-        shadow-[0_0_20px_rgba(59,130,246,0.05)]
       `}
     >
       {/* Header Row */}

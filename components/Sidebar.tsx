@@ -3,6 +3,7 @@ import React from 'react';
 import { Home, MessageSquare, Layers, Settings, Hexagon } from 'lucide-react';
 import { GlassTooltip } from './ui/GlassTooltip';
 import { motion } from 'framer-motion';
+import { HOVER_ACTION, SPRING_TIGHT } from '../constants/animations';
 
 interface SidebarProps {
   activeTab: string;
@@ -20,9 +21,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
   return (
     <aside className="hidden md:flex flex-col justify-between items-center w-24 h-screen fixed left-0 top-0 z-50 bg-white/5 backdrop-blur-2xl border-r border-blue-400/15 shadow-[0_0_40px_-10px_rgba(30,58,138,0.2)] py-8">
       {/* Logo */}
-      <div className="mb-8 p-3 bg-blue-500/20 rounded-xl border border-blue-400/30 shadow-inner backdrop-blur-md">
+      <motion.div 
+        className="mb-8 p-3 bg-blue-500/20 rounded-xl border border-blue-400/30 shadow-inner backdrop-blur-md"
+        whileHover={{ scale: 1.1, rotate: 180 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
         <Hexagon className="w-8 h-8 text-blue-100 fill-blue-500/50" />
-      </div>
+      </motion.div>
 
       {/* Navigation */}
       <nav className="flex flex-col gap-6 w-full px-4">
@@ -32,8 +37,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
             <GlassTooltip key={item.id} content={item.label} side="right">
               <motion.button
                 onClick={() => setActiveTab(item.id)}
-                whileHover={{ scale: 1.05, backgroundColor: isActive ? 'rgba(59,130,246,0.25)' : 'rgba(59,130,246,0.1)' }}
-                whileTap={{ scale: 0.95 }}
+                initial="initial"
+                whileHover="hover"
+                whileTap="tap"
+                variants={HOVER_ACTION}
                 animate={{ 
                   backgroundColor: isActive ? 'rgba(59,130,246,0.2)' : 'rgba(0,0,0,0)',
                   borderColor: isActive ? 'rgba(96,165,250,0.3)' : 'transparent',
@@ -41,7 +48,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
                 }}
                 className={`
                   relative group flex items-center justify-center w-full aspect-square rounded-2xl
-                  border
+                  border border-transparent
                 `}
                 aria-label={item.label}
               >
@@ -58,8 +65,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
       {/* User Avatar */}
       <div className="mt-auto">
         <motion.div 
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          variants={HOVER_ACTION}
+          initial="initial"
+          whileHover="hover"
+          whileTap="tap"
           className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 p-[2px] shadow-lg cursor-pointer"
         >
             <img 

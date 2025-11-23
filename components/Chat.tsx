@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Mic, Plus, Sparkles, User, ArrowUp, Bot, Zap } from 'lucide-react';
 import { useForm } from 'react-hook-form';
+import { FADE_IN_UP_ITEM, HOVER_CARD_GLOW, HOVER_ACTION } from '../constants/animations';
 
 interface Message {
   id: string;
@@ -129,8 +130,10 @@ export const Chat: React.FC = () => {
                    {inputValue.trim() && (
                      <motion.button 
                         type="submit"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
+                        variants={HOVER_ACTION}
+                        initial="initial"
+                        whileHover="hover"
+                        whileTap="tap"
                         className="p-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-lg"
                      >
                         <ArrowUp className="w-5 h-5" />
@@ -151,8 +154,10 @@ export const Chat: React.FC = () => {
                   <motion.button
                     key={i}
                     onClick={() => handleSuggestionClick(s.text)}
-                    whileHover={{ y: -4, backgroundColor: "rgba(255, 255, 255, 0.1)", borderColor: "rgba(96, 165, 250, 0.3)", boxShadow: "0 0 40px -10px rgba(96,165,250,0.4)" }}
-                    whileTap={{ scale: 0.98 }}
+                    variants={HOVER_CARD_GLOW}
+                    initial="initial"
+                    whileHover="hover"
+                    whileTap="tap"
                     className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-blue-400/15 backdrop-blur-sm text-left group"
                   >
                     <div className="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
@@ -176,8 +181,9 @@ export const Chat: React.FC = () => {
               {messages.map((msg) => (
                 <motion.div
                   key={msg.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  variants={FADE_IN_UP_ITEM}
+                  initial="hidden"
+                  animate="visible"
                   className={`flex gap-4 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   {/* AI Avatar */}
@@ -253,8 +259,10 @@ export const Chat: React.FC = () => {
                  ) : (
                     <motion.button 
                       type="submit"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      variants={HOVER_ACTION}
+                      initial="initial"
+                      whileHover="hover"
+                      whileTap="tap"
                       className="p-3 rounded-full bg-blue-600 text-white shadow-lg shadow-blue-500/20"
                     >
                       <ArrowUp className="w-5 h-5" />

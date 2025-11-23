@@ -5,6 +5,7 @@ import { Zap, Clock, Shield, Globe, Plus, X, Minus, Save, Check, Calendar, Chevr
 import { useForm, Controller } from 'react-hook-form';
 import DatePicker from 'react-datepicker';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { HOVER_ACTION, HOVER_CARD_GLOW, FAST_CASCADE_CONTAINER, FAST_FADE_UP_ITEM } from '../constants/animations';
 
 interface SettingsFormData {
   tipsInterval: number;
@@ -64,12 +65,17 @@ export const Settings: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-full max-w-2xl mx-auto pb-32">
+    <motion.form 
+      variants={FAST_CASCADE_CONTAINER}
+      initial="hidden"
+      animate="visible"
+      onSubmit={handleSubmit(onSubmit)} 
+      className="w-full max-w-2xl mx-auto pb-32"
+    >
       
       {/* --- Header --- */}
       <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
+        variants={FAST_FADE_UP_ITEM}
         className="mb-10 text-center md:text-left"
       >
         <h1 className="text-4xl font-bold text-white tracking-tight mb-2">System Preferences</h1>
@@ -78,14 +84,16 @@ export const Settings: React.FC = () => {
         </p>
       </motion.div>
 
-      <div className="flex flex-col gap-8">
+      <motion.div 
+        variants={FAST_CASCADE_CONTAINER}
+        className="flex flex-col gap-8"
+      >
 
         {/* --- Section 1: AI Intelligence --- */}
         <SettingSection 
           icon={Zap} 
           title="AI Intelligence" 
           description="Adjust the frequency of context analysis. Lower intervals increase accuracy but use more resources."
-          delay={0.1}
         >
           <div className="flex flex-col gap-6">
             {/* Tips Interval */}
@@ -114,7 +122,6 @@ export const Settings: React.FC = () => {
           icon={Clock} 
           title="Daily Digest Schedule" 
           description="Set the time for your daily summary report generation."
-          delay={0.2}
         >
           <div className="flex items-center justify-between pt-2 group">
              <span className="text-white/70 font-medium group-hover:text-white transition-colors">Report Time</span>
@@ -149,7 +156,6 @@ export const Settings: React.FC = () => {
           icon={Shield} 
           title="Privacy Exclusion Zone" 
           description="Prevent the AI from analyzing content from specific domains or URLs."
-          delay={0.3}
         >
           <div className="flex flex-col gap-6">
             
@@ -196,8 +202,10 @@ export const Settings: React.FC = () => {
                />
                <motion.button 
                  type="button"
-                 whileHover={{ scale: 1.1 }}
-                 whileTap={{ scale: 0.9 }}
+                 variants={HOVER_ACTION}
+                 initial="initial"
+                 whileHover="hover"
+                 whileTap="tap"
                  onClick={handleAddSite}
                  className="absolute right-2 top-2 p-1.5 rounded-lg bg-white/5 hover:bg-blue-500 text-white/40 hover:text-white transition-colors"
                >
@@ -237,7 +245,6 @@ export const Settings: React.FC = () => {
           icon={Globe} 
           title="System Language" 
           description="Select the primary language for AI analysis and interface text."
-          delay={0.4}
         >
            <div className="relative z-10">
              <Controller
@@ -276,13 +283,14 @@ export const Settings: React.FC = () => {
            </div>
         </SettingSection>
 
-      </div>
+      </motion.div>
 
       {/* --- Floating Save Action --- */}
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40">
         <motion.button
           type="submit"
-          whileHover={{ scale: 1.05 }}
+          variants={FAST_FADE_UP_ITEM}
+          whileHover={{ scale: 1.05, transition: { type: "spring", stiffness: 500, damping: 30 } }}
           whileTap={{ scale: 0.95 }}
           className={`
             flex items-center gap-2 px-8 py-3 rounded-full shadow-2xl border transition-all duration-300
@@ -296,34 +304,41 @@ export const Settings: React.FC = () => {
         </motion.button>
       </div>
 
-    </form>
+    </motion.form>
   );
 };
 
 // --- Helper Components ---
 
-const SettingSection: React.FC<{ icon: any, title: string, description: string, children: React.ReactNode, delay: number }> = ({ icon: Icon, title, description, children, delay }) => (
-  <motion.div 
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    whileHover={{ y: -4, borderColor: "rgba(96, 165, 250, 0.3)", boxShadow: "0 0 40px -10px rgba(96,165,250,0.4)" }}
-    transition={{ delay, duration: 0.5 }}
-    className="bg-white/5 backdrop-blur-xl border border-blue-400/15 rounded-2xl p-6 md:p-8"
-  >
-     <div className="flex items-start gap-4 mb-6">
-        <div className="p-3 rounded-xl bg-white/5 border border-white/5 shadow-inner">
-           <Icon className="w-6 h-6 text-blue-300" />
-        </div>
-        <div>
-           <h3 className="text-xl font-semibold text-white mb-1">{title}</h3>
-           <p className="text-sm text-white/50 leading-relaxed max-w-md">{description}</p>
-        </div>
-     </div>
-     <div className="pl-0 md:pl-[4.5rem]">
-        {children}
-     </div>
-  </motion.div>
-);
+const SettingSection: React.FC<{ icon: any, title: string, description: string, children: React.ReactNode }> = ({ icon: Icon, title, description, children }) => {
+  // Merge variants to support both entry (FAST_FADE_UP_ITEM) and hover (HOVER_CARD_GLOW)
+  const variants = {
+    ...FAST_FADE_UP_ITEM,
+    hover: HOVER_CARD_GLOW.hover,
+    tap: HOVER_CARD_GLOW.tap
+  };
+
+  return (
+    <motion.div 
+      variants={variants}
+      whileHover="hover"
+      className="bg-white/5 backdrop-blur-xl border border-blue-400/15 rounded-2xl p-6 md:p-8 transition-colors duration-300"
+    >
+       <div className="flex items-start gap-4 mb-6">
+          <div className="p-3 rounded-xl bg-white/5 border border-white/5 shadow-inner">
+             <Icon className="w-6 h-6 text-blue-300" />
+          </div>
+          <div>
+             <h3 className="text-xl font-semibold text-white mb-1">{title}</h3>
+             <p className="text-sm text-white/50 leading-relaxed max-w-md">{description}</p>
+          </div>
+       </div>
+       <div className="pl-0 md:pl-[4.5rem]">
+          {children}
+       </div>
+    </motion.div>
+  );
+};
 
 const IntervalControl: React.FC<{ label: string, value: number, unit: string, onIncrement: () => void, onDecrement: () => void }> = ({ label, value, unit, onIncrement: onIncrement, onDecrement }) => (
   <div className="flex items-center justify-between group">
