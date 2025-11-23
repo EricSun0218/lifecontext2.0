@@ -121,39 +121,37 @@ export const FloatingMascotLogo = () => {
          <AnimatePresence>
             {isHovered && (
               <>
-                {/* 1. NOTIFICATION TOGGLE (Left) */}
+                {/* 1. NOTIFICATION TOGGLE (Left-Bottom Cluster) */}
                 <motion.div
-                   initial={{ opacity: 0, x: 20, scale: 0.8 }}
-                   animate={{ opacity: 1, x: -60, scale: 1 }} // Position to left
-                   exit={{ opacity: 0, x: 20, scale: 0.8 }}
+                   initial={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                   animate={{ opacity: 1, x: -48, y: 14, scale: 1 }} // Position: Left & slightly down
+                   exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
                    transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.05 }}
                    className="absolute bottom-1 right-1"
                 >
                    <button
                      onClick={toggleNotification}
                      className={`
-                       w-10 h-10 rounded-full flex items-center justify-center 
-                       backdrop-blur-xl border transition-all duration-300 shadow-lg group/btn relative
+                       w-8 h-8 rounded-full flex items-center justify-center 
+                       backdrop-blur-xl transition-all duration-300 shadow-lg group/btn relative
                        !border-none !outline-none
-                       ${isNotificationEnabled 
-                         ? 'bg-blue-500/20 border-blue-400/30 text-blue-200 hover:bg-blue-500/30' 
-                         : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:text-white/60'}
+                       bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
                      `}
                    >
-                     {isNotificationEnabled ? <Bell className="w-4 h-4" /> : <BellOff className="w-4 h-4" />}
+                     {isNotificationEnabled ? <Bell className="w-3.5 h-3.5" /> : <BellOff className="w-3.5 h-3.5" />}
                      
                      {/* Tooltip */}
-                     <span className="absolute right-full mr-2 px-2 py-1 bg-slate-900/90 border border-white/10 text-[10px] text-white rounded-md opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                     <span className="absolute right-full mr-3 px-2 py-1 bg-slate-900/90 border border-white/10 text-[10px] text-white rounded-md opacity-0 group-hover/btn:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
                        {isNotificationEnabled ? 'Notifications On' : 'Notifications Off'}
                      </span>
                    </button>
                 </motion.div>
 
-                {/* 2. CAPTURE CONTROL (Top) */}
+                {/* 2. CAPTURE CONTROL (Left-Top Cluster) */}
                 <motion.div
-                   initial={{ opacity: 0, y: 20, scale: 0.8 }}
-                   animate={{ opacity: 1, y: -60, scale: 1 }} // Position to top
-                   exit={{ opacity: 0, y: 20, scale: 0.8 }}
+                   initial={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                   animate={{ opacity: 1, x: -48, y: -22, scale: 1 }} // Position: Left & slightly up
+                   exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                    className="absolute bottom-1 right-1"
                    onMouseEnter={() => setActiveMenu('capture')}
@@ -161,25 +159,23 @@ export const FloatingMascotLogo = () => {
                 >
                    <button
                      className={`
-                       w-10 h-10 rounded-full flex items-center justify-center 
-                       backdrop-blur-xl border transition-all duration-300 shadow-lg relative
+                       w-8 h-8 rounded-full flex items-center justify-center 
+                       backdrop-blur-xl transition-all duration-300 shadow-lg relative
                        !border-none !outline-none
-                       ${isCaptureEnabled 
-                         ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-200 hover:bg-emerald-500/30' 
-                         : 'bg-red-500/10 border-red-400/20 text-red-300 hover:bg-red-500/20'}
+                       bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
                      `}
                    >
-                     {isCaptureEnabled ? <Camera className="w-4 h-4" /> : <Ban className="w-4 h-4" />}
+                     {isCaptureEnabled ? <Camera className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
                    </button>
 
                    {/* --- CAPTURE MENU (Dropdown) --- */}
                    <AnimatePresence>
                      {activeMenu === 'capture' && (
                        <motion.div
-                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                         exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                         className="absolute bottom-full mb-3 right-0 w-48 bg-[#0f0c29]/95 backdrop-blur-2xl border border-blue-400/20 rounded-xl shadow-[0_0_30px_-5px_rgba(0,0,0,0.5)] overflow-hidden p-1 flex flex-col gap-0.5 z-[60]"
+                         initial={{ opacity: 0, y: 5, scale: 0.95 }}
+                         animate={{ opacity: 1, y: -5, scale: 1 }}
+                         exit={{ opacity: 0, y: 0, scale: 0.95 }}
+                         className="absolute bottom-full mb-2 right-[-20px] w-48 bg-[#0f0c29]/95 backdrop-blur-2xl border border-blue-400/20 rounded-xl shadow-[0_0_30px_-5px_rgba(0,0,0,0.5)] overflow-hidden p-1 flex flex-col gap-0.5 z-[60]"
                        >
                           {/* Item 1: Toggle Master Switch */}
                           <div 
@@ -246,11 +242,11 @@ export const FloatingMascotLogo = () => {
           !border-none !outline-none !bg-transparent
         "
       >
-        {/* CLIPPING CONTAINER + BREATHING ANIMATION */}
+        {/* CLIPPING CONTAINER (Static) */}
         <motion.div 
           className="w-full h-full rounded-full overflow-hidden !bg-transparent !border-none !outline-none !shadow-none !p-0 !m-0"
-          animate={isSleeping ? { scale: [1, 1.02, 1], opacity: 0.8 } : { scale: 1, opacity: 1 }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.3 }}
         >
           <svg 
             viewBox="0 0 100 100" 
@@ -336,9 +332,9 @@ export const FloatingMascotLogo = () => {
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    {/* Closed Eyes (Sleep Mode) */}
-                    <path d="M 29 50 Q 34 53 39 50" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round" />
-                    <path d="M 55 50 Q 60 53 65 50" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round" />
+                    {/* Closed Eyes (Sleep Mode) - Enhanced Visibility */}
+                    <path d="M 29 50 Q 34 53 39 50" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
+                    <path d="M 55 50 Q 60 53 65 50" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" />
                   </motion.g>
                 )}
               </AnimatePresence>
