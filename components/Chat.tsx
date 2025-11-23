@@ -2,11 +2,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Mic, Plus, Sparkles, User, ArrowUp, Bot, Zap } from 'lucide-react';
+import { useForm } from 'react-hook-form';
 
 interface Message {
   id: string;
   role: 'user' | 'ai';
   content: string;
+}
+
+interface ChatFormData {
+  message: string;
 }
 
 const SUGGESTIONS = [
@@ -18,9 +23,11 @@ const SUGGESTIONS = [
 
 export const Chat: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  
+  const { register, handleSubmit, setValue, watch, reset } = useForm<ChatFormData>();
+  const inputValue = watch('message', '');
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -32,17 +39,17 @@ export const Chat: React.FC = () => {
     }
   }, [messages, isTyping]);
 
-  const handleSend = async () => {
-    if (!inputValue.trim()) return;
+  const onSubmit = async (data: ChatFormData) => {
+    if (!data.message.trim()) return;
 
     const userMsg: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: inputValue
+      content: data.message
     };
 
     setMessages(prev => [...prev, userMsg]);
-    setInputValue("");
+    reset();
     setIsTyping(true);
 
     // Mock AI Delay
@@ -57,10 +64,15 @@ export const Chat: React.FC = () => {
     }, 1500);
   };
 
+  const handleSuggestionClick = (text: string) => {
+    setValue('message', text);
+    // Optional: auto-submit? Let's just set value for now to match UX of filling input
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      handleSubmit(onSubmit)();
     }
   };
 
@@ -92,35 +104,40 @@ export const Chat: React.FC = () => {
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ scale: 1.01 }}
               transition={{ delay: 0.1, duration: 0.5 }}
               className="w-full relative mb-12 group"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="relative bg-white/10 backdrop-blur-xl border border-blue-400/15 rounded-2xl p-2 pl-5 pr-3 flex items-center gap-4 shadow-2xl transition-all focus-within:bg-white/15 focus-within:border-blue-400/30 h-16">
+              <form 
+                onSubmit={handleSubmit(onSubmit)}
+                className="relative bg-white/10 backdrop-blur-xl border border-blue-400/15 rounded-2xl p-2 pl-5 pr-3 flex items-center gap-4 shadow-2xl transition-all focus-within:bg-white/15 focus-within:border-blue-400/30 h-16"
+              >
                  <Plus className="w-6 h-6 text-slate-400 cursor-pointer hover:text-white transition-colors" />
                  <input 
                     type="text" 
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
+                    {...register('message')}
                     onKeyDown={handleKeyDown}
                     placeholder="Ask anything..." 
                     className="flex-1 bg-transparent border-none outline-none text-lg text-white placeholder-slate-400 h-full font-light"
                     autoFocus
                  />
                  <div className="flex items-center gap-2">
-                   <button className="p-2 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white transition-colors">
+                   <button type="button" className="p-2 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white transition-colors">
                      <Mic className="w-5 h-5" />
                    </button>
                    {inputValue.trim() && (
-                     <button 
-                        onClick={handleSend}
-                        className="p-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-lg transition-all animate-in fade-in zoom-in duration-200"
+                     <motion.button 
+                        type="submit"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="p-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-lg"
                      >
                         <ArrowUp className="w-5 h-5" />
-                     </button>
+                     </motion.button>
                    )}
                  </div>
-              </div>
+              </form>
             </motion.div>
 
             {/* 3. Suggestion Cards (Below Input) */}
@@ -131,10 +148,12 @@ export const Chat: React.FC = () => {
               className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full"
             >
                {SUGGESTIONS.map((s, i) => (
-                  <button
+                  <motion.button
                     key={i}
-                    onClick={() => setInputValue(s.text)}
-                    className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-white/10 border border-blue-400/15 backdrop-blur-sm text-left group transition-all duration-300 hover:shadow-[0_0_40px_-10px_rgba(96,165,250,0.4)] hover:border-blue-400/30 hover:-translate-y-1"
+                    onClick={() => handleSuggestionClick(s.text)}
+                    whileHover={{ y: -4, backgroundColor: "rgba(255, 255, 255, 0.1)", borderColor: "rgba(96, 165, 250, 0.3)", boxShadow: "0 0 40px -10px rgba(96,165,250,0.4)" }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-blue-400/15 backdrop-blur-sm text-left group"
                   >
                     <div className="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
                       <s.icon className="w-4 h-4 text-blue-300" />
@@ -142,7 +161,7 @@ export const Chat: React.FC = () => {
                     <span className="text-white/70 group-hover:text-white text-sm font-medium transition-colors">
                       {s.text}
                     </span>
-                  </button>
+                  </motion.button>
                ))}
             </motion.div>
 
@@ -209,15 +228,17 @@ export const Chat: React.FC = () => {
 
           {/* BOTTOM INPUT AREA */}
           <div className="absolute bottom-0 left-0 right-0 p-4 pt-2 bg-gradient-to-t from-[#0f0c29] to-transparent">
-            <div className="relative flex items-center gap-2 p-2 rounded-[2rem] bg-white/5 backdrop-blur-2xl border border-blue-400/15 shadow-2xl focus-within:bg-white/10 focus-within:border-blue-400/30 transition-all">
+            <form 
+              onSubmit={handleSubmit(onSubmit)}
+              className="relative flex items-center gap-2 p-2 rounded-[2rem] bg-white/5 backdrop-blur-2xl border border-blue-400/15 shadow-2xl focus-within:bg-white/10 focus-within:border-blue-400/30 transition-all"
+            >
               
-              <button className="p-3 rounded-full hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+              <button type="button" className="p-3 rounded-full hover:bg-white/10 text-white/50 hover:text-white transition-colors">
                 <Plus className="w-5 h-5" />
               </button>
 
               <input
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
+                {...register('message')}
                 onKeyDown={handleKeyDown}
                 placeholder="Ask anything..."
                 className="flex-1 bg-transparent border-none outline-none text-white placeholder-white/30 text-lg px-2 font-light"
@@ -226,19 +247,21 @@ export const Chat: React.FC = () => {
 
               <div className="flex items-center gap-1 pr-2">
                  {inputValue.length === 0 ? (
-                   <button className="p-3 rounded-full hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                   <button type="button" className="p-3 rounded-full hover:bg-white/10 text-white/50 hover:text-white transition-colors">
                      <Mic className="w-5 h-5" />
                    </button>
                  ) : (
-                    <button 
-                      onClick={handleSend}
-                      className="p-3 rounded-full bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-500/20 transition-all transform hover:scale-105 active:scale-95"
+                    <motion.button 
+                      type="submit"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="p-3 rounded-full bg-blue-600 text-white shadow-lg shadow-blue-500/20"
                     >
                       <ArrowUp className="w-5 h-5" />
-                    </button>
+                    </motion.button>
                  )}
               </div>
-            </div>
+            </form>
             <div className="text-center mt-2 mb-1">
                <p className="text-[10px] text-white/20">
                  AI can make mistakes. Check important info.

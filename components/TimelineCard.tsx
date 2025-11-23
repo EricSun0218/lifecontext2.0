@@ -49,7 +49,10 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ entry, isLast, onIns
           </div>
 
           {/* Context Card (Metadata Style) */}
-          <div className="w-full md:w-[280px] bg-white/5 rounded-2xl p-5 backdrop-blur-sm border border-blue-400/15 transition-all duration-300 hover:bg-white/10 hover:border-blue-400/30 hover:shadow-[0_0_40px_-10px_rgba(96,165,250,0.4)] hover:-translate-y-[2px] shadow-[0_0_20px_rgba(59,130,246,0.05)]">
+          <motion.div 
+            whileHover={{ y: -2, backgroundColor: "rgba(255, 255, 255, 0.1)", borderColor: "rgba(96, 165, 250, 0.3)", boxShadow: "0 0 40px -10px rgba(96,165,250,0.4)" }}
+            className="w-full md:w-[280px] bg-white/5 rounded-2xl p-5 backdrop-blur-sm border border-blue-400/15 shadow-[0_0_20px_rgba(59,130,246,0.05)] cursor-default"
+          >
             <div className="mb-3 opacity-50">
                 <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-blue-200">
                   Source Context
@@ -74,7 +77,7 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ entry, isLast, onIns
                 )
               })}
             </div>
-          </div>
+          </motion.div>
       </div>
 
       {/* --- RIGHT COLUMN: INSIGHT DECK --- */}
@@ -116,7 +119,7 @@ const InsightCard: React.FC<{ insight: Insight; onClick: () => void }> = ({ insi
     <motion.div 
       layoutId={insight.id}
       onClick={onClick}
-      whileHover={{ scale: 1.01, y: -4 }}
+      whileHover={{ scale: 1.01, y: -4, backgroundColor: "rgba(255, 255, 255, 0.1)", boxShadow: "0 0 40px -10px rgba(96,165,250,0.4)", borderColor: "rgba(96, 165, 250, 0.3)" }}
       transition={{ type: "spring", stiffness: 400, damping: 17 }}
       className={`
         w-full max-w-[720px]
@@ -125,11 +128,6 @@ const InsightCard: React.FC<{ insight: Insight; onClick: () => void }> = ({ insi
         cursor-pointer
         flex flex-col gap-4
         shadow-[0_0_20px_rgba(59,130,246,0.05)]
-        
-        /* --- UNIFIED HOVER EFFECT (Premium Blue-Purple Glow) --- */
-        hover:bg-white/10
-        hover:shadow-[0_0_40px_-10px_rgba(96,165,250,0.4)]
-        hover:border-blue-400/30
       `}
     >
       {/* Header Row */}

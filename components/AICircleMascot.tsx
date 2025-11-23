@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, BellOff, Camera, Globe, Ban, Link2, Check, X, Home, Filter, TrendingUp, List, Plus, Mic, MessageSquare } from 'lucide-react';
 import { GlassTooltip } from './ui/GlassTooltip';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { useForm } from 'react-hook-form';
 
 interface FloatingMascotProps {
   setActiveTab?: (tab: string) => void;
@@ -16,8 +17,6 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
 
   // Dialog State
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [useContext, setUseContext] = useState(true); // For the sidebar context toggle
 
   // Settings State
   const [isCaptureEnabled, setIsCaptureEnabled] = useState(true);
@@ -405,10 +404,6 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
           <RightFloatingChat 
              key="floating-chat"
              onClose={() => setIsDialogOpen(false)}
-             inputValue={inputValue}
-             setInputValue={setInputValue}
-             useContext={useContext}
-             setUseContext={setUseContext}
           />
         )}
       </AnimatePresence>
@@ -419,19 +414,28 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
 // --- RIGHT FLOATING CHAT COMPONENT ---
 interface RightFloatingChatProps {
   onClose: () => void;
-  inputValue: string;
-  setInputValue: (val: string) => void;
-  useContext: boolean;
-  setUseContext: (val: boolean) => void;
 }
 
-const RightFloatingChat: React.FC<RightFloatingChatProps> = ({ onClose, inputValue, setInputValue, useContext, setUseContext }) => {
+interface FloatingChatFormData {
+    query: string;
+}
+
+const RightFloatingChat: React.FC<RightFloatingChatProps> = ({ onClose }) => {
+    const [useContext, setUseContext] = useState(true);
+    const { register, handleSubmit, setValue } = useForm<FloatingChatFormData>();
+    
     // Quick Actions Data
     const quickActions = [
         { icon: Filter, title: "Filter Content", subtitle: "What might I like best here?", prompt: "Filter content based on my preferences" },
         { icon: TrendingUp, title: "Analyze Trends", subtitle: "What are the genre trends?", prompt: "Analyze current trends on this site" },
         { icon: List, title: "Draft Watchlist", subtitle: "Draft a list for this site.", prompt: "Draft a watchlist from this content" }
     ];
+
+    const onSubmit = (data: FloatingChatFormData) => {
+        console.log("Floating chat query:", data.query, "Context:", useContext);
+        // Implement chat logic here or pass up if needed
+        setValue('query', '');
+    };
 
     return (
         <motion.div
@@ -465,7 +469,7 @@ const RightFloatingChat: React.FC<RightFloatingChatProps> = ({ onClose, inputVal
                      {quickActions.map((action, i) => (
                          <button 
                             key={i}
-                            onClick={() => setInputValue(action.prompt)}
+                            onClick={() => setValue('query', action.prompt)}
                             className="
                               flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 text-left group
                               transition-all duration-300 
@@ -508,21 +512,23 @@ const RightFloatingChat: React.FC<RightFloatingChatProps> = ({ onClose, inputVal
                      </div>
 
                      {/* Input Area */}
-                     <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/5 border border-blue-400/20 focus-within:bg-white/10 focus-within:border-blue-400/40 transition-all">
-                        <button className="p-3 rounded-xl hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                     <form 
+                        onSubmit={handleSubmit(onSubmit)}
+                        className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/5 border border-blue-400/20 focus-within:bg-white/10 focus-within:border-blue-400/40 transition-all"
+                     >
+                        <button type="button" className="p-3 rounded-xl hover:bg-white/10 text-white/50 hover:text-white transition-colors">
                             <Plus className="w-5 h-5" />
                         </button>
                         <input 
                             type="text" 
-                            value={inputValue}
-                            onChange={(e) => setInputValue(e.target.value)}
+                            {...register('query')}
                             placeholder="Ask anything..."
                             className="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder-white/30 h-10"
                         />
-                        <button className="p-3 rounded-xl hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                        <button type="button" className="p-3 rounded-xl hover:bg-white/10 text-white/50 hover:text-white transition-colors">
                             <Mic className="w-5 h-5" />
                         </button>
-                     </div>
+                     </form>
                  </div>
              </div>
         </motion.div>

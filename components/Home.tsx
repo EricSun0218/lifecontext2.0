@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { SlidersHorizontal, X, ExternalLink, Clock, ArrowUpRight } from 'lucide-react';
+import * as Switch from '@radix-ui/react-switch';
 
 // --- Updated Data for Grid Layout (Standardized) ---
 const newsItems = [
@@ -200,6 +201,21 @@ const initialSources = [
   { id: 'security', name: 'Security', active: true },
 ];
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05
+    }
+  }
+};
+
+const cardVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 30 } }
+};
+
 export const Home: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sources, setSources] = useState(initialSources);
@@ -222,29 +238,34 @@ export const Home: React.FC = () => {
           </p>
         </div>
 
-        <button 
+        <motion.button 
           onClick={() => setIsSettingsOpen(true)}
-          className="mt-6 md:mt-0 flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-blue-400/15 hover:border-blue-400/30 backdrop-blur-md transition-all text-white/80 hover:text-white group"
+          whileHover={{ scale: 1.02, backgroundColor: "rgba(255, 255, 255, 0.1)", borderColor: "rgba(96, 165, 250, 0.3)" }}
+          whileTap={{ scale: 0.98 }}
+          className="mt-6 md:mt-0 flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 border border-blue-400/15 backdrop-blur-md text-white/80 group"
         >
           <SlidersHorizontal className="w-4 h-4" />
           <span className="text-sm font-medium">Customize Sources</span>
-        </button>
+        </motion.button>
       </div>
 
       {/* --- Masonry Layout (Staggered/Waterfall) --- */}
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
-        {newsItems.map((item, index) => (
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6"
+      >
+        {newsItems.map((item) => (
           <motion.div
             key={item.id}
+            variants={cardVariants}
             className="break-inside-avoid mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: Math.min(index * 0.05, 0.5), duration: 0.5 }}
           >
             <NewsCard item={item} />
           </motion.div>
         ))}
-      </div>
+      </motion.div>
 
       {/* --- Settings Modal --- */}
       <AnimatePresence>
@@ -273,25 +294,44 @@ export const Home: React.FC = () => {
                  
                  <div className="space-y-4">
                    {sources.map(source => (
-                     <div key={source.id} className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
+                     <motion.div 
+                       key={source.id} 
+                       layout
+                       className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5"
+                     >
                         <span className="text-white font-medium">{source.name}</span>
-                        <div 
-                          onClick={() => toggleSource(source.id)}
-                          className={`w-12 h-7 rounded-full p-1 cursor-pointer transition-colors duration-300 ${source.active ? 'bg-blue-600' : 'bg-white/10'}`}
+                        
+                        <Switch.Root
+                          checked={source.active}
+                          onCheckedChange={() => toggleSource(source.id)}
+                          className={`
+                            w-12 h-7 rounded-full p-1 transition-colors duration-300
+                            ${source.active ? 'bg-blue-600' : 'bg-white/10'}
+                            border-none outline-none cursor-pointer relative
+                          `}
                         >
-                          <motion.div 
-                            className="w-5 h-5 bg-white rounded-full shadow-md"
-                            animate={{ x: source.active ? 20 : 0 }}
-                          />
-                        </div>
-                     </div>
+                          <Switch.Thumb asChild>
+                             <motion.div 
+                               layout
+                               className="block w-5 h-5 bg-white rounded-full shadow-md"
+                               animate={{ x: source.active ? 20 : 0 }}
+                               transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                             />
+                          </Switch.Thumb>
+                        </Switch.Root>
+                     </motion.div>
                    ))}
                  </div>
                  
                  <div className="mt-8">
-                   <button onClick={() => setIsSettingsOpen(false)} className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-medium transition-colors">
+                   <motion.button 
+                     whileHover={{ scale: 1.02 }}
+                     whileTap={{ scale: 0.98 }}
+                     onClick={() => setIsSettingsOpen(false)} 
+                     className="w-full py-3 rounded-xl bg-blue-600 text-white font-medium"
+                   >
                      Done
-                   </button>
+                   </motion.button>
                  </div>
               </div>
             </motion.div>
@@ -307,16 +347,21 @@ const NewsCard: React.FC<{ item: any }> = ({ item }) => {
   const imageHeight = item.id % 3 === 0 ? 'h-64' : 'h-48';
 
   return (
-    <div className="group flex flex-col relative overflow-hidden rounded-3xl bg-white/5 backdrop-blur-md border border-blue-400/15 transition-all duration-300 hover:shadow-[0_0_40px_-10px_rgba(96,165,250,0.5)] hover:border-blue-400/30 hover:-translate-y-1 cursor-pointer">
+    <motion.div 
+      whileHover={{ y: -4, scale: 1.01, boxShadow: "0 0 40px -10px rgba(96,165,250,0.5)", borderColor: "rgba(96, 165, 250, 0.3)" }}
+      className="group flex flex-col relative overflow-hidden rounded-3xl bg-white/5 backdrop-blur-md border border-blue-400/15 cursor-pointer"
+    >
       
       {/* Image Section - Variable Height for Masonry */}
       {item.type.includes('image') && (
         <div className={`${imageHeight} w-full overflow-hidden relative shrink-0`}>
            <div className="absolute inset-0 bg-gradient-to-t from-[#0f0c29] via-transparent to-transparent opacity-60 z-10" />
-           <img 
+           <motion.img 
              src={item.imgUrl} 
              alt={item.title} 
-             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+             className="w-full h-full object-cover"
+             whileHover={{ scale: 1.1 }}
+             transition={{ duration: 0.7 }}
            />
            <div className="absolute top-4 left-4 z-20">
              <span className="px-2 py-1 rounded-md bg-blue-500/20 border border-blue-400/20 backdrop-blur-md text-[10px] font-bold text-blue-200 uppercase tracking-wider">
@@ -364,6 +409,6 @@ const NewsCard: React.FC<{ item: any }> = ({ item }) => {
            <ArrowUpRight className="w-4 h-4 text-blue-300 transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

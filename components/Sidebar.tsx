@@ -2,6 +2,7 @@
 import React from 'react';
 import { Home, MessageSquare, Layers, Settings, Hexagon } from 'lucide-react';
 import { GlassTooltip } from './ui/GlassTooltip';
+import { motion } from 'framer-motion';
 
 interface SidebarProps {
   activeTab: string;
@@ -29,13 +30,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
           const isActive = activeTab === item.id;
           return (
             <GlassTooltip key={item.id} content={item.label} side="right">
-              <button
+              <motion.button
                 onClick={() => setActiveTab(item.id)}
+                whileHover={{ scale: 1.05, backgroundColor: isActive ? 'rgba(59,130,246,0.25)' : 'rgba(59,130,246,0.1)' }}
+                whileTap={{ scale: 0.95 }}
+                animate={{ 
+                  backgroundColor: isActive ? 'rgba(59,130,246,0.2)' : 'rgba(0,0,0,0)',
+                  borderColor: isActive ? 'rgba(96,165,250,0.3)' : 'transparent',
+                  boxShadow: isActive ? '0 0 20px rgba(59,130,246,0.2)' : 'none'
+                }}
                 className={`
-                  relative group flex items-center justify-center w-full aspect-square rounded-2xl transition-all duration-300 ease-out
-                  ${isActive 
-                    ? 'bg-blue-500/20 shadow-[0_0_20px_rgba(59,130,246,0.2)] border border-blue-400/30' 
-                    : 'hover:bg-blue-500/10 border border-transparent'}
+                  relative group flex items-center justify-center w-full aspect-square rounded-2xl
+                  border
                 `}
                 aria-label={item.label}
               >
@@ -43,7 +49,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
                   className={`w-6 h-6 transition-colors duration-300 ${isActive ? 'text-white' : 'text-white/70 group-hover:text-white'}`} 
                   strokeWidth={isActive ? 2.5 : 2}
                 />
-              </button>
+              </motion.button>
             </GlassTooltip>
           );
         })}
@@ -51,13 +57,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
 
       {/* User Avatar */}
       <div className="mt-auto">
-        <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 p-[2px] shadow-lg cursor-pointer hover:scale-105 transition-transform">
+        <motion.div 
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 p-[2px] shadow-lg cursor-pointer"
+        >
             <img 
                 src="https://picsum.photos/100/100" 
                 alt="User" 
                 className="w-full h-full rounded-full object-cover border-2 border-white/20"
             />
-        </div>
+        </motion.div>
       </div>
     </aside>
   );
