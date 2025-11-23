@@ -44,12 +44,12 @@ export const FloatingMascotLogo = () => {
     >
       <div 
         className="
-          relative w-24 h-24 
+          relative w-12 h-12 
           rounded-full
           transition-transform duration-300 ease-out 
           group-hover:scale-110 group-hover:-translate-y-1
           /* CSS GLOW: GPU accelerated and strictly circular, avoiding SVG box artifacts */
-          shadow-[0_0_25px_-5px_rgba(96,165,250,0.6)]
+          shadow-[0_0_15px_-3px_rgba(96,165,250,0.6)]
         "
       >
         {/* CLIPPING CONTAINER: Ensures SVG stays perfectly round */ }
