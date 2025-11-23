@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, MessageSquare, Layers, Settings, Hexagon } from 'lucide-react';
+import { MessageSquare, Layers, Settings, Hexagon, Sparkles, Book, Lightbulb } from 'lucide-react';
 import { GlassTooltip } from './ui/GlassTooltip';
 import { motion } from 'framer-motion';
 import { HOVER_ACTION, SPRING_TIGHT } from '../constants/animations';
@@ -12,9 +12,10 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
   const menuItems = [
-    { id: 'home', icon: Home, label: 'Home' },
+    { id: 'timeline', icon: Lightbulb, label: 'Insights' }, // Main Dashboard (Timeline View)
+    { id: 'home', icon: Sparkles, label: 'Daily Picks' }, // Original Home (News Grid)
     { id: 'chat', icon: MessageSquare, label: 'Chat' },
-    { id: 'timeline', icon: Layers, label: 'Timeline' },
+    { id: 'knowledge', icon: Book, label: 'Knowledge Base' },
     { id: 'settings', icon: Settings, label: 'Settings' },
   ];
 

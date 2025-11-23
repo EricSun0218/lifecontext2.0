@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Mic, Plus, Sparkles, User, ArrowUp, Bot, Zap } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { FADE_IN_UP_ITEM, HOVER_CARD_GLOW, HOVER_ACTION } from '../constants/animations';
+import { Mascot } from './AICircleMascot';
 
 interface Message {
   id: string;
@@ -94,8 +95,8 @@ export const Chat: React.FC = () => {
               transition={{ duration: 0.6 }}
               className="mb-10 flex flex-col items-center text-center"
             >
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-500 to-indigo-500 mb-6 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                <Sparkles className="w-8 h-8 text-white" />
+              <div className="mb-6">
+                <Mascot className="w-24 h-24" />
               </div>
               <h1 className="text-4xl md:text-5xl font-semibold tracking-tight mb-3 text-white">Hello, Alex</h1>
               <p className="text-slate-400 text-xl font-light">How can I help you analyze your digital footprint?</p>

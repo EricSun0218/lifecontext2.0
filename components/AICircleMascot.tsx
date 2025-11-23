@@ -1,19 +1,191 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, BellOff, Camera, Globe, Ban, Link2, Check, X, Home, Filter, TrendingUp, List, Plus, Mic, MessageSquare } from 'lucide-react';
+import { Bell, BellOff, Camera, Globe, Ban, Link2, Check, X, Home, Filter, TrendingUp, List, Plus, Mic } from 'lucide-react';
 import { GlassTooltip } from './ui/GlassTooltip';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useForm } from 'react-hook-form';
-import { HOVER_CARD_GLOW, HOVER_ACTION } from '../constants/animations';
+import { HOVER_CARD_GLOW } from '../constants/animations';
+
+// --- REUSABLE MASCOT COMPONENT ---
+interface MascotProps {
+  className?: string;
+  isSleeping?: boolean;
+}
+
+export const Mascot: React.FC<MascotProps> = ({ className = "w-12 h-12", isSleeping = false }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [eyePos, setEyePos] = useState({ x: 0, y: 0 });
+  const [isBlinking, setIsBlinking] = useState(false);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (isSleeping || !ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const dx = e.clientX - centerX;
+      const dy = e.clientY - centerY;
+      const angle = Math.atan2(dy, dx);
+      const maxMove = 6; 
+      const distance = Math.min(maxMove, Math.hypot(dx, dy) / 15);
+
+      setEyePos({
+        x: Math.cos(angle) * distance,
+        y: Math.sin(angle) * distance
+      });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, [isSleeping]);
+
+  useEffect(() => {
+    if (isSleeping) {
+      setEyePos({ x: 0, y: 0 });
+      setIsBlinking(false);
+      return;
+    }
+
+    // Blink Logic
+    let timer: ReturnType<typeof setTimeout>;
+    const scheduleBlink = () => {
+      // Random interval between 3s and 8s for natural blinking
+      // "Not too frequent"
+      const delay = 3000 + Math.random() * 5000;
+      
+      timer = setTimeout(() => {
+        setIsBlinking(true);
+        // Blink duration approx 150ms
+        setTimeout(() => {
+          setIsBlinking(false);
+          scheduleBlink();
+        }, 150);
+      }, delay);
+    };
+
+    scheduleBlink();
+    return () => clearTimeout(timer);
+  }, [isSleeping]);
+
+  const areEyesClosed = isSleeping || isBlinking;
+  // Snappy transition for blinks (0.1s), smooth/slow for sleep (0.3s)
+  const transitionConfig = { duration: isSleeping ? 0.3 : 0.1 };
+
+  return (
+    <div ref={ref} className={`${className} relative`}>
+        <motion.div 
+            className="w-full h-full rounded-full overflow-hidden"
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+        >
+        <svg 
+            viewBox="0 0 100 100" 
+            className="w-full h-full block"
+            style={{ overflow: 'visible' }}
+        >
+            <defs>
+            <radialGradient id="blueJellyGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                <stop offset="0%" stopColor="#60a5fa" />
+                <stop offset="85%" stopColor="#1e3a8a" />
+                <stop offset="100%" stopColor="#172554" />
+            </radialGradient>
+
+            <filter id="wetBlur" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
+            </filter>
+
+            <filter id="rimGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feMorphology operator="erode" radius="1.5" in="SourceAlpha" result="eroded" />
+                <feComposite operator="out" in="SourceAlpha" in2="eroded" result="outline" />
+                <feGaussianBlur in="outline" stdDeviation="1.5" result="blurredOutline" />
+                <feFlood floodColor="rgba(147, 197, 253, 0.4)" result="glowColor" />
+                <feComposite operator="in" in="glowColor" in2="blurredOutline" result="finalGlow" />
+                <feMerge>
+                <feMergeNode in="SourceGraphic" />
+                <feMergeNode in="finalGlow" />
+                </feMerge>
+            </filter>
+
+            <filter id="eyeGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="blur" />
+                <feFlood floodColor="rgba(191, 219, 254, 0.5)" result="glowColor" />
+                <feComposite in="glowColor" in2="blur" operator="in" result="coloredBlur" />
+                <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+                </feMerge>
+            </filter>
+            
+            <linearGradient id="eyeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#ffffff" />
+                <stop offset="100%" stopColor="#dbeafe" />
+            </linearGradient>
+            </defs>
+
+            <circle cx="50" cy="50" r="50" fill="url(#blueJellyGrad)" filter="url(#rimGlow)" />
+
+            <path 
+            d="M 25 25 Q 50 15 75 25" 
+            fill="none" 
+            stroke="white" 
+            strokeWidth="3" 
+            strokeLinecap="round" 
+            opacity="0.25" 
+            filter="url(#wetBlur)" 
+            />
+            <ellipse cx="35" cy="30" rx="18" ry="10" fill="white" opacity="0.15" transform="rotate(-20 35 30)" filter="url(#wetBlur)" />
+
+            <ellipse cx="25" cy="55" rx="6" ry="3" fill="#f472b6" opacity="0.2" filter="url(#wetBlur)" />
+            <ellipse cx="75" cy="55" rx="6" ry="3" fill="#f472b6" opacity="0.2" filter="url(#wetBlur)" />
+
+            <g 
+            className="eyes transition-transform duration-100 ease-out" 
+            style={{ transform: `translate(${eyePos.x}px, ${eyePos.y}px)` }}
+            >
+            <AnimatePresence mode="wait">
+                {!areEyesClosed ? (
+                <motion.g 
+                    key="open"
+                    initial={{ opacity: 0, scaleY: 0.8 }}
+                    animate={{ opacity: 1, scaleY: 1 }}
+                    exit={{ opacity: 0, scaleY: 0.8 }}
+                    transition={transitionConfig}
+                >
+                    <rect x="29" y="39" width="10" height="20" rx="5" fill="url(#eyeGrad)" filter="url(#eyeGlow)" />
+                    <rect x="55" y="39" width="10" height="20" rx="5" fill="url(#eyeGrad)" filter="url(#eyeGlow)" />
+                </motion.g>
+                ) : (
+                <motion.g
+                    key="closed"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={transitionConfig}
+                >
+                    <path d="M 29 50 Q 34 53 39 50" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
+                    <path d="M 55 50 Q 60 53 65 50" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
+                </motion.g>
+                )}
+            </AnimatePresence>
+            
+            <path d="M 42 60 Q 47 63 52 60" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round" />
+            </g>
+        </svg>
+        </motion.div>
+    </div>
+  );
+};
+
+
+// --- MAIN FLOATING COMPONENT ---
 
 interface FloatingMascotProps {
   setActiveTab?: (tab: string) => void;
 }
 
 export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [eyePos, setEyePos] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
 
   // Dialog State
@@ -55,13 +227,6 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
   // Computed Sleep State
   const isSleeping = !isCaptureEnabled || isPageBlocked();
 
-  // Reset eyes when sleeping
-  useEffect(() => {
-    if (isSleeping) {
-      setEyePos({ x: 0, y: 0 });
-    }
-  }, [isSleeping]);
-
   const toggleCapture = () => {
     const newState = !isCaptureEnabled;
     setIsCaptureEnabled(newState);
@@ -98,33 +263,6 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
     }
   };
 
-  // Eye Tracking Logic
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      // Disable tracking if sleeping or dialog open
-      if (isSleeping || isDialogOpen) return;
-      if (!containerRef.current) return;
-
-      const rect = containerRef.current.getBoundingClientRect();
-      const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
-
-      const dx = e.clientX - centerX;
-      const dy = e.clientY - centerY;
-      const angle = Math.atan2(dy, dx);
-      const maxMove = 6;
-      const distance = Math.min(maxMove, Math.hypot(dx, dy) / 15);
-
-      setEyePos({
-        x: Math.cos(angle) * distance,
-        y: Math.sin(angle) * distance
-      });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [isSleeping, isDialogOpen]);
-
   return (
     <>
       <AnimatePresence mode="wait">
@@ -146,7 +284,6 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
           >
             {/* --- EXPANDED INTERACTION ZONE (Invisible Bridge) --- */}
             <div 
-              ref={containerRef}
               className="absolute bottom-0 right-0 pointer-events-auto transition-all duration-300"
               style={{
                 width: isHovered ? '200px' : '48px',
@@ -299,105 +436,7 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
                 !border-none !outline-none !bg-transparent
               "
             >
-              <motion.div 
-                className="w-full h-full rounded-full overflow-hidden !bg-transparent !border-none !outline-none !shadow-none !p-0 !m-0"
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.3 }}
-              >
-                <svg 
-                  viewBox="0 0 100 100" 
-                  className="w-full h-full block !border-none !outline-none"
-                  style={{ overflow: 'visible' }}
-                >
-                  <defs>
-                    <radialGradient id="blueJellyGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-                      <stop offset="0%" stopColor="#60a5fa" />
-                      <stop offset="85%" stopColor="#1e3a8a" />
-                      <stop offset="100%" stopColor="#172554" />
-                    </radialGradient>
-
-                    <filter id="wetBlur" x="-50%" y="-50%" width="200%" height="200%">
-                      <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
-                    </filter>
-
-                    <filter id="rimGlow" x="-50%" y="-50%" width="200%" height="200%">
-                      <feMorphology operator="erode" radius="1.5" in="SourceAlpha" result="eroded" />
-                      <feComposite operator="out" in="SourceAlpha" in2="eroded" result="outline" />
-                      <feGaussianBlur in="outline" stdDeviation="1.5" result="blurredOutline" />
-                      <feFlood floodColor="rgba(147, 197, 253, 0.4)" result="glowColor" />
-                      <feComposite operator="in" in="glowColor" in2="blurredOutline" result="finalGlow" />
-                      <feMerge>
-                        <feMergeNode in="SourceGraphic" />
-                        <feMergeNode in="finalGlow" />
-                      </feMerge>
-                    </filter>
-
-                    <filter id="eyeGlow" x="-50%" y="-50%" width="200%" height="200%">
-                      <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="blur" />
-                      <feFlood floodColor="rgba(191, 219, 254, 0.5)" result="glowColor" />
-                      <feComposite in="glowColor" in2="blur" operator="in" result="coloredBlur" />
-                      <feMerge>
-                        <feMergeNode in="coloredBlur" />
-                        <feMergeNode in="SourceGraphic" />
-                      </feMerge>
-                    </filter>
-                    
-                    <linearGradient id="eyeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                      <stop offset="0%" stopColor="#ffffff" />
-                      <stop offset="100%" stopColor="#dbeafe" />
-                    </linearGradient>
-                  </defs>
-
-                  <circle cx="50" cy="50" r="50" fill="url(#blueJellyGrad)" filter="url(#rimGlow)" />
-
-                  <path 
-                    d="M 25 25 Q 50 15 75 25" 
-                    fill="none" 
-                    stroke="white" 
-                    strokeWidth="3" 
-                    strokeLinecap="round" 
-                    opacity="0.25" 
-                    filter="url(#wetBlur)" 
-                  />
-                  <ellipse cx="35" cy="30" rx="18" ry="10" fill="white" opacity="0.15" transform="rotate(-20 35 30)" filter="url(#wetBlur)" />
-
-                  <ellipse cx="25" cy="55" rx="6" ry="3" fill="#f472b6" opacity="0.2" filter="url(#wetBlur)" />
-                  <ellipse cx="75" cy="55" rx="6" ry="3" fill="#f472b6" opacity="0.2" filter="url(#wetBlur)" />
-
-                  <g 
-                    className="eyes transition-transform duration-100 ease-out" 
-                    style={{ transform: `translate(${eyePos.x}px, ${eyePos.y}px)` }}
-                  >
-                    <AnimatePresence mode="wait">
-                      {!isSleeping ? (
-                        <motion.g 
-                          key="open"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <rect x="29" y="39" width="10" height="20" rx="5" fill="url(#eyeGrad)" filter="url(#eyeGlow)" />
-                          <rect x="55" y="39" width="10" height="20" rx="5" fill="url(#eyeGrad)" filter="url(#eyeGlow)" />
-                        </motion.g>
-                      ) : (
-                        <motion.g
-                          key="closed"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          transition={{ duration: 0.3 }}
-                        >
-                          <path d="M 29 50 Q 34 53 39 50" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
-                          <path d="M 55 50 Q 60 53 65 50" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
-                        </motion.g>
-                      )}
-                    </AnimatePresence>
-                    
-                    <path d="M 42 60 Q 47 63 52 60" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round" />
-                  </g>
-                </svg>
-              </motion.div>
+              <Mascot isSleeping={isSleeping} className="w-12 h-12" />
             </div>
           </motion.div>
         ) : (

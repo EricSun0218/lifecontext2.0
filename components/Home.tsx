@@ -1,11 +1,9 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SlidersHorizontal, X, ExternalLink, Clock, ArrowUpRight } from 'lucide-react';
+import { SlidersHorizontal, X, Clock, ArrowUpRight } from 'lucide-react';
 import * as Switch from '@radix-ui/react-switch';
 import { 
-  FAST_CASCADE_CONTAINER, 
-  FAST_FADE_UP_ITEM, 
   HOVER_ACTION, 
   HOVER_CARD_GLOW, 
   MODAL_BACKDROP, 
@@ -13,7 +11,7 @@ import {
   SPRING_TIGHT 
 } from '../constants/animations';
 
-// --- Updated Data for Grid Layout (Standardized) ---
+// --- Data ---
 const newsItems = [
   { 
     id: 1, 
@@ -213,10 +211,37 @@ const initialSources = [
 export const Home: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sources, setSources] = useState(initialSources);
+  
+  // Responsive Masonry Logic
+  const [columns, setColumns] = useState(() => {
+    if (typeof window !== 'undefined') {
+      if (window.innerWidth >= 1024) return 3;
+      if (window.innerWidth >= 768) return 2;
+    }
+    return 1;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) setColumns(3);
+      else if (window.innerWidth >= 768) setColumns(2);
+      else setColumns(1);
+    };
+    
+    handleResize(); // Init
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const toggleSource = (id: string) => {
     setSources(prev => prev.map(s => s.id === id ? { ...s, active: !s.active } : s));
   };
+
+  // Distribute items into columns for Left-to-Right reading order
+  const distributedItems = Array.from({ length: columns }, () => [] as typeof newsItems);
+  newsItems.forEach((item, i) => {
+    distributedItems[i % columns].push(item);
+  });
 
   return (
     <div className="w-full">
@@ -245,21 +270,19 @@ export const Home: React.FC = () => {
         </motion.button>
       </div>
 
-      {/* --- Masonry Layout (CSS Columns) --- */}
+      {/* --- JS Masonry Grid --- */}
       <motion.div 
-        variants={FAST_CASCADE_CONTAINER}
-        initial="hidden"
-        animate="visible"
-        className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }} // Display all at once
+        className="flex gap-6 items-start"
       >
-        {newsItems.map((item) => (
-          <motion.div
-            key={item.id}
-            variants={FAST_FADE_UP_ITEM}
-            className="break-inside-avoid mb-6"
-          >
-            <NewsCard item={item} />
-          </motion.div>
+        {distributedItems.map((colItems, colIndex) => (
+          <div key={colIndex} className="flex-1 flex flex-col gap-6">
+            {colItems.map((item) => (
+              <NewsCard key={item.id} item={item} />
+            ))}
+          </div>
         ))}
       </motion.div>
 
