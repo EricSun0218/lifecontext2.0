@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, BellOff, Camera, Globe, Ban, Link2, Check, X, Home, Filter, TrendingUp, List, Plus, Mic, MessageSquare } from 'lucide-react';
 import { GlassTooltip } from './ui/GlassTooltip';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 interface FloatingMascotProps {
   setActiveTab?: (tab: string) => void;
@@ -12,7 +13,6 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
   const containerRef = useRef<HTMLDivElement>(null);
   const [eyePos, setEyePos] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
-  const [activeMenu, setActiveMenu] = useState<string | null>(null);
 
   // Dialog State
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -142,7 +142,7 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
               ${isHovered ? 'w-56 h-64 pointer-events-auto' : 'w-12 h-12 pointer-events-none'}
             `}
             onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => { setIsHovered(false); setActiveMenu(null); }}
+            onMouseLeave={() => { setIsHovered(false); }}
           >
             {/* --- EXPANDED INTERACTION ZONE (Invisible Bridge) --- */}
             <div 
@@ -163,34 +163,37 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
                          exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
                          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                          className="absolute bottom-2 right-2 z-10"
-                         onMouseEnter={() => setActiveMenu('capture')}
                       >
-                        <GlassTooltip content={isCaptureEnabled ? "Capture On" : "Capture Off"} side="left">
-                           <button
-                             className={`
-                               w-8 h-8 rounded-full flex items-center justify-center 
-                               backdrop-blur-xl transition-all duration-300 shadow-lg relative
-                               !border-none !outline-none
-                               bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
-                             `}
-                           >
-                             {isCaptureEnabled ? <Camera className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
-                           </button>
-                         </GlassTooltip>
+                         <DropdownMenu.Root>
+                           <GlassTooltip content={isCaptureEnabled ? "Capture On" : "Capture Off"} side="left">
+                             <DropdownMenu.Trigger asChild>
+                               <button
+                                 className={`
+                                   w-8 h-8 rounded-full flex items-center justify-center 
+                                   backdrop-blur-xl transition-all duration-300 shadow-lg relative
+                                   !border-none !outline-none
+                                   bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
+                                   data-[state=open]:bg-white/20 data-[state=open]:text-white
+                                 `}
+                               >
+                                 {isCaptureEnabled ? <Camera className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
+                               </button>
+                             </DropdownMenu.Trigger>
+                           </GlassTooltip>
 
-                         {/* --- CAPTURE MENU --- */}
-                         <AnimatePresence>
-                           {activeMenu === 'capture' && (
-                             <motion.div
-                               initial={{ opacity: 0, x: 10, scale: 0.95 }}
-                               animate={{ opacity: 1, x: 0, scale: 1 }}
-                               exit={{ opacity: 0, x: 10, scale: 0.95 }}
-                               className="absolute bottom-0 right-full mr-3 w-48 bg-[#0f0c29]/95 backdrop-blur-2xl border border-blue-400/20 rounded-xl shadow-[0_0_30px_-5px_rgba(0,0,0,0.5)] overflow-hidden p-1 flex flex-col gap-0.5 z-[60]"
+                           <DropdownMenu.Portal>
+                             <DropdownMenu.Content
+                               side="left"
+                               align="end"
+                               sideOffset={12}
+                               className="
+                                 w-48 bg-[#0f0c29]/95 backdrop-blur-2xl border border-blue-400/20 rounded-xl shadow-[0_0_30px_-5px_rgba(0,0,0,0.5)] overflow-hidden p-1 flex flex-col gap-0.5 z-[100]
+                                 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=left]:slide-in-from-right-2
+                               "
                              >
-                                {/* Items... */}
-                                <div 
-                                   onClick={toggleCapture}
-                                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 cursor-pointer group/item transition-colors"
+                                <DropdownMenu.Item 
+                                   onSelect={toggleCapture}
+                                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 cursor-pointer outline-none focus:bg-white/10 transition-colors group/item"
                                 >
                                    <div className={`p-1.5 rounded-md ${isCaptureEnabled ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}`}>
                                      {isCaptureEnabled ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
@@ -200,13 +203,13 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
                                        {isCaptureEnabled ? 'Capture On' : 'Capture Off'}
                                      </span>
                                    </div>
-                                </div>
+                                </DropdownMenu.Item>
 
-                                <div className="h-px bg-white/5 my-0.5 mx-2" />
+                                <DropdownMenu.Separator className="h-px bg-white/5 my-0.5 mx-2" />
 
-                                <div 
-                                   onClick={handleBlockDomain}
-                                   className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer group/item transition-colors"
+                                <DropdownMenu.Item 
+                                   onSelect={handleBlockDomain}
+                                   className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer outline-none focus:bg-white/10 transition-colors group/item"
                                 >
                                    <div className="p-1.5 rounded-md bg-white/5 text-white/50 group-hover/item:bg-blue-500/20 group-hover/item:text-blue-300 transition-colors">
                                      <Globe className="w-3.5 h-3.5" />
@@ -215,11 +218,11 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
                                      <span className="text-xs font-medium text-white/80 group-hover/item:text-white">Block Domain</span>
                                      <span className="text-[10px] text-white/30 truncate max-w-[100px]">{window.location.hostname}</span>
                                    </div>
-                                </div>
+                                </DropdownMenu.Item>
 
-                                <div 
-                                   onClick={handleBlockUrl}
-                                   className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer group/item transition-colors"
+                                <DropdownMenu.Item 
+                                   onSelect={handleBlockUrl}
+                                   className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer outline-none focus:bg-white/10 transition-colors group/item"
                                 >
                                    <div className="p-1.5 rounded-md bg-white/5 text-white/50 group-hover/item:bg-blue-500/20 group-hover/item:text-blue-300 transition-colors">
                                      <Link2 className="w-3.5 h-3.5" />
@@ -227,10 +230,10 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
                                    <div className="flex flex-col">
                                      <span className="text-xs font-medium text-white/80 group-hover/item:text-white">Block Page</span>
                                    </div>
-                                </div>
-                             </motion.div>
-                           )}
-                         </AnimatePresence>
+                                </DropdownMenu.Item>
+                             </DropdownMenu.Content>
+                           </DropdownMenu.Portal>
+                         </DropdownMenu.Root>
                       </motion.div>
 
                       {/* 2. NOTIFICATION TOGGLE */}
