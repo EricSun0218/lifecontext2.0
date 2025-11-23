@@ -112,7 +112,12 @@ export const FloatingMascotLogo = () => {
   return (
     <div 
       ref={containerRef}
-      className="fixed bottom-8 right-8 z-50 flex flex-col items-end justify-end pointer-events-none !border-none !outline-none"
+      className={`
+        fixed bottom-8 right-8 z-50 flex flex-col items-end justify-end 
+        transition-all duration-300 ease-out
+        !border-none !outline-none
+        ${isHovered ? 'w-56 h-64 pointer-events-auto' : 'w-12 h-12 pointer-events-none'}
+      `}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => { setIsHovered(false); setActiveMenu(null); }}
     >
@@ -127,7 +132,7 @@ export const FloatingMascotLogo = () => {
                    animate={{ opacity: 1, x: -48, y: 14, scale: 1 }} // Position: Left & slightly down
                    exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
                    transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.05 }}
-                   className="absolute bottom-1 right-1"
+                   className="absolute bottom-3 right-3"
                 >
                    <button
                      onClick={toggleNotification}
@@ -153,9 +158,9 @@ export const FloatingMascotLogo = () => {
                    animate={{ opacity: 1, x: -48, y: -22, scale: 1 }} // Position: Left & slightly up
                    exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
                    transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                   className="absolute bottom-1 right-1"
+                   className="absolute bottom-3 right-3"
                    onMouseEnter={() => setActiveMenu('capture')}
-                   onMouseLeave={() => setActiveMenu(null)}
+                   // Note: onMouseLeave is handled by the parent container or menu exit logic
                 >
                    <button
                      className={`
