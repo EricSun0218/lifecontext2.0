@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, BellOff, Camera, Globe, Ban, Link2, Check, X } from 'lucide-react';
 
@@ -13,13 +13,44 @@ export const FloatingMascotLogo = () => {
   const [isCaptureEnabled, setIsCaptureEnabled] = useState(true);
   const [isNotificationEnabled, setIsNotificationEnabled] = useState(true);
   
-  // Persist settings
+  // Blocking State
+  const [blockedDomains, setBlockedDomains] = useState<string[]>([]);
+  const [blockedUrls, setBlockedUrls] = useState<string[]>([]);
+
+  // Load Settings & Blocked Lists
   useEffect(() => {
     const storedCapture = localStorage.getItem('lc_capture_enabled');
     const storedNotify = localStorage.getItem('lc_notify_enabled');
+    
     if (storedCapture !== null) setIsCaptureEnabled(storedCapture === 'true');
     if (storedNotify !== null) setIsNotificationEnabled(storedNotify === 'true');
+
+    try {
+      const domains = JSON.parse(localStorage.getItem('lc_blocked_domains') || '[]');
+      const urls = JSON.parse(localStorage.getItem('lc_blocked_urls') || '[]');
+      setBlockedDomains(domains);
+      setBlockedUrls(urls);
+    } catch (e) {
+      console.error("Failed to load blocked lists", e);
+    }
   }, []);
+
+  // Helpers
+  const isPageBlocked = () => {
+    const domain = window.location.hostname;
+    const url = window.location.href;
+    return blockedDomains.includes(domain) || blockedUrls.includes(url);
+  };
+
+  // Computed Sleep State
+  const isSleeping = !isCaptureEnabled || isPageBlocked();
+
+  // Reset eyes when sleeping
+  useEffect(() => {
+    if (isSleeping) {
+      setEyePos({ x: 0, y: 0 });
+    }
+  }, [isSleeping]);
 
   const toggleCapture = () => {
     const newState = !isCaptureEnabled;
@@ -34,18 +65,28 @@ export const FloatingMascotLogo = () => {
   };
 
   const handleBlockDomain = () => {
-    // Logic to block current domain would go here
-    console.log(`Blocking domain: ${window.location.hostname}`);
+    const domain = window.location.hostname;
+    if (!blockedDomains.includes(domain)) {
+      const newList = [...blockedDomains, domain];
+      setBlockedDomains(newList);
+      localStorage.setItem('lc_blocked_domains', JSON.stringify(newList));
+    }
   };
 
   const handleBlockUrl = () => {
-    // Logic to block current URL would go here
-    console.log(`Blocking URL: ${window.location.href}`);
+    const url = window.location.href;
+    if (!blockedUrls.includes(url)) {
+      const newList = [...blockedUrls, url];
+      setBlockedUrls(newList);
+      localStorage.setItem('lc_blocked_urls', JSON.stringify(newList));
+    }
   };
 
   // Eye Tracking Logic
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
+      // Disable tracking if sleeping
+      if (isSleeping) return;
       if (!containerRef.current) return;
 
       const rect = containerRef.current.getBoundingClientRect();
@@ -66,12 +107,12 @@ export const FloatingMascotLogo = () => {
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+  }, [isSleeping]);
 
   return (
     <div 
       ref={containerRef}
-      className="fixed bottom-8 right-8 z-50 flex flex-col items-end justify-end pointer-events-none"
+      className="fixed bottom-8 right-8 z-50 flex flex-col items-end justify-end pointer-events-none !border-none !outline-none"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => { setIsHovered(false); setActiveMenu(null); }}
     >
@@ -93,6 +134,7 @@ export const FloatingMascotLogo = () => {
                      className={`
                        w-10 h-10 rounded-full flex items-center justify-center 
                        backdrop-blur-xl border transition-all duration-300 shadow-lg group/btn relative
+                       !border-none !outline-none
                        ${isNotificationEnabled 
                          ? 'bg-blue-500/20 border-blue-400/30 text-blue-200 hover:bg-blue-500/30' 
                          : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:text-white/60'}
@@ -121,6 +163,7 @@ export const FloatingMascotLogo = () => {
                      className={`
                        w-10 h-10 rounded-full flex items-center justify-center 
                        backdrop-blur-xl border transition-all duration-300 shadow-lg relative
+                       !border-none !outline-none
                        ${isCaptureEnabled 
                          ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-200 hover:bg-emerald-500/30' 
                          : 'bg-red-500/10 border-red-400/20 text-red-300 hover:bg-red-500/20'}
@@ -200,10 +243,15 @@ export const FloatingMascotLogo = () => {
           transition-transform duration-300 ease-out 
           hover:scale-110 hover:-translate-y-1
           !shadow-[0_0_15px_-3px_rgba(96,165,250,0.6)]
+          !border-none !outline-none !bg-transparent
         "
       >
-        {/* CLIPPING CONTAINER */ }
-        <div className="w-full h-full rounded-full overflow-hidden !bg-transparent !border-none !outline-none !shadow-none !p-0 !m-0">
+        {/* CLIPPING CONTAINER + BREATHING ANIMATION */}
+        <motion.div 
+          className="w-full h-full rounded-full overflow-hidden !bg-transparent !border-none !outline-none !shadow-none !p-0 !m-0"
+          animate={isSleeping ? { scale: [1, 1.02, 1], opacity: 0.8 } : { scale: 1, opacity: 1 }}
+          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+        >
           <svg 
             viewBox="0 0 100 100" 
             className="w-full h-full block !border-none !outline-none"
@@ -268,12 +316,38 @@ export const FloatingMascotLogo = () => {
               className="eyes transition-transform duration-100 ease-out" 
               style={{ transform: `translate(${eyePos.x}px, ${eyePos.y}px)` }}
             >
-              <rect x="29" y="39" width="10" height="20" rx="5" fill="url(#eyeGrad)" filter="url(#eyeGlow)" />
-              <rect x="55" y="39" width="10" height="20" rx="5" fill="url(#eyeGrad)" filter="url(#eyeGlow)" />
+              <AnimatePresence mode="wait">
+                {!isSleeping ? (
+                  <motion.g 
+                    key="open"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <rect x="29" y="39" width="10" height="20" rx="5" fill="url(#eyeGrad)" filter="url(#eyeGlow)" />
+                    <rect x="55" y="39" width="10" height="20" rx="5" fill="url(#eyeGrad)" filter="url(#eyeGlow)" />
+                  </motion.g>
+                ) : (
+                  <motion.g
+                    key="closed"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {/* Closed Eyes (Sleep Mode) */}
+                    <path d="M 29 50 Q 34 53 39 50" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round" />
+                    <path d="M 55 50 Q 60 53 65 50" fill="none" stroke="rgba(255,255,255,0.7)" strokeWidth="2" strokeLinecap="round" />
+                  </motion.g>
+                )}
+              </AnimatePresence>
+              
+              {/* Mouth centered between eyes */}
               <path d="M 42 60 Q 47 63 52 60" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round" />
             </g>
           </svg>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
