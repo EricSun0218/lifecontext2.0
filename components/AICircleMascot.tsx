@@ -41,7 +41,7 @@ export const FloatingMascotLogo = () => {
     <div 
       ref={containerRef} 
       className="fixed bottom-8 right-8 z-50 cursor-pointer group"
-      style={{ overflow: 'hidden', border: 'none', outline: 'none' }}
+      style={{ overflow: 'visible', border: 'none', outline: 'none', padding: '8px' }}
     >
       <div 
         className="
@@ -49,13 +49,13 @@ export const FloatingMascotLogo = () => {
           transition-transform duration-300 ease-out 
           group-hover:scale-105 group-hover:-translate-y-1
         "
-        style={{ overflow: 'hidden', borderRadius: '50%', border: 'none', outline: 'none' }}
+        style={{ border: 'none', outline: 'none' }}
       >
         <svg 
           viewBox="0 0 100 100" 
           className="w-full h-full"
           xmlns="http://www.w3.org/2000/svg"
-          style={{ overflow: 'hidden', border: 'none', outline: 'none', margin: 0, padding: 0, display: 'block' }}
+          style={{ overflow: 'visible', border: 'none', outline: 'none', margin: 0, padding: 0, display: 'block' }}
         >
           <defs>
             {/* 1. Deep Blue/Indigo Jelly Gradient */}

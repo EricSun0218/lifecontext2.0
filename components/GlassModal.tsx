@@ -39,16 +39,15 @@ export const GlassModal: React.FC<GlassModalProps> = ({ insight, onClose }) => {
 
   return (
     <motion.div 
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
+      // Removed exit={{ opacity: 0 }} from wrapper to allow child layoutId animation to play out visible
       className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8"
     >
       {/* Backdrop (Subtle Dim to keep context visible) */}
       <motion.div 
         initial={{ opacity: 0 }} 
         animate={{ opacity: 1 }}
-        // exit={{ opacity: 0 }} // Managed by parent wrapper exit
-        transition={{ duration: 0.3, ease: "easeInOut" }}
+        exit={{ opacity: 0 }} // Explicitly fade out backdrop
+        transition={{ duration: 0.3 }}
         onClick={onClose}
         className="absolute inset-0 bg-[#0f0c29]/40 backdrop-blur-[2px]"
       />
@@ -58,7 +57,7 @@ export const GlassModal: React.FC<GlassModalProps> = ({ insight, onClose }) => {
         layoutId={insight.id}
         initial={false}
         animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
+        // Removed explicit exit prop to allow layoutId to morph back to the list item
         transition={{ duration: 0.3, ease: "easeInOut" }}
         className="relative w-full max-w-[720px] max-h-[85vh] flex flex-col rounded-3xl border border-blue-400/15 border-t-blue-400/30 shadow-[0_0_50px_-12px_rgba(96,165,250,0.25)] overflow-hidden"
         style={{
@@ -95,8 +94,8 @@ export const GlassModal: React.FC<GlassModalProps> = ({ insight, onClose }) => {
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
+          exit={{ opacity: 0 }} // Fade out content quickly so it doesn't clip during shrink
+          transition={{ duration: 0.2 }}
           className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar scrollbar-thumb-blue-500/20 pb-12"
         >
            {/* Markdown Content Renderer */}
