@@ -41,21 +41,52 @@ export const FloatingMascotLogo = () => {
     <div 
       ref={containerRef} 
       className="fixed bottom-8 right-8 z-50 cursor-pointer group"
-      style={{ overflow: 'visible', border: 'none', outline: 'none', padding: '8px' }}
+      style={{ 
+        overflow: 'visible', 
+        border: 'none !important', 
+        outline: 'none !important', 
+        padding: '12px', /* Padding prevents clipping during scale */
+        background: 'transparent !important', 
+        backgroundColor: 'transparent !important',
+        boxShadow: 'none !important', 
+        WebkitTapHighlightColor: 'transparent',
+        userSelect: 'none',
+        margin: 0,
+        appearance: 'none',
+        textDecoration: 'none'
+      }}
     >
       <div 
         className="
           relative w-16 h-16 
           transition-transform duration-300 ease-out 
-          group-hover:scale-105 group-hover:-translate-y-1
+          group-hover:scale-110 group-hover:-translate-y-1
         "
-        style={{ border: 'none', outline: 'none' }}
+        style={{ 
+          border: 'none !important', 
+          outline: 'none !important', 
+          background: 'transparent !important', 
+          backgroundColor: 'transparent !important',
+          boxShadow: 'none !important', 
+          overflow: 'visible', 
+          borderRadius: '0',
+          appearance: 'none'
+        }}
       >
         <svg 
           viewBox="0 0 100 100" 
           className="w-full h-full"
           xmlns="http://www.w3.org/2000/svg"
-          style={{ overflow: 'visible', border: 'none', outline: 'none', margin: 0, padding: 0, display: 'block' }}
+          style={{ 
+            overflow: 'visible', 
+            border: 'none !important', 
+            outline: 'none !important', 
+            margin: 0, 
+            padding: 0, 
+            display: 'block', 
+            background: 'transparent !important',
+            boxShadow: 'none !important'
+          }}
         >
           <defs>
             {/* 1. Deep Blue/Indigo Jelly Gradient */}
@@ -154,9 +185,9 @@ export const FloatingMascotLogo = () => {
               filter="url(#eyeGlow)" 
             />
             
-            {/* Tiny Smile */}
+            {/* Tiny Smile (Centered between eyes: Center X = 47) */}
             <path 
-               d="M 45 60 Q 50 63 55 60" 
+               d="M 42 60 Q 47 63 52 60" 
                fill="none" 
                stroke="rgba(255,255,255,0.6)" 
                strokeWidth="1.5" 
@@ -164,8 +195,6 @@ export const FloatingMascotLogo = () => {
             />
           </g>
           
-          {/* DIAMOND SPARKLE REMOVED */}
-
         </svg>
 
         {/* Hover Tooltip */}

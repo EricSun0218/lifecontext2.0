@@ -99,25 +99,26 @@ export const GlassModal: React.FC<GlassModalProps> = ({ insight, onClose }) => {
           className="flex-1 overflow-y-auto p-8 space-y-6 custom-scrollbar scrollbar-thumb-blue-500/20 pb-12"
         >
            {/* Markdown Content Renderer */}
-           <ReactMarkdown
-             className="prose prose-invert max-w-none"
-             components={{
-               // Override HTML elements for perfect Glassmorphism control
-               p: ({node, ...props}) => <p className="text-blue-50/90 leading-7 mb-4 font-light" {...props} />,
-               h1: ({node, ...props}) => <h1 className="text-2xl font-bold text-white mt-6 mb-4" {...props} />,
-               h2: ({node, ...props}) => <h2 className="text-xl font-semibold text-white mt-6 mb-3 border-b border-blue-400/10 pb-2" {...props} />,
-               h3: ({node, ...props}) => <h3 className="text-lg font-medium text-blue-100 mt-5 mb-2" {...props} />,
-               ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-4 space-y-2 text-blue-100/80 marker:text-blue-400" {...props} />,
-               li: ({node, ...props}) => <li className="pl-1" {...props} />,
-               strong: ({node, ...props}) => <strong className="text-white font-semibold" {...props} />,
-               blockquote: ({node, ...props}) => (
-                 <blockquote className="p-5 rounded-2xl bg-blue-500/10 border border-blue-500/20 my-6 not-italic shadow-inner" {...props} />
-               ),
-               code: ({node, ...props}) => <code className="bg-black/30 rounded-md px-1.5 py-0.5 text-sm font-mono text-blue-200" {...props} />,
-             }}
-           >
-             {insight.markdownContent || insight.content}
-           </ReactMarkdown>
+           <div className="prose prose-invert max-w-none">
+             <ReactMarkdown
+               components={{
+                 // Override HTML elements for perfect Glassmorphism control
+                 p: ({node, ...props}) => <p className="text-blue-50/90 leading-7 mb-4 font-light" {...props} />,
+                 h1: ({node, ...props}) => <h1 className="text-2xl font-bold text-white mt-6 mb-4" {...props} />,
+                 h2: ({node, ...props}) => <h2 className="text-xl font-semibold text-white mt-6 mb-3 border-b border-blue-400/10 pb-2" {...props} />,
+                 h3: ({node, ...props}) => <h3 className="text-lg font-medium text-blue-100 mt-5 mb-2" {...props} />,
+                 ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-4 space-y-2 text-blue-100/80 marker:text-blue-400" {...props} />,
+                 li: ({node, ...props}) => <li className="pl-1" {...props} />,
+                 strong: ({node, ...props}) => <strong className="text-white font-semibold" {...props} />,
+                 blockquote: ({node, ...props}) => (
+                   <blockquote className="p-5 rounded-2xl bg-blue-500/10 border border-blue-500/20 my-6 not-italic shadow-inner" {...props} />
+                 ),
+                 code: ({node, ...props}) => <code className="bg-black/30 rounded-md px-1.5 py-0.5 text-sm font-mono text-blue-200" {...props} />,
+               }}
+             >
+               {insight.markdownContent || insight.content}
+             </ReactMarkdown>
+           </div>
         </motion.div>
 
         {/* FOOTER REMOVED */}
