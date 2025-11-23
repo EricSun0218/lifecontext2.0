@@ -43,6 +43,9 @@ export const FloatingMascotLogo = () => {
       className="fixed bottom-8 right-8 z-50 cursor-pointer group !bg-transparent !border-none !outline-none !shadow-none !appearance-none !m-0 !p-3 select-none"
       style={{ 
         WebkitTapHighlightColor: 'transparent',
+        // CRITICAL FIX: CSS Mask to physically cut off any square container artifacts
+        maskImage: 'radial-gradient(circle at center, black 70%, transparent 100%)',
+        WebkitMaskImage: 'radial-gradient(circle at center, black 70%, transparent 100%)'
       }}
     >
       <div 
