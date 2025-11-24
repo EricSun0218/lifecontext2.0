@@ -137,20 +137,34 @@ export const GlassModal: React.FC<GlassModalProps> = ({ insight, onClose }) => {
                 animate="visible"
                 exit="exit"
               >
-                 <div className="prose prose-invert max-w-none">
+                 <div className="prose prose-invert max-w-none prose-headings:text-white prose-p:text-blue-50/90 prose-strong:text-white prose-code:text-blue-200 prose-a:text-blue-300 prose-ul:text-blue-100/80 prose-ol:text-blue-100/80 prose-li:text-blue-100/80">
                    <ReactMarkdown
                      components={{
                        p: ({node, ...props}) => <p className="text-blue-50/90 leading-7 mb-4 font-light" {...props} />,
                        h1: ({node, ...props}) => <h1 className="text-2xl font-bold text-white mt-6 mb-4" {...props} />,
                        h2: ({node, ...props}) => <h2 className="text-xl font-semibold text-white mt-6 mb-3 border-b border-blue-400/10 pb-2" {...props} />,
                        h3: ({node, ...props}) => <h3 className="text-lg font-medium text-blue-100 mt-5 mb-2" {...props} />,
+                       h4: ({node, ...props}) => <h4 className="text-base font-medium text-blue-100 mt-4 mb-2" {...props} />,
                        ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-4 space-y-2 text-blue-100/80 marker:text-blue-400" {...props} />,
-                       li: ({node, ...props}) => <li className="pl-1" {...props} />,
+                       ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-4 space-y-2 text-blue-100/80 marker:text-blue-400" {...props} />,
+                       li: ({node, ...props}) => <li className="pl-1 text-blue-100/80" {...props} />,
                        strong: ({node, ...props}) => <strong className="text-white font-semibold" {...props} />,
+                       em: ({node, ...props}) => <em className="text-blue-100/90 italic" {...props} />,
+                       a: ({node, ...props}) => <a className="text-blue-300 hover:text-blue-200 underline" {...props} />,
                        blockquote: ({node, ...props}) => (
-                         <blockquote className="p-5 rounded-2xl bg-blue-500/10 border border-blue-500/20 my-6 not-italic shadow-inner" {...props} />
+                         <blockquote className="p-5 rounded-2xl bg-blue-500/10 border border-blue-500/20 my-6 not-italic shadow-inner text-blue-100/90" {...props} />
                        ),
-                       code: ({node, ...props}) => <code className="bg-black/30 rounded-md px-1.5 py-0.5 text-sm font-mono text-blue-200" {...props} />,
+                       code: ({node, inline, className, children, ...props}: any) => {
+                         if (inline) {
+                           return <code className="bg-blue-500/20 border border-blue-500/30 rounded-md px-1.5 py-0.5 text-sm font-mono text-blue-200" {...props}>{children}</code>;
+                         }
+                         return <code className="text-blue-50 font-mono text-sm leading-relaxed" {...props}>{children}</code>;
+                       },
+                       pre: ({node, children, ...props}: any) => (
+                         <pre className="bg-blue-950/60 border border-blue-500/40 rounded-lg p-4 mb-4 overflow-x-auto backdrop-blur-sm" {...props}>
+                           {children}
+                         </pre>
+                       ),
                      }}
                    >
                      {insight.markdownContent || insight.content}

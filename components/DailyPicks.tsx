@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { SlidersHorizontal, X, Clock, ArrowUpRight, ChevronDown, Sparkles, ListTodo, Check, BrainCircuit, ArrowRight } from 'lucide-react';
 import * as Switch from '@radix-ui/react-switch';
 import { GlassTooltip } from './ui/GlassTooltip';
+import { GlassModal } from './GlassModal';
+import { Insight } from '../types';
 import { 
   HOVER_ACTION, 
   HOVER_CARD_GLOW, 
@@ -14,7 +16,7 @@ import {
 
 // --- Data ---
 // Mock Data for Top Cards
-const dailySummary = {
+const dailySummaryData = {
   title: "Daily Briefing",
   date: "Oct 24, 2025",
   content: "Today's digital footprint suggests a strong focus on frontend architecture and AI integration. Your reading patterns align with the release of Gemini 1.5, indicating a shift towards multimodal model research. Productivity peaked between 10 AM and 2 PM.",
@@ -23,6 +25,16 @@ const dailySummary = {
     { label: "Reading Time", value: "2h 15m" },
     { label: "New Topics", value: "3" }
   ]
+};
+
+// Convert dailySummary to Insight format for modal
+const dailySummaryInsight: Insight = {
+  id: 'daily-summary',
+  type: 'Analysis',
+  title: dailySummaryData.title,
+  content: dailySummaryData.content,
+  tag: dailySummaryData.date,
+  markdownContent: `# ${dailySummaryData.title}\n\n**Date:** ${dailySummaryData.date}\n\n${dailySummaryData.content}\n\n## Key Metrics\n\n${dailySummaryData.stats.map(stat => `- **${stat.label}:** ${stat.value}`).join('\n')}\n\n## Detailed Analysis\n\nToday's digital footprint reveals a comprehensive engagement with cutting-edge technologies. The focus on frontend architecture suggests a deep dive into modern web development practices, while the alignment with Gemini 1.5 release indicates active research into multimodal AI capabilities.\n\n### Productivity Insights\n\nProductivity peaked between 10 AM and 2 PM, indicating optimal cognitive performance during these hours. This pattern aligns with research on circadian rhythms and peak mental acuity.\n\n### Learning Patterns\n\nThe shift towards multimodal model research reflects an understanding of the evolving AI landscape, where text, image, and audio processing converge to create more sophisticated AI systems.\n\n### Recommendations\n\n1. **Maintain Focus Windows**: Leverage the 10 AM - 2 PM window for complex problem-solving tasks.\n2. **Deep Dive Sessions**: Schedule dedicated time for exploring multimodal AI capabilities.\n3. **Knowledge Integration**: Connect frontend architecture learnings with AI integration patterns.`
 };
 
 const todoList = [
@@ -232,6 +244,7 @@ export const DailyPicks: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sources, setSources] = useState(initialSources);
   const [todos, setTodos] = useState(todoList);
+  const [selectedInsight, setSelectedInsight] = useState<Insight | null>(null);
   
   // Responsive Masonry Logic
   const [columns, setColumns] = useState(() => {
@@ -322,10 +335,13 @@ export const DailyPicks: React.FC = () => {
       >
         {/* Daily Summary Card */}
         <motion.div 
+            layoutId="daily-summary"
             initial="initial"
             whileHover="hover"
+            whileTap="tap"
             variants={HOVER_CARD_GLOW}
-            className="p-8 rounded-3xl bg-white/5 border border-blue-400/15 backdrop-blur-xl relative overflow-hidden group flex flex-col justify-between"
+            onClick={() => setSelectedInsight(dailySummaryInsight)}
+            className="p-8 rounded-3xl bg-white/5 border border-blue-400/15 backdrop-blur-xl relative overflow-hidden group flex flex-col justify-between cursor-pointer"
         >
             {/* Background Decor */}
             <div className="absolute top-0 right-0 p-32 bg-blue-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none transition-opacity group-hover:opacity-100 opacity-50" />
@@ -337,23 +353,31 @@ export const DailyPicks: React.FC = () => {
                             <BrainCircuit className="w-5 h-5" />
                         </div>
                         <div>
-                           <h3 className="text-xl font-bold text-white tracking-tight">{dailySummary.title}</h3>
-                           <p className="text-xs text-blue-200/50 uppercase tracking-widest font-medium mt-0.5">{dailySummary.date}</p>
+                           <h3 className="text-xl font-bold text-white tracking-tight">{dailySummaryData.title}</h3>
+                           <p className="text-xs text-blue-200/50 uppercase tracking-widest font-medium mt-0.5">{dailySummaryData.date}</p>
                         </div>
                     </div>
                 </div>
                 
                 <p className="text-white/70 leading-relaxed mb-8 font-light text-base md:text-lg">
-                    {dailySummary.content}
+                    {dailySummaryData.content}
                 </p>
 
                 <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/5">
-                    {dailySummary.stats.map((stat, i) => (
+                    {dailySummaryData.stats.map((stat, i) => (
                         <div key={i}>
                             <div className="text-2xl font-bold text-white mb-1 group-hover:text-blue-200 transition-colors">{stat.value}</div>
                             <div className="text-[10px] text-blue-300/70 uppercase tracking-wider font-bold">{stat.label}</div>
                         </div>
                     ))}
+                </div>
+
+                {/* Footer Action */}
+                <div className="mt-4 pt-4 border-t border-blue-400/10 flex items-center justify-between opacity-50 group-hover:opacity-100 transition-all duration-300">
+                    <span className="text-xs text-white/50 font-medium group-hover:text-blue-300 transition-colors">View Details</span>
+                    <div className="p-2 rounded-full bg-white/5 group-hover:bg-blue-500/20 transition-colors">
+                        <ArrowRight className="w-4 h-4 text-white/50 group-hover:text-blue-300" />
+                    </div>
                 </div>
             </div>
         </motion.div>
@@ -518,6 +542,17 @@ export const DailyPicks: React.FC = () => {
               </div>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* Daily Summary Detail Modal */}
+      <AnimatePresence>
+        {selectedInsight && (
+          <GlassModal 
+            key={selectedInsight.id}
+            insight={selectedInsight} 
+            onClose={() => setSelectedInsight(null)} 
+          />
         )}
       </AnimatePresence>
     </div>
