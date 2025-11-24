@@ -292,17 +292,17 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
               fixed bottom-8 right-8 z-50 flex items-end justify-end 
               transition-all duration-300 ease-out
               !border-none !outline-none
-              ${isHovered ? 'w-56 h-64 pointer-events-auto' : 'w-12 h-12 pointer-events-none'}
+              ${isHovered ? 'w-32 h-32 pointer-events-auto' : 'w-12 h-12 pointer-events-none'}
             `}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => { setIsHovered(false); }}
           >
-            {/* --- EXPANDED INTERACTION ZONE (Invisible Bridge) --- */}
+            {/* --- COMPACT INTERACTION ZONE (Invisible Bridge) --- */}
             <div 
               className="absolute bottom-0 right-0 pointer-events-auto transition-all duration-300"
               style={{
-                width: isHovered ? '200px' : '48px',
-                height: isHovered ? '200px' : '48px',
+                width: isHovered ? '120px' : '48px',
+                height: isHovered ? '120px' : '48px',
               }}
             >
                <AnimatePresence>
@@ -458,7 +458,10 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
           /* --- RIGHT FLOATING CHAT CARD MODE --- */
           <RightFloatingChat 
              key="floating-chat"
-             onClose={() => setIsDialogOpen(false)}
+             onClose={() => {
+               setIsDialogOpen(false);
+               setIsHovered(false); // Reset hover state when dialog closes
+             }}
           />
         )}
       </AnimatePresence>
