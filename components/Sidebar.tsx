@@ -4,66 +4,20 @@ import { MessageSquare, Settings, Sparkles, Book, Lightbulb } from 'lucide-react
 import { GlassTooltip } from './ui/GlassTooltip';
 import { motion } from 'framer-motion';
 import { HOVER_ACTION } from '../constants/animations';
+import logoImage from '../assets/logo.png';
 
 interface SidebarProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
 }
 
-// Custom SVG Logo component - Stylized Interlocking Blue Geometric Knot
-const LogoSVG: React.FC<{ className?: string }> = ({ className }) => (
-  <svg viewBox="0 0 100 100" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="logoGradBlue" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#60A5FA" />   {/* Blue 400 */}
-        <stop offset="100%" stopColor="#2563EB" />  {/* Blue 600 */}
-      </linearGradient>
-      <linearGradient id="logoGradCyan" x1="100" y1="0" x2="0" y2="100" gradientUnits="userSpaceOnUse">
-        <stop offset="0%" stopColor="#93C5FD" />   {/* Blue 300 */}
-        <stop offset="100%" stopColor="#3B82F6" />  {/* Blue 500 */}
-      </linearGradient>
-      <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="4" result="blur" />
-        <feComposite in="SourceGraphic" in2="blur" operator="over" />
-      </filter>
-    </defs>
-    
-    <g filter="url(#softGlow)">
-      {/* Shape 1: Top-Right to Bottom-Left (Underneath) */}
-      <path 
-        d="M 65 25 L 75 25 A 15 15 0 0 1 90 40 L 90 70 A 5 5 0 0 1 85 75 L 60 75 A 15 15 0 0 1 45 60 L 45 45" 
-        stroke="url(#logoGradCyan)" 
-        strokeWidth="16" 
-        strokeLinecap="round" 
-        strokeLinejoin="round"
-      />
-
-      {/* Shape 2: Top-Left to Bottom-Right (Overlapping) */}
-      <path 
-        d="M 35 75 L 25 75 A 15 15 0 0 1 10 60 L 10 30 A 5 5 0 0 1 15 25 L 40 25 A 15 15 0 0 1 55 40 L 55 55" 
-        stroke="url(#logoGradBlue)" 
-        strokeWidth="16" 
-        strokeLinecap="round" 
-        strokeLinejoin="round"
-      />
-      
-      {/* Bridge: Completing the Loop Visually */}
-      {/* Connecting Shape 2 end to Shape 1 start area to create the knot loop illusion */}
-      <path 
-        d="M 55 55 L 55 60 A 15 15 0 0 0 70 75 L 75 75"
-        stroke="url(#logoGradBlue)"
-        strokeWidth="16"
-        strokeLinecap="round"
-      />
-       {/* Connecting Shape 1 end to Shape 2 start area */}
-      <path 
-        d="M 45 45 L 45 40 A 15 15 0 0 0 30 25 L 25 25"
-        stroke="url(#logoGradCyan)"
-        strokeWidth="16"
-        strokeLinecap="round"
-      />
-    </g>
-  </svg>
+// Logo Image Component
+const LogoImage: React.FC<{ className?: string }> = ({ className }) => (
+  <img 
+    src={logoImage} 
+    alt="LifeContext Logo" 
+    className={className}
+  />
 );
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
@@ -84,7 +38,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
         whileTap={{ scale: 0.95 }}
         transition={{ duration: 0.2, type: "spring", stiffness: 300 }}
       >
-        <LogoSVG className="w-12 h-12 drop-shadow-[0_0_15px_rgba(59,130,246,0.6)]" />
+        <LogoImage className="w-12 h-12 drop-shadow-[0_0_15px_rgba(59,130,246,0.6)]" />
       </motion.div>
 
       {/* Navigation */}
