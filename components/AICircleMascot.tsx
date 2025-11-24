@@ -256,7 +256,7 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
 
   const handleGoHome = () => {
     if (setActiveTab) {
-      setActiveTab('home');
+      setActiveTab('insights');
     }
   };
 
