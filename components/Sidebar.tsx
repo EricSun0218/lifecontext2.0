@@ -20,7 +20,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
   ];
 
   return (
-    <aside className="hidden md:flex flex-col justify-between items-center w-24 h-screen fixed left-0 top-0 z-50 bg-white/5 backdrop-blur-2xl border-r border-blue-400/15 shadow-[0_0_40px_-10px_rgba(30,58,138,0.2)] py-8">
+    <aside className="hidden md:flex flex-col justify-start items-center w-24 h-screen fixed left-0 top-0 z-50 bg-white/5 backdrop-blur-2xl border-r border-blue-400/15 shadow-[0_0_40px_-10px_rgba(30,58,138,0.2)] py-8">
       {/* Logo */}
       <motion.div 
         className="mb-8 p-3 bg-blue-500/20 rounded-xl border border-blue-400/30 shadow-inner backdrop-blur-md"
@@ -62,23 +62,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
           );
         })}
       </nav>
-
-      {/* User Avatar */}
-      <div className="mt-auto">
-        <motion.div 
-          variants={HOVER_ACTION}
-          initial="initial"
-          whileHover="hover"
-          whileTap="tap"
-          className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-500 p-[2px] shadow-lg cursor-pointer"
-        >
-            <img 
-                src="https://picsum.photos/100/100" 
-                alt="User" 
-                className="w-full h-full rounded-full object-cover border-2 border-white/20"
-            />
-        </motion.div>
-      </div>
     </aside>
   );
 };
