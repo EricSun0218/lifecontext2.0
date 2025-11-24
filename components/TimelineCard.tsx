@@ -43,25 +43,13 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ entry, isLast, onIns
           
           {/* Time Display */}
           <div className="mb-6 md:pr-6">
-            <span className="text-6xl md:text-7xl font-thin text-blue-100/20 tracking-tighter font-sans select-none">
+            <span className="text-4xl md:text-5xl font-light text-white/90 tracking-tight font-sans select-none drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]">
               {entry.time}
             </span>
           </div>
 
-          {/* Context Card (Metadata Style) */}
-          <motion.div 
-            initial="initial"
-            whileHover="hover"
-            whileTap="tap"
-            variants={HOVER_CARD_GLOW}
-            className="w-full md:w-[280px] rounded-2xl p-5 backdrop-blur-sm border cursor-default"
-          >
-            <div className="mb-3 opacity-50">
-                <span className="text-[10px] uppercase tracking-[0.25em] font-bold text-blue-200">
-                  Source Context
-                </span>
-            </div>
-            
+          {/* Context Info (Clean Style - No Box) */}
+          <div className="w-full md:w-[280px] md:pr-6 cursor-default">
             <h4 className="text-white/90 font-medium text-lg leading-snug mb-4 line-clamp-2">
               {entry.context.title}
             </h4>
@@ -80,7 +68,7 @@ export const TimelineCard: React.FC<TimelineCardProps> = ({ entry, isLast, onIns
                 )
               })}
             </div>
-          </motion.div>
+          </div>
       </div>
 
       {/* --- RIGHT COLUMN: INSIGHT DECK --- */}

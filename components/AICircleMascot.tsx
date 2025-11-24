@@ -29,7 +29,7 @@ export const Mascot: React.FC<MascotProps> = ({ className = "w-12 h-12", isSleep
       const dy = e.clientY - centerY;
       const angle = Math.atan2(dy, dx);
       const maxMove = 6; 
-      const distance = Math.min(maxMove, Math.hypot(dx, dy) / 15);
+      const distance = Math.min(maxMove, Math.hypot(dx, dy) / 12);
 
       setEyePos({
         x: Math.cos(angle) * distance,
@@ -51,13 +51,10 @@ export const Mascot: React.FC<MascotProps> = ({ className = "w-12 h-12", isSleep
     // Blink Logic
     let timer: ReturnType<typeof setTimeout>;
     const scheduleBlink = () => {
-      // Random interval between 3s and 8s for natural blinking
-      // "Not too frequent"
       const delay = 3000 + Math.random() * 5000;
       
       timer = setTimeout(() => {
         setIsBlinking(true);
-        // Blink duration approx 150ms
         setTimeout(() => {
           setIsBlinking(false);
           scheduleBlink();
@@ -70,7 +67,6 @@ export const Mascot: React.FC<MascotProps> = ({ className = "w-12 h-12", isSleep
   }, [isSleeping]);
 
   const areEyesClosed = isSleeping || isBlinking;
-  // Snappy transition for blinks (0.1s), smooth/slow for sleep (0.3s)
   const transitionConfig = { duration: isSleeping ? 0.3 : 0.1 };
 
   return (
@@ -141,7 +137,7 @@ export const Mascot: React.FC<MascotProps> = ({ className = "w-12 h-12", isSleep
             <ellipse cx="75" cy="55" rx="6" ry="3" fill="#f472b6" opacity="0.2" filter="url(#wetBlur)" />
 
             <g 
-            className="eyes transition-transform duration-100 ease-out" 
+            className="eyes" 
             style={{ transform: `translate(${eyePos.x}px, ${eyePos.y}px)` }}
             >
             <AnimatePresence mode="wait">
@@ -485,25 +481,22 @@ const RightFloatingChat: React.FC<RightFloatingChatProps> = ({ onClose }) => {
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
             className="fixed top-4 bottom-4 right-4 w-[380px] z-[100] flex flex-col bg-[#0f0c29]/95 backdrop-blur-3xl border border-blue-400/20 shadow-2xl rounded-3xl"
         >
-             {/* Header / Close */}
-             <div className="flex justify-end p-6">
-                 <button 
-                   onClick={onClose} 
-                   className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors"
-                 >
-                     <X className="w-5 h-5" />
-                 </button>
+             {/* Header */}
+             <div className="flex-none p-6 flex justify-between items-start">
+                <div>
+                    <h2 className="text-3xl font-bold text-white mb-1">LifeContext AI</h2>
+                    <p className="text-blue-200/50 font-light">Your intelligent companion for the open web.</p>
+                </div>
+                <button 
+                    onClick={onClose} 
+                    className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors flex-shrink-0 -mt-1 -mr-1"
+                >
+                    <X className="w-5 h-5" />
+                </button>
              </div>
 
              {/* Content Container */}
-             <div className="flex-1 flex flex-col px-8 pb-8 overflow-y-auto custom-scrollbar">
-                 
-                 {/* Welcome / Title */}
-                 <div className="mb-8 mt-4">
-                    <h2 className="text-3xl font-bold text-white mb-2">LifeContext AI</h2>
-                    <p className="text-blue-200/50 font-light">Your intelligent companion for the open web.</p>
-                 </div>
-
+             <div className="flex-1 flex flex-col px-6 pb-6 pt-2 overflow-y-auto custom-scrollbar">
                  {/* Quick Actions */}
                  <div className="flex flex-col gap-3">
                      {quickActions.map((action, i) => (

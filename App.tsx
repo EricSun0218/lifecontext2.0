@@ -8,6 +8,7 @@ import { DailyPicks } from './components/DailyPicks';
 import { Insights } from './components/Insights';
 import { Chat } from './components/Chat';
 import { Settings } from './components/Settings';
+import { StarField } from './components/StarField';
 import { FADE_IN_UP_ITEM } from './constants/animations';
 
 const App: React.FC = () => {
@@ -20,15 +21,18 @@ const App: React.FC = () => {
       {/* --- STATIC BACKGROUND LAYERS (No Animation) --- */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         
-        {/* 1. Purple Glow (Top Left) - Reduced Opacity (15%) */}
-        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-purple-700/15 blur-[120px]"></div>
+        {/* 1. Purple/Reddish Glow (Top Left) - Slightly Enhanced */}
+        <div className="absolute top-[-15%] left-[-5%] w-[45vw] h-[45vw] rounded-full bg-fuchsia-800/20 blur-[120px]"></div>
         
-        {/* 2. Blue/Cyan Glow (Top Right) - Increased Opacity (15%) */}
-        <div className="absolute top-[-10%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-blue-600/15 blur-[100px]"></div>
+        {/* 2. Blue/Cyan Glow (Top Right) - Dominant Blue */}
+        <div className="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-700/15 blur-[120px]"></div>
         
-        {/* 3. Pink/Fuchsia Glow (Bottom) - Significantly Reduced (8%) */}
-        <div className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[40vw] rounded-full bg-fuchsia-900/8 blur-[120px]"></div>
+        {/* 3. Indigo/Dark Blue Glow (Bottom) */}
+        <div className="absolute bottom-[-20%] left-[10%] w-[70vw] h-[50vw] rounded-full bg-indigo-900/10 blur-[140px]"></div>
         
+        {/* 4. Star Field Animation */}
+        <StarField />
+
         {/* Micro-Noise Overlay (Texture Only) */}
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] mix-blend-overlay"></div>
       </div>

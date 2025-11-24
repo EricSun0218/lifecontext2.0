@@ -13,7 +13,7 @@ export const Insights: React.FC = () => {
   return (
     <>
       {/* Timeline Header */}
-      <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-32 border-b border-blue-400/10 pb-12 animate-fade-in">
+      <div className="flex flex-col md:flex-row items-start md:items-end justify-between mb-12 border-b border-blue-400/10 pb-12 animate-fade-in">
          <div className="max-w-2xl">
             <div className="flex items-center gap-3 mb-4">
                <div className="p-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
