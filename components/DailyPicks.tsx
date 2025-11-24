@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SlidersHorizontal, X, Clock, ArrowUpRight, ChevronDown } from 'lucide-react';
+import { SlidersHorizontal, X, Clock, ArrowUpRight, ChevronDown, Sparkles, ListTodo, Check, BrainCircuit, ArrowRight } from 'lucide-react';
 import * as Switch from '@radix-ui/react-switch';
 import { GlassTooltip } from './ui/GlassTooltip';
 import { 
@@ -13,6 +13,25 @@ import {
 } from '../constants/animations';
 
 // --- Data ---
+// Mock Data for Top Cards
+const dailySummary = {
+  title: "Daily Briefing",
+  date: "Oct 24, 2025",
+  content: "Today's digital footprint suggests a strong focus on frontend architecture and AI integration. Your reading patterns align with the release of Gemini 1.5, indicating a shift towards multimodal model research. Productivity peaked between 10 AM and 2 PM.",
+  stats: [
+    { label: "Focus Score", value: "88%" },
+    { label: "Reading Time", value: "2h 15m" },
+    { label: "New Topics", value: "3" }
+  ]
+};
+
+const todoList = [
+  { id: 1, text: "Review PR #42: Virtualization Fix", completed: false, tag: "Critical" },
+  { id: 2, text: "Research Gemini 2.5 Flash limits", completed: false, tag: "Research" },
+  { id: 3, text: "Update Tailwind config for dark mode", completed: true, tag: "Dev" },
+  { id: 4, text: "Schedule team sync", completed: false, tag: "Meeting" },
+];
+
 const newsItems = [
   { 
     id: 1, 
@@ -212,6 +231,7 @@ const initialSources = [
 export const DailyPicks: React.FC = () => {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sources, setSources] = useState(initialSources);
+  const [todos, setTodos] = useState(todoList);
   
   // Responsive Masonry Logic
   const [columns, setColumns] = useState(() => {
@@ -238,6 +258,10 @@ export const DailyPicks: React.FC = () => {
     setSources(prev => prev.map(s => s.id === id ? { ...s, active: !s.active } : s));
   };
 
+  const toggleTodo = (id: number) => {
+    setTodos(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+  };
+
   // Distribute items into columns for Left-to-Right reading order
   const distributedItems = Array.from({ length: columns }, () => [] as typeof newsItems);
   newsItems.forEach((item, i) => {
@@ -245,7 +269,7 @@ export const DailyPicks: React.FC = () => {
   });
 
   return (
-    <div className="w-full animate-fade-in">
+    <div className="w-full">
       {/* --- Header --- */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 border-b border-blue-400/10 pb-8">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
@@ -288,6 +312,122 @@ export const DailyPicks: React.FC = () => {
           </GlassTooltip>
         </div>
       </div>
+
+      {/* --- PRIORITY SECTION: Summary & Todos --- */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.4 }}
+        className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12"
+      >
+        {/* Daily Summary Card */}
+        <motion.div 
+            initial="initial"
+            whileHover="hover"
+            variants={HOVER_CARD_GLOW}
+            className="p-8 rounded-3xl bg-white/5 border border-blue-400/15 backdrop-blur-xl relative overflow-hidden group flex flex-col justify-between"
+        >
+            {/* Background Decor */}
+            <div className="absolute top-0 right-0 p-32 bg-blue-500/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none transition-opacity group-hover:opacity-100 opacity-50" />
+            
+            <div className="relative z-10">
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                            <BrainCircuit className="w-5 h-5" />
+                        </div>
+                        <div>
+                           <h3 className="text-xl font-bold text-white tracking-tight">{dailySummary.title}</h3>
+                           <p className="text-xs text-blue-200/50 uppercase tracking-widest font-medium mt-0.5">{dailySummary.date}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <p className="text-white/70 leading-relaxed mb-8 font-light text-base md:text-lg">
+                    {dailySummary.content}
+                </p>
+
+                <div className="grid grid-cols-3 gap-4 pt-6 border-t border-white/5">
+                    {dailySummary.stats.map((stat, i) => (
+                        <div key={i}>
+                            <div className="text-2xl font-bold text-white mb-1 group-hover:text-blue-200 transition-colors">{stat.value}</div>
+                            <div className="text-[10px] text-blue-300/70 uppercase tracking-wider font-bold">{stat.label}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </motion.div>
+
+        {/* Todo Card */}
+        <motion.div 
+            initial="initial"
+            whileHover="hover"
+            variants={HOVER_CARD_GLOW}
+            className="p-8 rounded-3xl bg-white/5 border border-blue-400/15 backdrop-blur-xl flex flex-col h-full relative overflow-hidden group"
+        >
+             {/* Glow effect */}
+            <div className="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-blue-500/5 to-transparent pointer-events-none opacity-50" />
+
+            <div className="flex items-center justify-between mb-6 relative z-10">
+                <div className="flex items-center gap-3">
+                    <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+                        <ListTodo className="w-5 h-5" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white tracking-tight">Action Items</h3>
+                </div>
+                <span className="text-[10px] font-bold tracking-wider text-emerald-300 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                    {todos.filter(t => !t.completed).length} PENDING
+                </span>
+            </div>
+
+            <div className="space-y-3 flex-1 relative z-10">
+                {todos.map((todo) => (
+                    <div 
+                        key={todo.id} 
+                        onClick={() => toggleTodo(todo.id)}
+                        className={`
+                            flex items-center gap-3 p-3 rounded-xl border transition-all cursor-pointer group/item
+                            ${todo.completed 
+                                ? 'bg-white/5 border-transparent opacity-50' 
+                                : 'bg-white/5 border-white/5 hover:border-blue-400/30 hover:bg-white/10'}
+                        `}
+                    >
+                        <div className={`
+                            flex-none w-5 h-5 rounded-md border flex items-center justify-center transition-colors
+                            ${todo.completed 
+                                ? 'bg-emerald-500/20 border-emerald-500/50' 
+                                : 'border-white/30 group-hover/item:border-blue-400/50'}
+                        `}>
+                            {todo.completed && <Check className="w-3.5 h-3.5 text-emerald-400" />}
+                        </div>
+                        
+                        <span className={`flex-1 text-sm font-medium transition-colors ${todo.completed ? 'text-white/30 line-through' : 'text-white/80 group-hover/item:text-white'}`}>
+                            {todo.text}
+                        </span>
+                        
+                        {!todo.completed && (
+                            <span className={`
+                                text-[10px] px-2 py-0.5 rounded-md border
+                                ${todo.tag === 'Critical' ? 'bg-red-500/10 text-red-300 border-red-500/20' : 
+                                  todo.tag === 'Research' ? 'bg-blue-500/10 text-blue-300 border-blue-500/20' :
+                                  'bg-white/5 text-white/50 border-white/10'}
+                            `}>
+                                {todo.tag}
+                            </span>
+                        )}
+                    </div>
+                ))}
+                
+                {/* Add New Item Placeholder */}
+                <div className="flex items-center gap-3 p-3 rounded-xl border border-dashed border-white/10 text-white/30 hover:text-white/50 hover:border-white/20 hover:bg-white/5 transition-all cursor-pointer">
+                    <div className="w-5 h-5 rounded-md border border-dashed border-current flex items-center justify-center">
+                        <ArrowRight className="w-3 h-3" />
+                    </div>
+                    <span className="text-sm">Add a new task...</span>
+                </div>
+            </div>
+        </motion.div>
+      </motion.div>
 
       {/* --- JS Masonry Grid --- */}
       <motion.div 

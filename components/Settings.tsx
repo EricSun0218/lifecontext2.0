@@ -293,10 +293,10 @@ export const Settings: React.FC = () => {
           whileHover={{ scale: 1.05, transition: { type: "spring", stiffness: 500, damping: 30 } }}
           whileTap={{ scale: 0.95 }}
           className={`
-            flex items-center gap-2 px-8 py-3 rounded-full shadow-2xl border transition-all duration-300
+            flex items-center gap-2 px-8 py-3 rounded-full shadow-[0_0_20px_-5px_rgba(0,0,0,0.3)] border backdrop-blur-xl transition-all duration-300
             ${isSaving 
-              ? 'bg-green-500/20 border-green-500/50 text-green-400' 
-              : 'bg-blue-600 border-blue-400/30 text-white hover:bg-blue-500'}
+              ? 'bg-emerald-500/20 border-emerald-400/30 text-emerald-300 shadow-[0_0_30px_-5px_rgba(16,185,129,0.2)]' 
+              : 'bg-blue-500/20 border-blue-400/30 text-blue-100 hover:bg-blue-500/30 hover:border-blue-400/50 hover:text-white hover:shadow-[0_0_30px_-5px_rgba(59,130,246,0.4)]'}
           `}
         >
           {isSaving ? <Check className="w-5 h-5" /> : <Save className="w-5 h-5" />}

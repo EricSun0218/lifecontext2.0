@@ -18,9 +18,16 @@ export const Mascot: React.FC<MascotProps> = ({ className = "w-12 h-12", isSleep
   const [eyePos, setEyePos] = useState({ x: 0, y: 0 });
   const [isBlinking, setIsBlinking] = useState(false);
 
+  // Refs to store timer IDs for proper cleanup
+  const blinkTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const resetTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Eye Tracking Logic
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (isSleeping || !ref.current) return;
+      // Prevent eye tracking if sleeping or blinking
+      if (isSleeping || isBlinking || !ref.current) return;
+      
       const rect = ref.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
@@ -39,31 +46,43 @@ export const Mascot: React.FC<MascotProps> = ({ className = "w-12 h-12", isSleep
 
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [isSleeping]);
+  }, [isSleeping, isBlinking]);
 
+  // Blink & Sleep State Management
   useEffect(() => {
+    // Helper to clear all active timers
+    const cleanupTimers = () => {
+      if (blinkTimerRef.current) clearTimeout(blinkTimerRef.current);
+      if (resetTimerRef.current) clearTimeout(resetTimerRef.current);
+      blinkTimerRef.current = null;
+      resetTimerRef.current = null;
+    };
+
     if (isSleeping) {
-      setEyePos({ x: 0, y: 0 });
-      setIsBlinking(false);
+      cleanupTimers();
+      setEyePos({ x: 0, y: 0 }); // Reset eyes to center
+      setIsBlinking(false);      // Ensure blink state is off so 'closed' is derived solely from isSleeping
       return;
     }
 
-    // Blink Logic
-    let timer: ReturnType<typeof setTimeout>;
     const scheduleBlink = () => {
       const delay = 3000 + Math.random() * 5000;
       
-      timer = setTimeout(() => {
+      blinkTimerRef.current = setTimeout(() => {
         setIsBlinking(true);
-        setTimeout(() => {
+        
+        // Schedule eye opening
+        resetTimerRef.current = setTimeout(() => {
           setIsBlinking(false);
-          scheduleBlink();
+          scheduleBlink(); // Recursively schedule next blink
         }, 150);
       }, delay);
     };
 
     scheduleBlink();
-    return () => clearTimeout(timer);
+    
+    // Cleanup on unmount or when isSleeping changes
+    return cleanupTimers;
   }, [isSleeping]);
 
   const areEyesClosed = isSleeping || isBlinking;
@@ -482,14 +501,16 @@ const RightFloatingChat: React.FC<RightFloatingChatProps> = ({ onClose }) => {
             className="fixed top-4 bottom-4 right-4 w-[380px] z-[100] flex flex-col bg-[#0f0c29]/95 backdrop-blur-3xl border border-blue-400/20 shadow-2xl rounded-3xl"
         >
              {/* Header */}
-             <div className="flex-none p-6 flex justify-between items-start">
-                <div>
-                    <h2 className="text-3xl font-bold text-white mb-1">LifeContext AI</h2>
-                    <p className="text-blue-200/50 font-light">Your intelligent companion for the open web.</p>
+             <div className="flex-none p-6 pt-6 flex justify-between items-start">
+                <div className="flex items-center gap-3">
+                    <div>
+                        <h2 className="text-xl font-bold text-white">LifeContext AI</h2>
+                        <p className="text-blue-200/50 text-xs font-light">Your intelligent companion</p>
+                    </div>
                 </div>
                 <button 
                     onClick={onClose} 
-                    className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors flex-shrink-0 -mt-1 -mr-1"
+                    className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors -mt-1 -mr-1"
                 >
                     <X className="w-5 h-5" />
                 </button>
