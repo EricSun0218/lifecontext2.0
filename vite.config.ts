@@ -18,6 +18,27 @@ export default defineConfig(({ mode }) => {
         alias: {
           '@': path.resolve(__dirname, '.'),
         }
+      },
+      build: {
+        rollupOptions: {
+          output: {
+            manualChunks: {
+              // Vendor chunks
+              'react-vendor': ['react', 'react-dom'],
+              'framer-motion': ['framer-motion'],
+              'radix-ui': [
+                '@radix-ui/react-dialog',
+                '@radix-ui/react-dropdown-menu',
+                '@radix-ui/react-switch',
+                '@radix-ui/react-tooltip'
+              ],
+              'form-vendor': ['react-hook-form', 'react-datepicker'],
+              'markdown': ['react-markdown'],
+              'icons': ['lucide-react']
+            }
+          }
+        },
+        chunkSizeWarningLimit: 1000
       }
     };
 });
