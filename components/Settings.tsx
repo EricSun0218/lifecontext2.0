@@ -3,13 +3,11 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Zap, Clock, Shield, Globe, Plus, X, Minus, Save, Check, Calendar, ChevronDown } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
-import DatePicker from 'react-datepicker';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { HOVER_ACTION, HOVER_CARD_GLOW, FAST_CASCADE_CONTAINER, FAST_FADE_UP_ITEM } from '../constants/animations';
 
 interface SettingsFormData {
   tipsInterval: number;
-  todoInterval: number;
   reportTime: Date;
   skipMode: 'domain' | 'url';
   skipInput: string;
@@ -27,7 +25,6 @@ export const Settings: React.FC = () => {
   const { control, register, handleSubmit, watch, setValue, formState: { errors } } = useForm<SettingsFormData>({
     defaultValues: {
       tipsInterval: 15,
-      todoInterval: 30,
       reportTime: defaultReportTime,
       skipMode: 'domain',
       skipInput: '',
@@ -37,14 +34,17 @@ export const Settings: React.FC = () => {
   });
 
   const tipsInterval = watch('tipsInterval');
-  const todoInterval = watch('todoInterval');
   const skipMode = watch('skipMode');
   const skipInput = watch('skipInput');
   const excludedSites = watch('excludedSites');
 
   // Handlers
-  const adjustInterval = (key: 'tipsInterval' | 'todoInterval', amount: number, currentValue: number) => {
-    setValue(key, Math.max(5, currentValue + amount));
+  const adjustTipsInterval = (amount: number) => {
+    const currentValue = tipsInterval;
+    const newValue = currentValue + amount;
+    // Only allow multiples of 15, max 60
+    const clampedValue = Math.max(15, Math.min(60, Math.round(newValue / 15) * 15));
+    setValue('tipsInterval', clampedValue);
   };
 
   const handleAddSite = () => {
@@ -101,18 +101,8 @@ export const Settings: React.FC = () => {
               label="Insight Generation Interval"
               value={tipsInterval}
               unit="min"
-              onDecrement={() => adjustInterval('tipsInterval', -5, tipsInterval)}
-              onIncrement={() => adjustInterval('tipsInterval', 5, tipsInterval)}
-            />
-            {/* Separator */}
-            <div className="h-px bg-white/5 w-full" />
-            {/* Todo Interval */}
-            <IntervalControl 
-              label="Action Item Extraction"
-              value={todoInterval}
-              unit="min"
-              onDecrement={() => adjustInterval('todoInterval', -5, todoInterval)}
-              onIncrement={() => adjustInterval('todoInterval', 5, todoInterval)}
+              onDecrement={() => adjustTipsInterval(-15)}
+              onIncrement={() => adjustTipsInterval(15)}
             />
           </div>
         </SettingSection>
@@ -130,21 +120,7 @@ export const Settings: React.FC = () => {
                   control={control}
                   name="reportTime"
                   render={({ field }) => (
-                    <div className="relative group/picker">
-                      <DatePicker
-                        selected={field.value}
-                        onChange={(date: Date | null) => field.onChange(date)}
-                        showTimeSelect
-                        showTimeSelectOnly
-                        timeIntervals={15}
-                        timeCaption="Time"
-                        dateFormat="h:mm aa"
-                        className="w-32 bg-white/5 border border-blue-400/15 rounded-xl py-2.5 pl-10 pr-4 text-white text-center font-medium outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all cursor-pointer"
-                        wrapperClassName="w-full"
-                        popperClassName="!z-[100]"
-                      />
-                      <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 group-hover/picker:text-blue-400 transition-colors pointer-events-none" />
-                    </div>
+                    <TimePicker value={field.value} onChange={field.onChange} />
                   )}
                 />
              </div>
@@ -337,6 +313,85 @@ const SettingSection: React.FC<{ icon: any, title: string, description: string, 
           {children}
        </div>
     </motion.div>
+  );
+};
+
+// Time Picker Component
+interface TimePickerProps {
+  value: Date;
+  onChange: (date: Date) => void;
+}
+
+const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  // Extract hours and minutes from the date
+  const hours = value.getHours();
+  const minutes = value.getMinutes();
+  
+  // Format time for display (12-hour format with AM/PM)
+  const formatTime = (h: number, m: number) => {
+    const hour12 = h % 12 || 12;
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const minStr = m.toString().padStart(2, '0');
+    return `${hour12}:${minStr} ${ampm}`;
+  };
+  
+  // Generate time options (15-minute intervals)
+  const timeOptions: string[] = [];
+  for (let h = 0; h < 24; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      timeOptions.push(`${h}:${m}`); // Store as "H:MM" for parsing
+    }
+  }
+  
+  const handleTimeSelect = (timeStr: string) => {
+    const [h, m] = timeStr.split(':').map(Number);
+    const newDate = new Date(value);
+    newDate.setHours(h, m, 0, 0);
+    onChange(newDate);
+    setIsOpen(false);
+  };
+  
+  return (
+    <DropdownMenu.Root open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenu.Trigger asChild>
+        <button className="w-32 bg-white/5 border border-blue-400/15 rounded-xl py-2.5 pl-10 pr-4 text-white text-center font-medium outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all cursor-pointer hover:bg-white/10 group/picker relative">
+          <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 group-hover/picker:text-blue-400 transition-colors pointer-events-none" />
+          <span>{formatTime(hours, minutes)}</span>
+        </button>
+      </DropdownMenu.Trigger>
+      
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          align="end"
+          sideOffset={8}
+          className="w-48 bg-[#0f0c29]/95 backdrop-blur-2xl border border-blue-400/20 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden p-1 z-[9999] max-h-[300px] overflow-y-auto custom-scrollbar"
+        >
+          {timeOptions.map((timeStr) => {
+            const [h, m] = timeStr.split(':').map(Number);
+            const displayTime = formatTime(h, m);
+            const isSelected = hours === h && minutes === m;
+            
+            return (
+              <DropdownMenu.Item
+                key={timeStr}
+                onSelect={() => handleTimeSelect(timeStr)}
+                className={`
+                  flex items-center justify-between px-3 py-2.5 rounded-lg cursor-pointer outline-none transition-colors text-sm
+                  ${isSelected 
+                    ? 'bg-blue-500/20 text-blue-200' 
+                    : 'text-white/80 hover:text-white hover:bg-white/10'}
+                `}
+              >
+                <span>{displayTime}</span>
+                {isSelected && <Check className="w-3.5 h-3.5 text-blue-400" />}
+              </DropdownMenu.Item>
+            );
+          })}
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 };
 
