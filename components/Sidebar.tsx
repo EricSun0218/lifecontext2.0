@@ -22,7 +22,7 @@ const LogoImage: React.FC<{ className?: string }> = ({ className }) => (
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => {
   const menuItems = [
-    { id: 'insights', icon: Lightbulb, label: 'Insights' }, // Main Dashboard (Timeline View)
+    { id: 'insights', icon: Lightbulb, label: 'Insight' }, // Main Dashboard (Timeline View)
     { id: 'daily_picks', icon: Sparkles, label: 'Daily Picks' }, // Original Home (News Grid)
     { id: 'chat', icon: MessageSquare, label: 'Chat' },
     { id: 'knowledge', icon: Book, label: 'Knowledge Base' },

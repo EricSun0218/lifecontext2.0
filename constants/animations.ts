@@ -118,3 +118,65 @@ export const MODAL_CONTENT: Variants = {
     transition: { duration: 0.2 }
   }
 };
+
+export const NOTIFICATION_PANEL: Variants = {
+  hidden: { 
+    opacity: 0, 
+    x: 100, 
+    scale: 0.95 
+  },
+  visible: { 
+    opacity: 1, 
+    x: 0, 
+    scale: 1,
+    transition: SPRING_SOFT
+  },
+  exit: { 
+    opacity: 0, 
+    x: 100, 
+    scale: 0.95,
+    transition: { duration: 0.2 }
+  }
+};
+
+export const NOTIFICATION_PANEL_CONTAINER: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.1
+    }
+  },
+  exit: {
+    opacity: 0,
+    transition: {
+      staggerChildren: 0.02,
+      staggerDirection: -1
+    }
+  }
+};
+
+export const NOTIFICATION_ITEM: Variants = {
+  hidden: { 
+    opacity: 0, 
+    y: 10,
+    scale: 0.95
+  },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 400,
+      damping: 25
+    }
+  },
+  exit: { 
+    opacity: 0, 
+    scale: 0.95,
+    y: -5,
+    transition: { duration: 0.15 }
+  }
+};

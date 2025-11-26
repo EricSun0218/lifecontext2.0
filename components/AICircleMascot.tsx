@@ -1,11 +1,13 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, BellOff, Camera, Globe, Ban, Link2, Check, X, Home, Filter, TrendingUp, List, Plus, Mic } from 'lucide-react';
+import { Bell, BellOff, Camera, Globe, Ban, Link2, Check, X, Home, Filter, TrendingUp, List, Plus, Mic, Zap, AlertTriangle, ArrowRight, Sparkles } from 'lucide-react';
 import { GlassTooltip } from './ui/GlassTooltip';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useForm } from 'react-hook-form';
-import { HOVER_CARD_GLOW } from '../constants/animations';
+import { HOVER_CARD_GLOW, NOTIFICATION_PANEL, NOTIFICATION_PANEL_CONTAINER, NOTIFICATION_ITEM } from '../constants/animations';
+import { Insight } from '../types';
+import { GlassModal } from './GlassModal';
 
 // --- REUSABLE MASCOT COMPONENT ---
 interface MascotProps {
@@ -200,11 +202,23 @@ interface FloatingMascotProps {
   setActiveTab?: (tab: string) => void;
 }
 
+type NotificationItem = {
+  id: string;
+  type: 'insight' | 'daily';
+  title: string;
+  insight?: Insight;
+};
+
 export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   // Dialog State
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  // Notification Panel State
+  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [selectedInsight, setSelectedInsight] = useState<Insight | null>(null);
+  const autoCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Settings State
   const [isCaptureEnabled, setIsCaptureEnabled] = useState(true);
@@ -277,6 +291,156 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
       localStorage.setItem('lc_blocked_urls', JSON.stringify(newList));
     }
   };
+
+  // Generate test notifications (insights + daily)
+  const generateTestNotifications = (): NotificationItem[] => {
+    const insights: Insight[] = [
+      {
+        id: `test-${Date.now()}-1`,
+        type: 'Analysis',
+        title: 'New Pattern Detected in Your Reading',
+        content: 'Your recent browsing shows increased interest in AI architecture. This aligns with your current project focus.',
+        tag: 'Behavior',
+        markdownContent: `# New Pattern Detected in Your Reading
+
+Your recent browsing shows increased interest in AI architecture. This aligns with your current project focus.
+
+## Key Observations
+
+- **Frequency**: 3x increase in AI-related content consumption
+- **Topics**: MoE architectures, transformer models, multimodal AI
+- **Timing**: Peak engagement between 10 AM - 2 PM
+
+## Recommendations
+
+1. Consider creating a knowledge base entry for AI architecture patterns
+2. Schedule dedicated research time during peak hours
+3. Connect these insights with your current project timeline`
+      },
+      {
+        id: `test-${Date.now()}-2`,
+        type: 'Action',
+        title: 'Action Required: Review Pending Items',
+        content: 'You have 3 pending action items from yesterday that need attention.',
+        tag: 'Productivity',
+        markdownContent: `# Action Required: Review Pending Items
+
+You have 3 pending action items from yesterday that need attention.
+
+## Pending Items
+
+1. Review PR #42: Virtualization Fix
+2. Research Gemini 2.5 Flash limits
+3. Update Tailwind config for dark mode
+
+## Priority
+
+- **High**: PR #42 (Critical bug fix)
+- **Medium**: Gemini research (Project planning)
+- **Low**: Tailwind config (Enhancement)`
+      },
+      {
+        id: `test-${Date.now()}-3`,
+        type: 'Warning',
+        title: 'Attention: Unusual Activity Pattern',
+        content: 'Your browsing pattern today differs significantly from your usual routine. Consider reviewing your focus areas.',
+        tag: 'Behavior',
+        markdownContent: `# Attention: Unusual Activity Pattern
+
+Your browsing pattern today differs significantly from your usual routine.
+
+## Changes Detected
+
+- **Time Distribution**: More evening activity than usual
+- **Content Type**: Shift from technical to general interest
+- **Engagement**: Lower interaction rate with deep technical content
+
+## Possible Causes
+
+- Context switching between multiple projects
+- Research phase transition
+- External factors affecting focus
+
+## Recommendations
+
+- Review your daily goals
+- Consider time-blocking for focused work
+- Check if this pattern aligns with your current priorities`
+      }
+    ];
+
+    return [
+      ...insights.map(insight => ({
+        id: insight.id,
+        type: 'insight' as const,
+        title: insight.title,
+        insight
+      })),
+      {
+        id: `daily-${Date.now()}`,
+        type: 'daily' as const,
+        title: 'Daily Summary Ready',
+      }
+    ];
+  };
+
+  const showNotification = (items: NotificationItem[]) => {
+    if (!isNotificationEnabled || isSleeping) return;
+    
+    // Clear existing timer
+    if (autoCloseTimerRef.current) {
+      clearTimeout(autoCloseTimerRef.current);
+    }
+    
+    setNotifications(items);
+    
+    // Auto close after 15 seconds
+    autoCloseTimerRef.current = setTimeout(() => {
+      setNotifications([]);
+      autoCloseTimerRef.current = null;
+    }, 15000);
+  };
+
+  const handleTestNotification = () => {
+    const testNotifications = generateTestNotifications();
+    showNotification(testNotifications);
+  };
+
+  const handleNotificationClick = (item: NotificationItem) => {
+    // Clear auto-close timer when user interacts
+    if (autoCloseTimerRef.current) {
+      clearTimeout(autoCloseTimerRef.current);
+      autoCloseTimerRef.current = null;
+    }
+    
+    if (item.type === 'insight' && item.insight) {
+      setSelectedInsight(item.insight);
+      setNotifications([]);
+    } else if (item.type === 'daily') {
+      // Navigate to daily page
+      if (setActiveTab) {
+        setActiveTab('daily_picks');
+      }
+      setNotifications([]);
+    }
+  };
+
+  const handleCloseNotification = () => {
+    if (autoCloseTimerRef.current) {
+      clearTimeout(autoCloseTimerRef.current);
+      autoCloseTimerRef.current = null;
+    }
+    setNotifications([]);
+  };
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (autoCloseTimerRef.current) {
+        clearTimeout(autoCloseTimerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <>
@@ -433,6 +597,29 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
                            </button>
                          </GlassTooltip>
                       </motion.div>
+
+                      {/* 4. TEST NOTIFICATION BUTTON */}
+                      <motion.div
+                         initial={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                         animate={{ opacity: 1, x: -20, y: -78, scale: 1 }}
+                         exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                         transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.15 }}
+                         className="absolute bottom-2 right-2 z-10"
+                      >
+                         <GlassTooltip content="Test Notification" side="top">
+                           <button
+                             onClick={handleTestNotification}
+                             className={`
+                               w-8 h-8 rounded-full flex items-center justify-center 
+                               backdrop-blur-xl transition-all duration-300 shadow-lg group/btn relative
+                               !border-none !outline-none
+                               bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
+                             `}
+                           >
+                             <Sparkles className="w-3.5 h-3.5" />
+                           </button>
+                         </GlassTooltip>
+                      </motion.div>
                     </>
                   )}
                </AnimatePresence>
@@ -462,6 +649,28 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
                setIsDialogOpen(false);
                setIsHovered(false); // Reset hover state when dialog closes
              }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Notification Panel */}
+      <AnimatePresence>
+        {notifications.length > 0 && (
+          <InsightNotificationPanel
+            notifications={notifications}
+            onNotificationClick={handleNotificationClick}
+            onClose={handleCloseNotification}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Insight Detail Modal */}
+      <AnimatePresence>
+        {selectedInsight && (
+          <GlassModal
+            key={selectedInsight.id}
+            insight={selectedInsight}
+            onClose={() => setSelectedInsight(null)}
           />
         )}
       </AnimatePresence>
@@ -591,3 +800,96 @@ const RightFloatingChat: React.FC<RightFloatingChatProps> = ({ onClose }) => {
         </motion.div>
     )
 }
+
+// --- INSIGHT NOTIFICATION PANEL ---
+interface InsightNotificationPanelProps {
+  notifications: NotificationItem[];
+  onNotificationClick: (item: NotificationItem) => void;
+  onClose: () => void;
+}
+
+const InsightNotificationPanel: React.FC<InsightNotificationPanelProps> = ({ notifications, onNotificationClick, onClose }) => {
+  const getTypeConfig = (item: NotificationItem) => {
+    if (item.type === 'daily') {
+      return { badge: 'text-emerald-300 bg-emerald-400/10 border-emerald-400/20', icon: Sparkles };
+    }
+    
+    if (!item.insight) {
+      return { badge: 'text-blue-300 bg-blue-500/10 border-blue-500/20', icon: Zap };
+    }
+
+    switch (item.insight.type) {
+      case 'Critical':
+        return { badge: 'text-red-300 bg-red-400/10 border-red-400/20', icon: AlertTriangle };
+      case 'Warning':
+        return { badge: 'text-amber-300 bg-amber-400/10 border-amber-400/20', icon: AlertTriangle };
+      case 'Action':
+        return { badge: 'text-emerald-300 bg-emerald-400/10 border-emerald-400/20', icon: ArrowRight };
+      case 'Analysis':
+      default:
+        return { badge: 'text-blue-300 bg-blue-500/10 border-blue-500/20', icon: Zap };
+    }
+  };
+
+  return (
+    <motion.div
+      variants={NOTIFICATION_PANEL}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      className="fixed bottom-24 right-8 w-[280px] z-[60] flex flex-col bg-white/5 backdrop-blur-xl border border-blue-400/15 rounded-2xl shadow-2xl max-h-[320px] overflow-hidden"
+    >
+      {/* Header */}
+      <div className="flex-none p-2.5 pb-2 flex justify-between items-center border-b border-white/5">
+        <div className="flex items-center gap-2">
+          <div className="p-1 rounded-md bg-blue-500/10 text-blue-300 border border-blue-500/20">
+            <Sparkles className="w-3 h-3" />
+          </div>
+          <h3 className="text-xs font-bold text-white">{notifications.length} New</h3>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-1 rounded-md bg-white/5 hover:bg-white/10 text-white/40 hover:text-white transition-colors"
+        >
+          <X className="w-3 h-3" />
+        </button>
+      </div>
+
+      {/* Notifications List */}
+      <motion.div
+        variants={NOTIFICATION_PANEL_CONTAINER}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        className="flex-1 overflow-y-auto custom-scrollbar p-2.5 space-y-2"
+      >
+        {notifications.map((item) => {
+          const typeConfig = getTypeConfig(item);
+          const Icon = typeConfig.icon;
+
+          return (
+            <motion.div
+              key={item.id}
+              variants={NOTIFICATION_ITEM}
+              whileHover={{ scale: 1.02 }}
+              onClick={() => onNotificationClick(item)}
+              className="
+                p-2.5 rounded-xl bg-white/5 border border-white/5 cursor-pointer group
+                hover:bg-white/10 hover:border-blue-400/30 transition-all backdrop-blur-sm
+              "
+            >
+              <div className="flex items-center gap-2">
+                <div className={`p-1 rounded-md border ${typeConfig.badge} flex-shrink-0 backdrop-blur-md`}>
+                  <Icon className="w-3 h-3" />
+                </div>
+                <h4 className="text-xs font-medium text-white/90 group-hover:text-white transition-colors line-clamp-2 flex-1">
+                  {item.title}
+                </h4>
+              </div>
+            </motion.div>
+          );
+        })}
+      </motion.div>
+    </motion.div>
+  );
+};
