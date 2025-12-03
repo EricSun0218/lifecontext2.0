@@ -1,0 +1,232 @@
+
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
+import {
+    Search, Plus, List, ArrowUpDown, ChevronRight, ChevronDown,
+    Folder, FileText, Video, Image as ImageIcon, MoreHorizontal,
+    Globe, Youtube, Mic, ChevronsLeft, ChevronsRight
+} from 'lucide-react';
+import { HOVER_ACTION, HOVER_CARD_GLOW, FADE_IN_UP_ITEM } from '../constants/animations';
+import { INITIAL_CATEGORIES, KNOWLEDGE_ITEMS, Category, KnowledgeItem } from '../constants/mockData';
+
+export const KnowledgeBase: React.FC = () => {
+    const [categories, setCategories] = useState(INITIAL_CATEGORIES);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+    const toggleCategory = (id: string) => {
+        setCategories(prev => prev.map(cat => {
+            if (cat.id === id) return { ...cat, isOpen: !cat.isOpen };
+            return cat;
+        }));
+    };
+
+    return (
+        <div className="flex h-[calc(100vh-6rem)] gap-8 relative">
+            {/* --- LEFT SIDEBAR (Categories) --- */}
+            <motion.aside
+                initial={{ width: 256, opacity: 1 }}
+                animate={{
+                    width: isSidebarOpen ? 256 : 0,
+                    opacity: isSidebarOpen ? 1 : 0,
+                    marginRight: isSidebarOpen ? 0 : -32 // Negative margin to pull content closer
+                }}
+                transition={{ duration: 0 }}
+                className="flex-shrink-0 flex flex-col gap-4 overflow-hidden"
+            >
+                <div className="flex items-center justify-between mb-2 px-2 min-w-[240px]">
+                    <div className="flex gap-2">
+                        <button className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                            <List className="w-4 h-4" />
+                        </button>
+                        <button className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                            <ArrowUpDown className="w-4 h-4" />
+                        </button>
+                    </div>
+                    <button
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors"
+                    >
+                        <ChevronsLeft className="w-4 h-4" />
+                    </button>
+                </div>
+
+                <div className="space-y-1 min-w-[240px]">
+                    {categories.map(category => (
+                        <div key={category.id} className="flex flex-col">
+                            <button
+                                onClick={() => toggleCategory(category.id)}
+                                className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/5 text-white/80 hover:text-white transition-colors group text-sm font-medium"
+                            >
+                                {category.isOpen ? (
+                                    <ChevronDown className="w-3.5 h-3.5 text-white/40 group-hover:text-white/60" />
+                                ) : (
+                                    <ChevronRight className="w-3.5 h-3.5 text-white/40 group-hover:text-white/60" />
+                                )}
+                                <span>{category.name}</span>
+                            </button>
+
+                            {category.isOpen && category.children && (
+                                <div className="ml-4 pl-2 border-l border-white/5 space-y-0.5 mt-1">
+                                    {category.children.map(child => (
+                                        <button
+                                            key={child.id}
+                                            className="flex items-center gap-2 w-full px-3 py-1.5 rounded-lg hover:bg-white/5 text-white/60 hover:text-white transition-colors text-sm text-left"
+                                        >
+                                            {/* Icon based on name or default */}
+                                            <Folder className="w-3.5 h-3.5 text-blue-400/60" />
+                                            <span className="truncate">{child.name}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    ))}
+
+                    <button className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/5 text-white/80 hover:text-white transition-colors group text-sm font-medium mt-4">
+                        <ChevronRight className="w-3.5 h-3.5 text-white/40 group-hover:text-white/60" />
+                        <span className="italic opacity-70">Untagged cards</span>
+                    </button>
+                </div>
+            </motion.aside>
+
+            {/* Expand Button (Visible when sidebar is closed) */}
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{
+                    opacity: !isSidebarOpen ? 1 : 0,
+                    x: !isSidebarOpen ? 0 : -20,
+                    pointerEvents: !isSidebarOpen ? 'auto' : 'none'
+                }}
+                className="absolute left-0 top-0 z-10"
+            >
+                <button
+                    onClick={() => setIsSidebarOpen(true)}
+                    className="p-2 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all"
+                >
+                    <ChevronsRight className="w-4 h-4" />
+                </button>
+            </motion.div>
+
+            {/* --- MAIN CONTENT --- */}
+            <div className="flex-1 flex flex-col min-w-0">
+
+                {/* Header Toolbar */}
+                <div className="flex items-center justify-end mb-8 gap-4">
+                    {/* Actions */}
+                    <div className="flex items-center gap-3">
+                        <button className="p-2.5 rounded-xl bg-white/5 border border-blue-400/15 text-blue-200 hover:text-white hover:bg-white/10 transition-all shadow-[0_0_15px_-5px_rgba(59,130,246,0.2)]">
+                            <Search className="w-5 h-5" />
+                        </button>
+                        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-blue-400/15 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium">
+                            <List className="w-4 h-4" />
+                            <span>List</span>
+                        </button>
+                        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-blue-400/15 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium">
+                            <span>Order by</span>
+                            <ChevronDown className="w-3.5 h-3.5" />
+                        </button>
+                        <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_-5px_rgba(37,99,235,0.5)] transition-all text-sm font-medium">
+                            <Plus className="w-4 h-4" />
+                            <span>Add Content</span>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Content Area */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-6">
+
+                    {/* Date Group */}
+                    <div className="mb-8">
+                        <h3 className="text-white/50 font-mono text-sm mb-4 pl-1">Fri Nov 28 2025</h3>
+                        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6">
+                            {/* First Item - Large Preview (Text) */}
+                            <KnowledgeCard item={KNOWLEDGE_ITEMS[0]} />
+                        </div>
+                    </div>
+
+                    {/* Date Group */}
+                    <div className="mb-12">
+                        <h3 className="text-white/50 font-mono text-sm mb-4 pl-1">Fri Nov 21 2025</h3>
+                        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6">
+                            {KNOWLEDGE_ITEMS.slice(1).map(item => (
+                                <KnowledgeCard key={item.id} item={item} />
+                            ))}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// --- Sub-Component: Knowledge Card ---
+const KnowledgeCard: React.FC<{ item: KnowledgeItem }> = ({ item }) => {
+    return (
+        <motion.div
+            variants={HOVER_CARD_GLOW}
+            initial="initial"
+            whileHover="hover"
+            whileTap="tap"
+            className="group flex flex-col w-full relative overflow-hidden rounded-3xl backdrop-blur-md border cursor-pointer bg-white/[0.02]"
+        >
+            {/* Thumbnail / Preview */}
+            <div className="aspect-video w-full bg-black/20 relative overflow-hidden shrink-0">
+                {item.thumbnail ? (
+                    <>
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#0f0c29] via-transparent to-transparent opacity-60 z-10" />
+                        <motion.img
+                            src={item.thumbnail}
+                            alt={item.title}
+                            className="w-full h-full object-cover"
+                            whileHover={{ scale: 1.1 }}
+                            transition={{ duration: 0.7 }}
+                        />
+                    </>
+                ) : (
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-white/5 to-white/0">
+                        {item.type === 'text' && <FileText className="w-12 h-12 text-white/10 group-hover:text-white/20 transition-colors" />}
+                        {item.type === 'video' && <Video className="w-12 h-12 text-white/10 group-hover:text-white/20 transition-colors" />}
+                        {item.type === 'image' && <ImageIcon className="w-12 h-12 text-white/10 group-hover:text-white/20 transition-colors" />}
+                    </div>
+                )}
+
+                {/* Type Icon Overlay */}
+                <div className="absolute top-3 right-3 p-1.5 rounded-lg bg-black/40 backdrop-blur-md border border-white/10 text-white/70 z-20">
+                    {item.type === 'text' && <FileText className="w-3.5 h-3.5" />}
+                    {item.type === 'video' && <Youtube className="w-3.5 h-3.5" />}
+                    {item.type === 'image' && <ImageIcon className="w-3.5 h-3.5" />}
+                </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-5 flex flex-col flex-1">
+                <h4 className="text-white font-medium leading-snug mb-2 line-clamp-2 group-hover:text-blue-200 transition-colors">
+                    {item.title}
+                </h4>
+                <p className="text-white/50 text-xs leading-relaxed line-clamp-3 mb-4 flex-1">
+                    {item.description}
+                </p>
+
+                {/* Footer */}
+                <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/5">
+                    <div className="flex items-center gap-2">
+                        {item.tags?.map(tag => (
+                            <span key={tag} className="px-2 py-0.5 rounded-md bg-white/5 border border-white/5 text-[10px] text-white/60">
+                                {tag}
+                            </span>
+                        ))}
+                    </div>
+
+                    {/* Source Icon (Optional) */}
+                    {item.source && (
+                        <span className="text-[10px] text-white/30 uppercase tracking-wider font-medium">
+                            {item.source}
+                        </span>
+                    )}
+                </div>
+            </div>
+        </motion.div>
+    );
+};
