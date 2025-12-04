@@ -83,7 +83,7 @@ export const KnowledgeBase: React.FC = () => {
             </div>
 
             {/* --- SPLIT VIEW CONTENT --- */}
-            <div className="flex flex-1 gap-0 md:gap-8 relative min-h-0">
+            <div className="flex flex-1 gap-0 md:gap-3 relative min-h-0">
                 {/* --- MOBILE BACKDROP --- */}
                 <AnimatePresence>
                     {isMobile && isSidebarOpen && (
@@ -189,7 +189,7 @@ export const KnowledgeBase: React.FC = () => {
                 {/* --- MAIN CONTENT --- */}
                 <div className="flex-1 flex flex-col min-w-0">
                     {/* Content Area */}
-                    <div className="flex-1 overflow-y-auto custom-scrollbar px-4 md:px-6 pb-6">
+                    <div className={`flex-1 overflow-y-auto custom-scrollbar px-4 md:px-6 pb-6 pt-1.5 ${!isSidebarOpen ? '!pl-11' : ''}`}>
 
                         {/* Date Group */}
                         <div className="mb-8">

@@ -25,9 +25,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab }) => 
 
   const menuItems = [
     { id: 'insights', icon: Lightbulb, label: t('sidebar.insight') }, // Main Dashboard (Timeline View)
-    { id: 'daily_picks', icon: Sparkles, label: t('sidebar.daily_picks') }, // Original Home (News Grid)
     { id: 'chat', icon: MessageSquare, label: t('sidebar.chat') },
     { id: 'knowledge', icon: Book, label: t('sidebar.knowledge_base') },
+    { id: 'daily_picks', icon: Sparkles, label: t('sidebar.daily_picks') }, // Original Home (News Grid)
     { id: 'settings', icon: Settings, label: t('sidebar.settings') },
   ];
 
