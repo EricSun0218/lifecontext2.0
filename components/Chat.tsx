@@ -139,7 +139,7 @@ export const Chat: React.FC = () => {
               <div className="mb-6">
                 <Mascot className="w-24 h-24" />
               </div>
-              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight mb-3 text-white">{t('chat.greeting')}</h1>
+              <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tight mb-3 text-white">{t('chat.greeting')}</h1>
               <p className="text-slate-400 text-xl font-light">{t('chat.subtitle')}</p>
             </motion.div>
 

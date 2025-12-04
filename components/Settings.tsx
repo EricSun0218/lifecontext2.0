@@ -80,9 +80,9 @@ export const Settings: React.FC = () => {
         variants={FAST_FADE_UP_ITEM}
         className="mb-10 text-center md:text-left"
       >
-        <h1 className="text-4xl font-bold text-white tracking-tight mb-2">System Preferences</h1>
+        <h1 className="text-3xl md:text-4xl font-display font-bold text-white tracking-tight mb-2">{t('settings_page.title')}</h1>
         <p className="text-white/50 text-lg font-light">
-          Configure how the AI observes, analyzes, and reports on your digital context.
+          {t('settings_page.subtitle')}
         </p>
       </motion.div>
 
@@ -94,13 +94,13 @@ export const Settings: React.FC = () => {
         {/* --- Section 1: AI Intelligence --- */}
         <SettingSection
           icon={Zap}
-          title="AI Intelligence"
-          description="Adjust the frequency of context analysis. Lower intervals increase accuracy but use more resources."
+          title={t('settings_page.ai_intelligence.title')}
+          description={t('settings_page.ai_intelligence.description')}
         >
           <div className="flex flex-col gap-6">
             {/* Tips Interval */}
             <IntervalControl
-              label="Insight Generation Interval"
+              label={t('settings_page.ai_intelligence.interval')}
               value={tipsInterval}
               unit="min"
               onDecrement={() => adjustTipsInterval(-15)}
@@ -112,11 +112,11 @@ export const Settings: React.FC = () => {
         {/* --- Section 2: Daily Digest --- */}
         <SettingSection
           icon={Clock}
-          title="Daily Digest Schedule"
-          description="Set the time for your daily summary report generation."
+          title={t('settings_page.daily_digest.title')}
+          description={t('settings_page.daily_digest.description')}
         >
           <div className="flex items-center justify-between pt-2 group">
-            <span className="text-white/70 font-medium group-hover:text-white transition-colors">Report Time</span>
+            <span className="text-white/70 font-medium group-hover:text-white transition-colors">{t('settings_page.daily_digest.report_time')}</span>
             <div className="relative">
               <Controller
                 control={control}
@@ -132,8 +132,8 @@ export const Settings: React.FC = () => {
         {/* --- Section 3: Privacy & Scope --- */}
         <SettingSection
           icon={Shield}
-          title="Privacy Exclusion Zone"
-          description="Prevent the AI from analyzing content from specific domains or URLs."
+          title={t('settings_page.privacy.title')}
+          description={t('settings_page.privacy.description')}
         >
           <div className="flex flex-col gap-6">
 
@@ -153,14 +153,14 @@ export const Settings: React.FC = () => {
                 onClick={() => setValue('skipMode', 'domain')}
                 className={`flex-1 py-2 text-sm font-medium z-10 transition-colors ${skipMode === 'domain' ? 'text-white' : 'text-white/40 hover:text-white/60'}`}
               >
-                Domain Block
+                {t('settings_page.privacy.domain_block')}
               </button>
               <button
                 type="button"
                 onClick={() => setValue('skipMode', 'url')}
                 className={`flex-1 py-2 text-sm font-medium z-10 transition-colors ${skipMode === 'url' ? 'text-white' : 'text-white/40 hover:text-white/60'}`}
               >
-                Exact URL
+                {t('settings_page.privacy.exact_url')}
               </button>
             </div>
 
@@ -175,7 +175,7 @@ export const Settings: React.FC = () => {
                     handleAddSite();
                   }
                 }}
-                placeholder={skipMode === 'domain' ? "e.g., facebook.com" : "e.g., https://site.com/private"}
+                placeholder={skipMode === 'domain' ? t('settings_page.privacy.placeholder_domain') : t('settings_page.privacy.placeholder_url')}
                 className="w-full bg-white/5 border border-blue-400/15 rounded-xl py-3 pl-4 pr-12 text-white placeholder-white/20 focus:outline-none focus:border-blue-500/50 focus:bg-white/10 transition-all"
               />
               <motion.button
@@ -211,7 +211,7 @@ export const Settings: React.FC = () => {
                 ))}
               </AnimatePresence>
               {excludedSites.length === 0 && (
-                <span className="text-sm text-white/30 italic">No active exclusions.</span>
+                <span className="text-sm text-white/30 italic">{t('settings_page.privacy.no_exclusions')}</span>
               )}
             </div>
 
@@ -221,8 +221,8 @@ export const Settings: React.FC = () => {
         {/* --- Section 4: Localization --- */}
         <SettingSection
           icon={Globe}
-          title="System Language"
-          description="Select the primary language for AI analysis and interface text."
+          title={t('settings_page.language.title')}
+          description={t('settings_page.language.description')}
         >
           <div className="relative z-10">
             <Controller
@@ -284,7 +284,7 @@ export const Settings: React.FC = () => {
           `}
         >
           {isSaving ? <Check className="w-5 h-5" /> : <Save className="w-5 h-5" />}
-          <span className="font-medium">{isSaving ? 'Saved' : 'Save Changes'}</span>
+          <span className="font-medium">{isSaving ? t('settings_page.saved') : t('settings_page.save')}</span>
         </motion.button>
       </div>
 

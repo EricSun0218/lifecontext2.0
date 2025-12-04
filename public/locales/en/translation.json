@@ -22,6 +22,9 @@
         }
     },
     "knowledge": {
+        "library": "LIBRARY",
+        "title": "Knowledge Base",
+        "subtitle": "Manage and organize your digital assets and resources.",
         "search": "Search",
         "list": "List",
         "order_by": "Order by",
@@ -110,6 +113,105 @@
             "item20": {
                 "title": "Coffee Culture: The Fourth Wave",
                 "summary": "It's no longer just about the bean origin, but the precise molecular chemistry of the brew water."
+            }
+        }
+    },
+    "insights": {
+        "ai_powered": "AI-Powered Analysis",
+        "dashboard": "Insight Dashboard",
+        "subtitle": "Translating your raw digital footprint into actionable intelligence.",
+        "today": "Today, Oct 24"
+    },
+    "daily_picks": {
+        "overview": "Overview",
+        "title": "Daily Picks",
+        "subtitle": "Curated highlights from your digital network.",
+        "briefing": {
+            "title": "Daily Briefing",
+            "content": "Today's digital footprint suggests a strong focus on frontend architecture and AI integration. Your reading patterns align with the release of Gemini 1.5, indicating a shift towards multimodal model research. Productivity peaked between 10 AM and 2 PM.",
+            "stats": {
+                "focus_score": "Focus Score",
+                "reading_time": "Reading Time",
+                "new_topics": "New Topics"
+            }
+        },
+        "todos": {
+            "title": "Action Items",
+            "pending": "PENDING",
+            "item1": "Review PR #42: Virtualization Fix",
+            "item2": "Research Gemini 2.5 Flash limits",
+            "item3": "Update Tailwind config for dark mode",
+            "item4": "Schedule team sync"
+        },
+        "view_details": "View Details"
+    },
+    "settings_page": {
+        "title": "System Preferences",
+        "subtitle": "Configure how the AI observes, analyzes, and reports on your digital context.",
+        "ai_intelligence": {
+            "title": "AI Intelligence",
+            "description": "Adjust the frequency of context analysis. Lower intervals increase accuracy but use more resources.",
+            "interval": "Insight Generation Interval"
+        },
+        "daily_digest": {
+            "title": "Daily Digest Schedule",
+            "description": "Set the time for your daily summary report generation.",
+            "report_time": "Report Time"
+        },
+        "privacy": {
+            "title": "Privacy Exclusion Zone",
+            "description": "Prevent the AI from analyzing content from specific domains or URLs.",
+            "domain_block": "Domain Block",
+            "exact_url": "Exact URL",
+            "placeholder_domain": "e.g., facebook.com",
+            "placeholder_url": "e.g., https://site.com/private",
+            "no_exclusions": "No active exclusions."
+        },
+        "language": {
+            "title": "System Language",
+            "description": "Select the primary language for AI analysis and interface text."
+        },
+        "save": "Save Changes",
+        "saved": "Saved"
+    },
+    "dashboard": {
+        "entry1": {
+            "context_title": "Gemini Architecture Research",
+            "source1": "Tech Talk 2024",
+            "source2": "Google DeepMind Papers",
+            "insight1": {
+                "title": "MoE Architecture Advantages",
+                "content": "Mixture-of-Experts allows scaling parameters without linear cost increases. This architecture enables the model to activate only a fraction of its parameters per token.",
+                "markdown": "# Deep Dive: Mixture of Experts\n\n> **Core Concept:** MoE models use a \"router\" network to select a subset of \"expert\" networks to process each token.\n\n### Why it matters?\nTraditional dense models activate **all** parameters for every input. MoE models only activate a fraction (e.g., 10-15%), significantly reducing FLOPs per inference.\n\n### Pseudocode Logic\n```python\ndef forward(x):\n  # Router decides which expert gets the token\n  weights, indices = router(x)\n  \n  # Only run selected experts\n  output = 0\n  for i, expert in enumerate(experts):\n      if i in indices:\n          output += weights[i] * expert(x)\n  return output\n```\n\n### Key Benefits\n*   **Scalability:** Train trillion-parameter models cheaply.\n*   **Latency:** Faster inference than dense equivalents.\n*   **Specialization:** Experts can specialize in code, math, or creative writing."
+            },
+            "insight2": {
+                "title": "Implementation Strategy",
+                "content": "Consider using the 1.5 Pro API for the context window, but cache common queries to optimize latency.",
+                "markdown": "## Deployment Plan\n\nTo optimize for both **cost** and **performance**, we recommend a hybrid approach involving caching and model tiering.\n\n### 1. Tiered Caching Strategy\nUse **Context Caching** for large, static assets to reduce token usage:\n*   API Documentation\n*   Codebase Snapshots\n*   Brand Style Guides\n\n### 2. Model Selection\n*   **Complex Reasoning:** Use *Gemini 1.5 Pro*\n*   **High Volume / Chat:** Use *Gemini 1.5 Flash*\n*   **Offline / Privacy:** Use *Gemma 2* (Self-hosted)\n\n> **Note:** Flash is approx. 10x cheaper for simple RAG tasks than Pro.\n\n### Action Items\n*   Refactor API client to support caching headers.\n*   Benchmark latency between Pro and Flash for your specific use case."
+            }
+        },
+        "entry2": {
+            "context_title": "React Performance Debugging",
+            "source1": "LifeContext/Repo",
+            "insight1": {
+                "title": "Reduce Re-renders",
+                "content": "The Timeline component is re-rendering on scroll. Implement React.memo() and virtualization.",
+                "markdown": "# Critical Performance Issue\n\nWe detected a **main-thread blocking** issue during rapid scrolling on mobile devices.\n\n### Diagnosis\nThe `TimelineCard` component is receiving a new function reference for `onInsightClick` on every render of the parent.\n\n```javascript\n// ❌ Bad Pattern causing re-renders\n<TimelineCard \n  onClick={() => handleInsight(id)} // New function every time\n/>\n\n// ✅ Fixed Pattern\nconst handleInsight = useCallback((id) => { ... }, []);\n<TimelineCard onClick={handleInsight} />\n```\n\n### Impact Analysis\n*   **FPS Drop:** Scrolled at ~45fps on high-end devices.\n*   **Battery:** Excessive CPU usage draining battery.\n\n> **Recommendation:** Please apply the fix immediately to `components/TimelineCard.tsx`."
+            }
+        },
+        "entry3": {
+            "context_title": "Design System Audit",
+            "source1": "Dribbble Inspiration",
+            "source2": "Tailwind UI",
+            "insight1": {
+                "title": "Contrast Accessibility",
+                "content": "Current glassmorphism borders are too subtle (10% opacity). Increase to 15-20% for better definition.",
+                "markdown": "### Visual Hierarchy Adjustment\n\nThe current glassmorphism implementation is too subtle in light mode or high-glare environments.\n\n*   **Current:** `border-white/10`\n*   **Proposed:** `border-white/20` + `shadow-sm`\n\n**Reasoning:**\n1.  Improves edge detection for visually impaired users.\n2.  Creates better separation from the background mesh.\n\n> \"Good design is invisible, but usable design is visible.\""
+            },
+            "insight2": {
+                "title": "Animation Overhead",
+                "content": "Multiple background blur animations are consuming excessive GPU resources.",
+                "markdown": "## GPU Bottleneck Detected\n\nCSS filters like `backdrop-filter: blur()` are expensive when animating, especially on large areas.\n\n### Optimization Tips\n1.  Use **opacity** animations instead of blur radius animations where possible.\n2.  Promote layers using `will-change: transform`.\n3.  Reduce the number of simultaneous glowing orbs.\n\n```css\n/* Expensive */\nanimation: blurPulse 2s infinite;\n\n/* Cheap & Performant */\nanimation: opacityPulse 2s infinite;\n```"
             }
         }
     },

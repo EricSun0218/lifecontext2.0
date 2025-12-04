@@ -29,7 +29,7 @@ export const Mascot: React.FC<MascotProps> = ({ className = "w-12 h-12", isSleep
     const handleMouseMove = (e: MouseEvent) => {
       // Prevent eye tracking if sleeping or blinking
       if (isSleeping || isBlinking || !ref.current) return;
-      
+
       const rect = ref.current.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
       const centerY = rect.top + rect.height / 2;
@@ -37,7 +37,7 @@ export const Mascot: React.FC<MascotProps> = ({ className = "w-12 h-12", isSleep
       const dx = e.clientX - centerX;
       const dy = e.clientY - centerY;
       const angle = Math.atan2(dy, dx);
-      const maxMove = 6; 
+      const maxMove = 6;
       const distance = Math.min(maxMove, Math.hypot(dx, dy) / 12);
 
       setEyePos({
@@ -69,10 +69,10 @@ export const Mascot: React.FC<MascotProps> = ({ className = "w-12 h-12", isSleep
 
     const scheduleBlink = () => {
       const delay = 3000 + Math.random() * 5000;
-      
+
       blinkTimerRef.current = setTimeout(() => {
         setIsBlinking(true);
-        
+
         // Schedule eye opening
         resetTimerRef.current = setTimeout(() => {
           setIsBlinking(false);
@@ -82,7 +82,7 @@ export const Mascot: React.FC<MascotProps> = ({ className = "w-12 h-12", isSleep
     };
 
     scheduleBlink();
-    
+
     // Cleanup on unmount or when isSleeping changes
     return cleanupTimers;
   }, [isSleeping]);
@@ -92,105 +92,105 @@ export const Mascot: React.FC<MascotProps> = ({ className = "w-12 h-12", isSleep
 
   return (
     <div ref={ref} className={`${className} relative`}>
-        <motion.div 
-            className="w-full h-full rounded-full overflow-hidden"
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3 }}
+      <motion.div
+        className="w-full h-full rounded-full overflow-hidden"
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <svg
+          viewBox="0 0 100 100"
+          className="w-full h-full block"
+          style={{ overflow: 'visible' }}
         >
-        <svg 
-            viewBox="0 0 100 100" 
-            className="w-full h-full block"
-            style={{ overflow: 'visible' }}
-        >
-            <defs>
+          <defs>
             <radialGradient id="blueJellyGrad" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-                <stop offset="0%" stopColor="#60a5fa" />
-                <stop offset="85%" stopColor="#1e3a8a" />
-                <stop offset="100%" stopColor="#172554" />
+              <stop offset="0%" stopColor="#60a5fa" />
+              <stop offset="85%" stopColor="#1e3a8a" />
+              <stop offset="100%" stopColor="#172554" />
             </radialGradient>
 
             <filter id="wetBlur" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
+              <feGaussianBlur in="SourceGraphic" stdDeviation="3" />
             </filter>
 
             <filter id="rimGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feMorphology operator="erode" radius="1.5" in="SourceAlpha" result="eroded" />
-                <feComposite operator="out" in="SourceAlpha" in2="eroded" result="outline" />
-                <feGaussianBlur in="outline" stdDeviation="1.5" result="blurredOutline" />
-                <feFlood floodColor="rgba(147, 197, 253, 0.4)" result="glowColor" />
-                <feComposite operator="in" in="glowColor" in2="blurredOutline" result="finalGlow" />
-                <feMerge>
+              <feMorphology operator="erode" radius="1.5" in="SourceAlpha" result="eroded" />
+              <feComposite operator="out" in="SourceAlpha" in2="eroded" result="outline" />
+              <feGaussianBlur in="outline" stdDeviation="1.5" result="blurredOutline" />
+              <feFlood floodColor="rgba(147, 197, 253, 0.4)" result="glowColor" />
+              <feComposite operator="in" in="glowColor" in2="blurredOutline" result="finalGlow" />
+              <feMerge>
                 <feMergeNode in="SourceGraphic" />
                 <feMergeNode in="finalGlow" />
-                </feMerge>
+              </feMerge>
             </filter>
 
             <filter id="eyeGlow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="blur" />
-                <feFlood floodColor="rgba(191, 219, 254, 0.5)" result="glowColor" />
-                <feComposite in="glowColor" in2="blur" operator="in" result="coloredBlur" />
-                <feMerge>
+              <feGaussianBlur in="SourceGraphic" stdDeviation="0.8" result="blur" />
+              <feFlood floodColor="rgba(191, 219, 254, 0.5)" result="glowColor" />
+              <feComposite in="glowColor" in2="blur" operator="in" result="coloredBlur" />
+              <feMerge>
                 <feMergeNode in="coloredBlur" />
                 <feMergeNode in="SourceGraphic" />
-                </feMerge>
+              </feMerge>
             </filter>
-            
+
             <linearGradient id="eyeGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#ffffff" />
-                <stop offset="100%" stopColor="#dbeafe" />
+              <stop offset="0%" stopColor="#ffffff" />
+              <stop offset="100%" stopColor="#dbeafe" />
             </linearGradient>
-            </defs>
+          </defs>
 
-            <circle cx="50" cy="50" r="50" fill="url(#blueJellyGrad)" filter="url(#rimGlow)" />
+          <circle cx="50" cy="50" r="50" fill="url(#blueJellyGrad)" filter="url(#rimGlow)" />
 
-            <path 
-            d="M 25 25 Q 50 15 75 25" 
-            fill="none" 
-            stroke="white" 
-            strokeWidth="3" 
-            strokeLinecap="round" 
-            opacity="0.25" 
-            filter="url(#wetBlur)" 
-            />
-            <ellipse cx="35" cy="30" rx="18" ry="10" fill="white" opacity="0.15" transform="rotate(-20 35 30)" filter="url(#wetBlur)" />
+          <path
+            d="M 25 25 Q 50 15 75 25"
+            fill="none"
+            stroke="white"
+            strokeWidth="3"
+            strokeLinecap="round"
+            opacity="0.25"
+            filter="url(#wetBlur)"
+          />
+          <ellipse cx="35" cy="30" rx="18" ry="10" fill="white" opacity="0.15" transform="rotate(-20 35 30)" filter="url(#wetBlur)" />
 
-            <ellipse cx="25" cy="55" rx="6" ry="3" fill="#f472b6" opacity="0.2" filter="url(#wetBlur)" />
-            <ellipse cx="75" cy="55" rx="6" ry="3" fill="#f472b6" opacity="0.2" filter="url(#wetBlur)" />
+          <ellipse cx="25" cy="55" rx="6" ry="3" fill="#f472b6" opacity="0.2" filter="url(#wetBlur)" />
+          <ellipse cx="75" cy="55" rx="6" ry="3" fill="#f472b6" opacity="0.2" filter="url(#wetBlur)" />
 
-            <g 
-            className="eyes" 
+          <g
+            className="eyes"
             style={{ transform: `translate(${eyePos.x}px, ${eyePos.y}px)` }}
-            >
+          >
             <AnimatePresence mode="wait">
-                {!areEyesClosed ? (
-                <motion.g 
-                    key="open"
-                    initial={{ opacity: 0, scaleY: 0.8 }}
-                    animate={{ opacity: 1, scaleY: 1 }}
-                    exit={{ opacity: 0, scaleY: 0.8 }}
-                    transition={transitionConfig}
-                >
-                    <rect x="29" y="39" width="10" height="20" rx="5" fill="url(#eyeGrad)" filter="url(#eyeGlow)" />
-                    <rect x="55" y="39" width="10" height="20" rx="5" fill="url(#eyeGrad)" filter="url(#eyeGlow)" />
-                </motion.g>
-                ) : (
+              {!areEyesClosed ? (
                 <motion.g
-                    key="closed"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={transitionConfig}
+                  key="open"
+                  initial={{ opacity: 0, scaleY: 0.8 }}
+                  animate={{ opacity: 1, scaleY: 1 }}
+                  exit={{ opacity: 0, scaleY: 0.8 }}
+                  transition={transitionConfig}
                 >
-                    <path d="M 29 50 Q 34 53 39 50" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
-                    <path d="M 55 50 Q 60 53 65 50" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
+                  <rect x="29" y="39" width="10" height="20" rx="5" fill="url(#eyeGrad)" filter="url(#eyeGlow)" />
+                  <rect x="55" y="39" width="10" height="20" rx="5" fill="url(#eyeGrad)" filter="url(#eyeGlow)" />
                 </motion.g>
-                )}
+              ) : (
+                <motion.g
+                  key="closed"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={transitionConfig}
+                >
+                  <path d="M 29 50 Q 34 53 39 50" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
+                  <path d="M 55 50 Q 60 53 65 50" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" />
+                </motion.g>
+              )}
             </AnimatePresence>
-            
+
             <path d="M 42 60 Q 47 63 52 60" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="1.5" strokeLinecap="round" />
-            </g>
+          </g>
         </svg>
-        </motion.div>
+      </motion.div>
     </div>
   );
 };
@@ -223,7 +223,7 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
   // Settings State
   const [isCaptureEnabled, setIsCaptureEnabled] = useState(true);
   const [isNotificationEnabled, setIsNotificationEnabled] = useState(true);
-  
+
   // Blocking State
   const [blockedDomains, setBlockedDomains] = useState<string[]>([]);
   const [blockedUrls, setBlockedUrls] = useState<string[]>([]);
@@ -232,7 +232,7 @@ export const FloatingMascotLogo: React.FC<FloatingMascotProps> = ({ setActiveTab
   useEffect(() => {
     const storedCapture = localStorage.getItem('lc_capture_enabled');
     const storedNotify = localStorage.getItem('lc_notify_enabled');
-    
+
     if (storedCapture !== null) setIsCaptureEnabled(storedCapture === 'true');
     if (storedNotify !== null) setIsNotificationEnabled(storedNotify === 'true');
 
@@ -386,14 +386,14 @@ Your browsing pattern today differs significantly from your usual routine.
 
   const showNotification = (items: NotificationItem[]) => {
     if (!isNotificationEnabled || isSleeping) return;
-    
+
     // Clear existing timer
     if (autoCloseTimerRef.current) {
       clearTimeout(autoCloseTimerRef.current);
     }
-    
+
     setNotifications(items);
-    
+
     // Auto close after 15 seconds
     autoCloseTimerRef.current = setTimeout(() => {
       setNotifications([]);
@@ -412,7 +412,7 @@ Your browsing pattern today differs significantly from your usual routine.
       clearTimeout(autoCloseTimerRef.current);
       autoCloseTimerRef.current = null;
     }
-    
+
     if (item.type === 'insight' && item.insight) {
       setSelectedInsight(item.insight);
       setNotifications([]);
@@ -447,7 +447,7 @@ Your browsing pattern today differs significantly from your usual routine.
       <AnimatePresence mode="wait">
         {!isDialogOpen ? (
           /* --- MASCOT SPHERE & SATELLITE BUTTONS --- */
-          <motion.div 
+          <motion.div
             key="mascot-container"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -462,171 +462,171 @@ Your browsing pattern today differs significantly from your usual routine.
             onMouseLeave={() => { setIsHovered(false); }}
           >
             {/* --- COMPACT INTERACTION ZONE (Invisible Bridge) --- */}
-            <div 
+            <div
               className="absolute bottom-0 right-0 pointer-events-auto transition-all duration-300"
               style={{
                 width: isHovered ? '120px' : '48px',
                 height: isHovered ? '120px' : '48px',
               }}
             >
-               <AnimatePresence>
-                  {isHovered && (
-                    <>
-                      {/* 1. MASTER SWITCH (Capture) */}
-                      <motion.div
-                         initial={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
-                         animate={{ opacity: 1, x: -58, y: 0, scale: 1 }}
-                         exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
-                         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                         className="absolute bottom-2 right-2 z-10"
-                      >
-                         <DropdownMenu.Root>
-                           <GlassTooltip content={isCaptureEnabled ? "Capture On" : "Capture Off"} side="left">
-                             <DropdownMenu.Trigger asChild>
-                               <button
-                                 className={`
+              <AnimatePresence>
+                {isHovered && (
+                  <>
+                    {/* 1. MASTER SWITCH (Capture) */}
+                    <motion.div
+                      initial={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, x: -58, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                      className="absolute bottom-2 right-2 z-10"
+                    >
+                      <DropdownMenu.Root>
+                        <GlassTooltip content={isCaptureEnabled ? "Capture On" : "Capture Off"} side="left">
+                          <DropdownMenu.Trigger asChild>
+                            <button
+                              className={`
                                    w-8 h-8 rounded-full flex items-center justify-center 
                                    backdrop-blur-xl transition-all duration-300 shadow-lg relative
                                    !border-none !outline-none
                                    bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
                                    data-[state=open]:bg-white/20 data-[state=open]:text-white
                                  `}
-                               >
-                                 {isCaptureEnabled ? <Camera className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
-                               </button>
-                             </DropdownMenu.Trigger>
-                           </GlassTooltip>
+                            >
+                              {isCaptureEnabled ? <Camera className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
+                            </button>
+                          </DropdownMenu.Trigger>
+                        </GlassTooltip>
 
-                           <DropdownMenu.Portal>
-                             <DropdownMenu.Content
-                               side="left"
-                               align="end"
-                               sideOffset={12}
-                               className="
+                        <DropdownMenu.Portal>
+                          <DropdownMenu.Content
+                            side="left"
+                            align="end"
+                            sideOffset={12}
+                            className="
                                  w-48 bg-[#0f0c29]/95 backdrop-blur-2xl border border-blue-400/20 rounded-xl shadow-[0_0_30px_-5px_rgba(0,0,0,0.5)] overflow-hidden p-1 flex flex-col gap-0.5 z-[100]
                                  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=left]:slide-in-from-right-2
                                "
-                             >
-                                <DropdownMenu.Item 
-                                   onSelect={toggleCapture}
-                                   className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 cursor-pointer outline-none focus:bg-white/10 transition-colors group/item"
-                                >
-                                   <div className={`p-1.5 rounded-md ${isCaptureEnabled ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}`}>
-                                     {isCaptureEnabled ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
-                                   </div>
-                                   <div className="flex flex-col">
-                                     <span className="text-xs font-medium text-white">
-                                       {isCaptureEnabled ? 'Capture On' : 'Capture Off'}
-                                     </span>
-                                   </div>
-                                </DropdownMenu.Item>
+                          >
+                            <DropdownMenu.Item
+                              onSelect={toggleCapture}
+                              className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-white/10 cursor-pointer outline-none focus:bg-white/10 transition-colors group/item"
+                            >
+                              <div className={`p-1.5 rounded-md ${isCaptureEnabled ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}`}>
+                                {isCaptureEnabled ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-xs font-medium text-white">
+                                  {isCaptureEnabled ? 'Capture On' : 'Capture Off'}
+                                </span>
+                              </div>
+                            </DropdownMenu.Item>
 
-                                <DropdownMenu.Separator className="h-px bg-white/5 my-0.5 mx-2" />
+                            <DropdownMenu.Separator className="h-px bg-white/5 my-0.5 mx-2" />
 
-                                <DropdownMenu.Item 
-                                   onSelect={handleBlockDomain}
-                                   className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer outline-none focus:bg-white/10 transition-colors group/item"
-                                >
-                                   <div className="p-1.5 rounded-md bg-white/5 text-white/50 group-hover/item:bg-blue-500/20 group-hover/item:text-blue-300 transition-colors">
-                                     <Globe className="w-3.5 h-3.5" />
-                                   </div>
-                                   <div className="flex flex-col">
-                                     <span className="text-xs font-medium text-white/80 group-hover/item:text-white">Block Domain</span>
-                                     <span className="text-[10px] text-white/30 truncate max-w-[100px]">{window.location.hostname}</span>
-                                   </div>
-                                </DropdownMenu.Item>
+                            <DropdownMenu.Item
+                              onSelect={handleBlockDomain}
+                              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer outline-none focus:bg-white/10 transition-colors group/item"
+                            >
+                              <div className="p-1.5 rounded-md bg-white/5 text-white/50 group-hover/item:bg-blue-500/20 group-hover/item:text-blue-300 transition-colors">
+                                <Globe className="w-3.5 h-3.5" />
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-xs font-medium text-white/80 group-hover/item:text-white">Block Domain</span>
+                                <span className="text-[10px] text-white/30 truncate max-w-[100px]">{window.location.hostname}</span>
+                              </div>
+                            </DropdownMenu.Item>
 
-                                <DropdownMenu.Item 
-                                   onSelect={handleBlockUrl}
-                                   className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer outline-none focus:bg-white/10 transition-colors group/item"
-                                >
-                                   <div className="p-1.5 rounded-md bg-white/5 text-white/50 group-hover/item:bg-blue-500/20 group-hover/item:text-blue-300 transition-colors">
-                                     <Link2 className="w-3.5 h-3.5" />
-                                   </div>
-                                   <div className="flex flex-col">
-                                     <span className="text-xs font-medium text-white/80 group-hover/item:text-white">Block Page</span>
-                                   </div>
-                                </DropdownMenu.Item>
-                             </DropdownMenu.Content>
-                           </DropdownMenu.Portal>
-                         </DropdownMenu.Root>
-                      </motion.div>
+                            <DropdownMenu.Item
+                              onSelect={handleBlockUrl}
+                              className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer outline-none focus:bg-white/10 transition-colors group/item"
+                            >
+                              <div className="p-1.5 rounded-md bg-white/5 text-white/50 group-hover/item:bg-blue-500/20 group-hover/item:text-blue-300 transition-colors">
+                                <Link2 className="w-3.5 h-3.5" />
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-xs font-medium text-white/80 group-hover/item:text-white">Block Page</span>
+                              </div>
+                            </DropdownMenu.Item>
+                          </DropdownMenu.Content>
+                        </DropdownMenu.Portal>
+                      </DropdownMenu.Root>
+                    </motion.div>
 
-                      {/* 2. NOTIFICATION TOGGLE */}
-                      <motion.div
-                         initial={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
-                         animate={{ opacity: 1, x: -48, y: -38, scale: 1 }}
-                         exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
-                         transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.05 }}
-                         className="absolute bottom-2 right-2 z-10"
-                      >
-                         <GlassTooltip content={isNotificationEnabled ? "Mute Notifications" : "Enable Notifications"} side="top">
-                           <button
-                             onClick={toggleNotification}
-                             className={`
+                    {/* 2. NOTIFICATION TOGGLE */}
+                    <motion.div
+                      initial={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, x: -48, y: -38, scale: 1 }}
+                      exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.05 }}
+                      className="absolute bottom-2 right-2 z-10"
+                    >
+                      <GlassTooltip content={isNotificationEnabled ? "Mute Notifications" : "Enable Notifications"} side="top">
+                        <button
+                          onClick={toggleNotification}
+                          className={`
                                w-8 h-8 rounded-full flex items-center justify-center 
                                backdrop-blur-xl transition-all duration-300 shadow-lg group/btn relative
                                !border-none !outline-none
                                bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
                              `}
-                           >
-                             {isNotificationEnabled ? <Bell className="w-3.5 h-3.5" /> : <BellOff className="w-3.5 h-3.5" />}
-                           </button>
-                         </GlassTooltip>
-                      </motion.div>
+                        >
+                          {isNotificationEnabled ? <Bell className="w-3.5 h-3.5" /> : <BellOff className="w-3.5 h-3.5" />}
+                        </button>
+                      </GlassTooltip>
+                    </motion.div>
 
-                      {/* 3. HOME BUTTON */}
-                      <motion.div
-                         initial={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
-                         animate={{ opacity: 1, x: -20, y: -58, scale: 1 }}
-                         exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
-                         transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
-                         className="absolute bottom-2 right-2 z-10"
-                      >
-                         <GlassTooltip content="Go Home" side="top">
-                           <button
-                             onClick={handleGoHome}
-                             className={`
+                    {/* 3. HOME BUTTON */}
+                    <motion.div
+                      initial={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, x: -20, y: -58, scale: 1 }}
+                      exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.1 }}
+                      className="absolute bottom-2 right-2 z-10"
+                    >
+                      <GlassTooltip content="Go Home" side="top">
+                        <button
+                          onClick={handleGoHome}
+                          className={`
                                w-8 h-8 rounded-full flex items-center justify-center 
                                backdrop-blur-xl transition-all duration-300 shadow-lg group/btn relative
                                !border-none !outline-none
                                bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
                              `}
-                           >
-                             <Home className="w-3.5 h-3.5" />
-                           </button>
-                         </GlassTooltip>
-                      </motion.div>
+                        >
+                          <Home className="w-3.5 h-3.5" />
+                        </button>
+                      </GlassTooltip>
+                    </motion.div>
 
-                      {/* 4. TEST NOTIFICATION BUTTON */}
-                      <motion.div
-                         initial={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
-                         animate={{ opacity: 1, x: -20, y: -78, scale: 1 }}
-                         exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
-                         transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.15 }}
-                         className="absolute bottom-2 right-2 z-10"
-                      >
-                         <GlassTooltip content="Test Notification" side="top">
-                           <button
-                             onClick={handleTestNotification}
-                             className={`
+                    {/* 4. TEST NOTIFICATION BUTTON */}
+                    <motion.div
+                      initial={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, x: -20, y: -108, scale: 1 }}
+                      exit={{ opacity: 0, x: 0, y: 0, scale: 0.5 }}
+                      transition={{ type: 'spring', stiffness: 300, damping: 20, delay: 0.15 }}
+                      className="absolute bottom-2 right-2 z-10"
+                    >
+                      <GlassTooltip content="Test Notification" side="top">
+                        <button
+                          onClick={handleTestNotification}
+                          className={`
                                w-8 h-8 rounded-full flex items-center justify-center 
                                backdrop-blur-xl transition-all duration-300 shadow-lg group/btn relative
                                !border-none !outline-none
                                bg-white/5 border border-white/10 text-white/40 hover:bg-white/10 hover:text-white/80
                              `}
-                           >
-                             <Sparkles className="w-3.5 h-3.5" />
-                           </button>
-                         </GlassTooltip>
-                      </motion.div>
-                    </>
-                  )}
-               </AnimatePresence>
+                        >
+                          <Sparkles className="w-3.5 h-3.5" />
+                        </button>
+                      </GlassTooltip>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* --- MASCOT SPHERE --- */}
-            <div 
+            <div
               onClick={() => setIsDialogOpen(true)}
               className="
                 absolute bottom-0 right-0
@@ -643,12 +643,12 @@ Your browsing pattern today differs significantly from your usual routine.
           </motion.div>
         ) : (
           /* --- RIGHT FLOATING CHAT CARD MODE --- */
-          <RightFloatingChat 
-             key="floating-chat"
-             onClose={() => {
-               setIsDialogOpen(false);
-               setIsHovered(false); // Reset hover state when dialog closes
-             }}
+          <RightFloatingChat
+            key="floating-chat"
+            onClose={() => {
+              setIsDialogOpen(false);
+              setIsHovered(false); // Reset hover state when dialog closes
+            }}
           />
         )}
       </AnimatePresence>
@@ -684,121 +684,121 @@ interface RightFloatingChatProps {
 }
 
 interface FloatingChatFormData {
-    query: string;
+  query: string;
 }
 
 const RightFloatingChat: React.FC<RightFloatingChatProps> = ({ onClose }) => {
-    const [useContext, setUseContext] = useState(true);
-    const { register, handleSubmit, setValue } = useForm<FloatingChatFormData>();
-    
-    // Quick Actions Data
-    const quickActions = [
-        { icon: Filter, title: "Filter Content", subtitle: "What might I like best here?", prompt: "Filter content based on my preferences" },
-        { icon: TrendingUp, title: "Analyze Trends", subtitle: "What are the genre trends?", prompt: "Analyze current trends on this site" },
-        { icon: List, title: "Draft Watchlist", subtitle: "Draft a list for this site.", prompt: "Draft a watchlist from this content" }
-    ];
+  const [useContext, setUseContext] = useState(true);
+  const { register, handleSubmit, setValue } = useForm<FloatingChatFormData>();
 
-    const onSubmit = (data: FloatingChatFormData) => {
-        console.log("Floating chat query:", data.query, "Context:", useContext);
-        // Implement chat logic here or pass up if needed
-        setValue('query', '');
-    };
+  // Quick Actions Data
+  const quickActions = [
+    { icon: Filter, title: "Filter Content", subtitle: "What might I like best here?", prompt: "Filter content based on my preferences" },
+    { icon: TrendingUp, title: "Analyze Trends", subtitle: "What are the genre trends?", prompt: "Analyze current trends on this site" },
+    { icon: List, title: "Draft Watchlist", subtitle: "Draft a list for this site.", prompt: "Draft a watchlist from this content" }
+  ];
 
-    return (
-        <motion.div
-            initial={{ x: 100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 100, opacity: 0 }}
-            transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed top-4 bottom-4 right-4 w-[380px] z-[100] flex flex-col bg-[#0f0c29]/95 backdrop-blur-3xl border border-blue-400/20 shadow-2xl rounded-3xl"
+  const onSubmit = (data: FloatingChatFormData) => {
+    console.log("Floating chat query:", data.query, "Context:", useContext);
+    // Implement chat logic here or pass up if needed
+    setValue('query', '');
+  };
+
+  return (
+    <motion.div
+      initial={{ x: 100, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      exit={{ x: 100, opacity: 0 }}
+      transition={{ type: "spring", damping: 30, stiffness: 300 }}
+      className="fixed top-4 bottom-4 right-4 w-[380px] z-[100] flex flex-col bg-[#0f0c29]/95 backdrop-blur-3xl border border-blue-400/20 shadow-2xl rounded-3xl"
+    >
+      {/* Header */}
+      <div className="flex-none p-6 pt-6 flex justify-between items-start">
+        <div className="flex items-center gap-3">
+          <div>
+            <h2 className="text-xl font-bold text-white">LifeContext AI</h2>
+            <p className="text-blue-200/50 text-xs font-light">Your intelligent companion</p>
+          </div>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors -mt-1 -mr-1"
         >
-             {/* Header */}
-             <div className="flex-none p-6 pt-6 flex justify-between items-start">
-                <div className="flex items-center gap-3">
-                    <div>
-                        <h2 className="text-xl font-bold text-white">LifeContext AI</h2>
-                        <p className="text-blue-200/50 text-xs font-light">Your intelligent companion</p>
-                    </div>
-                </div>
-                <button 
-                    onClick={onClose} 
-                    className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors -mt-1 -mr-1"
-                >
-                    <X className="w-5 h-5" />
-                </button>
-             </div>
+          <X className="w-5 h-5" />
+        </button>
+      </div>
 
-             {/* Content Container */}
-             <div className="flex-1 flex flex-col px-6 pb-6 pt-2 overflow-y-auto custom-scrollbar">
-                 {/* Quick Actions */}
-                 <div className="flex flex-col gap-3">
-                     {quickActions.map((action, i) => (
-                         <motion.button 
-                            key={i}
-                            onClick={() => setValue('query', action.prompt)}
-                            variants={HOVER_CARD_GLOW}
-                            initial="initial"
-                            whileHover="hover"
-                            whileTap="tap"
-                            className="
+      {/* Content Container */}
+      <div className="flex-1 flex flex-col px-6 pb-6 pt-2 overflow-y-auto custom-scrollbar">
+        {/* Quick Actions */}
+        <div className="flex flex-col gap-3">
+          {quickActions.map((action, i) => (
+            <motion.button
+              key={i}
+              onClick={() => setValue('query', action.prompt)}
+              variants={HOVER_CARD_GLOW}
+              initial="initial"
+              whileHover="hover"
+              whileTap="tap"
+              className="
                               flex items-start gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 text-left group
                             "
-                         >
-                            <div className="p-2 rounded-xl bg-blue-500/10 text-blue-300 group-hover:text-blue-200 group-hover:bg-blue-500/20 transition-colors">
-                                <action.icon className="w-5 h-5" />
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-semibold text-white group-hover:text-blue-100">{action.title}</h3>
-                                <p className="text-xs text-white/50 group-hover:text-white/70 mt-0.5">{action.subtitle}</p>
-                            </div>
-                         </motion.button>
-                     ))}
-                 </div>
+            >
+              <div className="p-2 rounded-xl bg-blue-500/10 text-blue-300 group-hover:text-blue-200 group-hover:bg-blue-500/20 transition-colors">
+                <action.icon className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-white group-hover:text-blue-100">{action.title}</h3>
+                <p className="text-xs text-white/50 group-hover:text-white/70 mt-0.5">{action.subtitle}</p>
+              </div>
+            </motion.button>
+          ))}
+        </div>
 
-                 <div className="flex-1" /> {/* Spacer */}
+        <div className="flex-1" /> {/* Spacer */}
 
-                 {/* Bottom Controls */}
-                 <div className="mt-6 flex flex-col gap-3">
-                     
-                     {/* Context Toggle Button - Compact Rectangular */}
-                     <div className="flex justify-start">
-                       <button
-                          onClick={() => setUseContext(!useContext)}
-                          className={`
+        {/* Bottom Controls */}
+        <div className="mt-6 flex flex-col gap-3">
+
+          {/* Context Toggle Button - Compact Rectangular */}
+          <div className="flex justify-start">
+            <button
+              onClick={() => setUseContext(!useContext)}
+              className={`
                             flex items-center gap-2 px-3 py-1.5 rounded-lg border transition-all duration-300 text-xs font-medium
-                            ${useContext 
-                               ? 'bg-blue-500/10 border-blue-400/40 text-blue-200 shadow-[0_0_10px_-2px_rgba(59,130,246,0.3)]' 
-                               : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:text-white/60'}
+                            ${useContext
+                  ? 'bg-blue-500/10 border-blue-400/40 text-blue-200 shadow-[0_0_10px_-2px_rgba(59,130,246,0.3)]'
+                  : 'bg-white/5 border-white/10 text-white/40 hover:bg-white/10 hover:text-white/60'}
                           `}
-                       >
-                          <Globe className="w-3 h-3" />
-                          <span>{window.location.hostname || 'localhost'}</span>
-                          {useContext && <Check className="w-3 h-3 ml-1" />}
-                       </button>
-                     </div>
+            >
+              <Globe className="w-3 h-3" />
+              <span>{window.location.hostname || 'localhost'}</span>
+              {useContext && <Check className="w-3 h-3 ml-1" />}
+            </button>
+          </div>
 
-                     {/* Input Area */}
-                     <form 
-                        onSubmit={handleSubmit(onSubmit)}
-                        className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/5 border border-blue-400/20 focus-within:bg-white/10 focus-within:border-blue-400/40 transition-all"
-                     >
-                        <button type="button" className="p-3 rounded-xl hover:bg-white/10 text-white/50 hover:text-white transition-colors">
-                            <Plus className="w-5 h-5" />
-                        </button>
-                        <input 
-                            type="text" 
-                            {...register('query')}
-                            placeholder="Ask anything..."
-                            className="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder-white/30 h-10"
-                        />
-                        <button type="button" className="p-3 rounded-xl hover:bg-white/10 text-white/50 hover:text-white transition-colors">
-                            <Mic className="w-5 h-5" />
-                        </button>
-                     </form>
-                 </div>
-             </div>
-        </motion.div>
-    )
+          {/* Input Area */}
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="flex items-center gap-2 p-1.5 rounded-2xl bg-white/5 border border-blue-400/20 focus-within:bg-white/10 focus-within:border-blue-400/40 transition-all"
+          >
+            <button type="button" className="p-3 rounded-xl hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+              <Plus className="w-5 h-5" />
+            </button>
+            <input
+              type="text"
+              {...register('query')}
+              placeholder="Ask anything..."
+              className="flex-1 bg-transparent border-none outline-none text-sm text-white placeholder-white/30 h-10"
+            />
+            <button type="button" className="p-3 rounded-xl hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+              <Mic className="w-5 h-5" />
+            </button>
+          </form>
+        </div>
+      </div>
+    </motion.div>
+  )
 }
 
 // --- INSIGHT NOTIFICATION PANEL ---
@@ -813,7 +813,7 @@ const InsightNotificationPanel: React.FC<InsightNotificationPanelProps> = ({ not
     if (item.type === 'daily') {
       return { badge: 'text-emerald-300 bg-emerald-400/10 border-emerald-400/20', icon: Sparkles };
     }
-    
+
     if (!item.insight) {
       return { badge: 'text-blue-300 bg-blue-500/10 border-blue-500/20', icon: Zap };
     }

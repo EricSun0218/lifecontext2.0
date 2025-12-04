@@ -22,6 +22,9 @@
         }
     },
     "knowledge": {
+        "library": "资料库",
+        "title": "知识库",
+        "subtitle": "管理和组织您的数字资产与资源。",
         "search": "搜索",
         "list": "列表",
         "order_by": "排序",
@@ -110,6 +113,105 @@
             "item20": {
                 "title": "咖啡文化：第四次浪潮",
                 "summary": "不再仅仅关于豆子产地，而是冲泡水的精确分子化学。"
+            }
+        }
+    },
+    "insights": {
+        "ai_powered": "AI 驱动分析",
+        "dashboard": "洞察仪表板",
+        "subtitle": "将你的原始数字足迹转化为可操作的情报。",
+        "today": "今天，10月24日"
+    },
+    "daily_picks": {
+        "overview": "概览",
+        "title": "每日精选",
+        "subtitle": "来自你数字网络的精选亮点。",
+        "briefing": {
+            "title": "每日简报",
+            "content": "今天的数字足迹显示你重点关注前端架构和 AI 集成。你的阅读模式与 Gemini 1.5 的发布一致，表明你正转向多模态模型研究。工作效率在上午 10 点到下午 2 点之间达到顶峰。",
+            "stats": {
+                "focus_score": "专注度",
+                "reading_time": "阅读时长",
+                "new_topics": "新主题"
+            }
+        },
+        "todos": {
+            "title": "待办事项",
+            "pending": "待处理",
+            "item1": "审查 PR #42：虚拟化修复",
+            "item2": "研究 Gemini 2.5 Flash 限制",
+            "item3": "更新 Tailwind 深色模式配置",
+            "item4": "安排团队同步会议"
+        },
+        "view_details": "查看详情"
+    },
+    "settings_page": {
+        "title": "系统偏好设置",
+        "subtitle": "配置 AI 如何观察、分析和报告你的数字环境。",
+        "ai_intelligence": {
+            "title": "AI 智能",
+            "description": "调整上下文分析的频率。较低的间隔会提高准确性，但会消耗更多资源。",
+            "interval": "洞察生成间隔"
+        },
+        "daily_digest": {
+            "title": "每日摘要时间表",
+            "description": "设置每日摘要报告生成的时间。",
+            "report_time": "报告时间"
+        },
+        "privacy": {
+            "title": "隐私排除区",
+            "description": "阻止 AI 分析来自特定域名或 URL 的内容。",
+            "domain_block": "域名屏蔽",
+            "exact_url": "精确 URL",
+            "placeholder_domain": "例如：facebook.com",
+            "placeholder_url": "例如：https://site.com/private",
+            "no_exclusions": "没有活动的排除项。"
+        },
+        "language": {
+            "title": "系统语言",
+            "description": "选择 AI 分析和界面文本的主要语言。"
+        },
+        "save": "保存更改",
+        "saved": "已保存"
+    },
+    "dashboard": {
+        "entry1": {
+            "context_title": "Gemini 架构研究",
+            "source1": "2024 技术讲座",
+            "source2": "Google DeepMind 论文",
+            "insight1": {
+                "title": "MoE 架构优势",
+                "content": "混合专家模型（MoE）允许在不增加线性成本的情况下扩展参数。这种架构使模型能够为每个 token 仅激活其参数的一小部分。",
+                "markdown": "# 深度解析：混合专家模型 (MoE)\n\n> **核心概念：** MoE 模型使用“路由器”网络选择“专家”网络子集来处理每个 token。\n\n### 为什么重要？\n传统的密集模型对每个输入激活**所有**参数。MoE 模型仅激活一小部分（例如 10-15%），显著减少了每次推理的 FLOPs。\n\n### 伪代码逻辑\n```python\ndef forward(x):\n  # 路由器决定哪个专家获得 token\n  weights, indices = router(x)\n  \n  # 仅运行选定的专家\n  output = 0\n  for i, expert in enumerate(experts):\n      if i in indices:\n          output += weights[i] * expert(x)\n  return output\n```\n\n### 主要优势\n*   **可扩展性：** 低成本训练万亿参数模型。\n*   **延迟：** 比密集同类模型推理更快。\n*   **专业化：** 专家可以专注于代码、数学或创意写作。"
+            },
+            "insight2": {
+                "title": "实施策略",
+                "content": "考虑使用 1.5 Pro API 获取上下文窗口，但缓存常见查询以优化延迟。",
+                "markdown": "## 部署计划\n\n为了优化**成本**和**性能**，我们建议采用包含缓存和模型分层的混合方法。\n\n### 1. 分层缓存策略\n对大型静态资产使用**上下文缓存**以减少 token 使用：\n*   API 文档\n*   代码库快照\n*   品牌风格指南\n\n### 2. 模型选择\n*   **复杂推理：** 使用 *Gemini 1.5 Pro*\n*   **高容量 / 聊天：** 使用 *Gemini 1.5 Flash*\n*   **离线 / 隐私：** 使用 *Gemma 2* (自托管)\n\n> **注意：** 对于简单的 RAG 任务，Flash 比 Pro 便宜约 10 倍。\n\n### 待办事项\n*   重构 API 客户端以支持缓存头。\n*   针对您的特定用例基准测试 Pro 和 Flash 之间的延迟。"
+            }
+        },
+        "entry2": {
+            "context_title": "React 性能调试",
+            "source1": "LifeContext/Repo",
+            "insight1": {
+                "title": "减少重新渲染",
+                "content": "Timeline 组件在滚动时重新渲染。实施 React.memo() 和虚拟化。",
+                "markdown": "# 关键性能问题\n\n我们在移动设备上快速滚动时检测到**主线程阻塞**问题。\n\n### 诊断\n`TimelineCard` 组件在父组件的每次渲染中都接收到 `onInsightClick` 的新函数引用。\n\n```javascript\n// ❌ 导致重新渲染的错误模式\n<TimelineCard \n  onClick={() => handleInsight(id)} // 每次都是新函数\n/>\n\n// ✅ 修复模式\nconst handleInsight = useCallback((id) => { ... }, []);\n<TimelineCard onClick={handleInsight} />\n```\n\n### 影响分析\n*   **FPS 下降：** 高端设备上滚动约为 45fps。\n*   **电池：** 过多的 CPU 使用率消耗电池。\n\n> **建议：** 请立即将修复应用于 `components/TimelineCard.tsx`。"
+            }
+        },
+        "entry3": {
+            "context_title": "设计系统审计",
+            "source1": "Dribbble 灵感",
+            "source2": "Tailwind UI",
+            "insight1": {
+                "title": "对比度无障碍性",
+                "content": "当前的玻璃拟态边框太微妙（10% 不透明度）。增加到 15-20% 以获得更好的清晰度。",
+                "markdown": "### 视觉层次调整\n\n当前的玻璃拟态实现在浅色模式或高眩光环境中太微妙。\n\n*   **当前：** `border-white/10`\n*   **建议：** `border-white/20` + `shadow-sm`\n\n**理由：**\n1.  改善视力受损用户的边缘检测。\n2.  与背景网格建立更好的分离。\n\n> “好的设计是看不见的，但可用的设计是可见的。”"
+            },
+            "insight2": {
+                "title": "动画开销",
+                "content": "多个背景模糊动画消耗了过多的 GPU 资源。",
+                "markdown": "## 检测到 GPU 瓶颈\n\n像 `backdrop-filter: blur()` 这样的 CSS 滤镜在动画时很昂贵，尤其是在大面积上。\n\n### 优化技巧\n1.  尽可能使用 **opacity** 动画代替模糊半径动画。\n2.  使用 `will-change: transform` 提升层级。\n3.  减少同时发光的球体数量。\n\n```css\n/* 昂贵 */\nanimation: blurPulse 2s infinite;\n\n/* 廉价且高性能 */\nanimation: opacityPulse 2s infinite;\n```"
             }
         }
     },

@@ -45,157 +45,172 @@ export const KnowledgeBase: React.FC = () => {
     };
 
     return (
-        <div className="flex h-[calc(100vh-6rem)] gap-0 md:gap-8 relative">
-            {/* --- MOBILE BACKDROP --- */}
-            <AnimatePresence>
-                {isMobile && isSidebarOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={() => setIsSidebarOpen(false)}
-                        className="absolute inset-0 z-20 bg-black/60 backdrop-blur-sm md:hidden"
-                    />
-                )}
-            </AnimatePresence>
-
-            {/* --- LEFT SIDEBAR (Categories) --- */}
-            <motion.aside
-                initial={false}
-                animate={{
-                    width: isSidebarOpen ? 256 : 0,
-                    opacity: isSidebarOpen ? 1 : 0,
-                    marginRight: (isSidebarOpen || isMobile) ? 0 : -32,
-                    x: isMobile && !isSidebarOpen ? -256 : 0
-                }}
-                transition={{ duration: isMobile ? 0.3 : 0, ease: "easeInOut" }}
-                className={`
-                    flex-shrink-0 flex flex-col gap-4 overflow-hidden
-                    ${isMobile ? 'absolute left-0 top-0 bottom-0 z-30 bg-[#0f0c29] border-r border-blue-400/20 shadow-2xl' : ''}
-                `}
-            >
-                <div className="flex items-center justify-between mb-2 px-2 min-w-[240px] pt-4 md:pt-0">
-                    <div className="flex gap-2">
-                        <button className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
-                            <List className="w-4 h-4" />
-                        </button>
-                        <button className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
-                            <ArrowUpDown className="w-4 h-4" />
-                        </button>
-                    </div>
-                    <button
-                        onClick={() => setIsSidebarOpen(false)}
-                        className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors"
-                    >
-                        <ChevronsLeft className="w-4 h-4" />
-                    </button>
-                </div>
-
-                <div className="space-y-1 min-w-[240px]">
-                    {categories.map(category => (
-                        <div key={category.id} className="flex flex-col">
-                            <button
-                                onClick={() => toggleCategory(category.id)}
-                                className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/5 text-white/80 hover:text-white transition-colors group text-sm font-medium"
-                            >
-                                {category.isOpen ? (
-                                    <ChevronDown className="w-3.5 h-3.5 text-white/40 group-hover:text-white/60" />
-                                ) : (
-                                    <ChevronRight className="w-3.5 h-3.5 text-white/40 group-hover:text-white/60" />
-                                )}
-                                <span>{t(category.name)}</span>
-                            </button>
-
-                            {category.isOpen && category.children && (
-                                <div className="ml-4 pl-2 border-l border-white/5 space-y-0.5 mt-1">
-                                    {category.children.map(child => (
-                                        <button
-                                            key={child.id}
-                                            className="flex items-center gap-2 w-full px-3 py-1.5 rounded-lg hover:bg-white/5 text-white/60 hover:text-white transition-colors text-sm text-left"
-                                        >
-                                            {/* Icon based on name or default */}
-                                            <Folder className="w-3.5 h-3.5 text-blue-400/60" />
-                                            <span className="truncate">{t(child.name)}</span>
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    ))}
-
-                    <button className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/5 text-white/80 hover:text-white transition-colors group text-sm font-medium mt-4">
-                        <ChevronRight className="w-3.5 h-3.5 text-white/40 group-hover:text-white/60" />
-                        <span className="italic opacity-70">{t('knowledge.untagged')}</span>
-                    </button>
-                </div>
-            </motion.aside>
-
-            {/* Expand Button (Visible when sidebar is closed) */}
-            <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{
-                    opacity: !isSidebarOpen ? 1 : 0,
-                    x: !isSidebarOpen ? 0 : -20,
-                    pointerEvents: !isSidebarOpen ? 'auto' : 'none'
-                }}
-                className="absolute left-0 top-0 z-10"
-            >
-                <button
-                    onClick={() => setIsSidebarOpen(true)}
-                    className="p-2 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all"
+        <div className="flex flex-col h-[calc(100vh-6rem)]">
+            {/* --- HEADER SECTION --- */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-6 border-b border-blue-400/10 pb-6 shrink-0">
+                <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
                 >
-                    <ChevronsRight className="w-4 h-4" />
-                </button>
-            </motion.div>
-
-            {/* --- MAIN CONTENT --- */}
-            <div className="flex-1 flex flex-col min-w-0">
+                    <h2 className="text-blue-400 font-mono text-xs tracking-widest uppercase mb-2">{t('knowledge.library')}</h2>
+                    <h1 className="text-3xl md:text-4xl font-display font-bold text-white tracking-tight">
+                        {t('knowledge.title')}
+                    </h1>
+                    <p className="text-white/50 text-lg font-light mt-2">
+                        {t('knowledge.subtitle')}
+                    </p>
+                </motion.div>
 
                 {/* Header Toolbar */}
-                <div className="flex items-center justify-end mb-8 gap-4">
-                    {/* Actions */}
-                    <div className="flex items-center gap-3">
-                        <button className="p-2.5 rounded-xl bg-white/5 border border-blue-400/15 text-blue-200 hover:text-white hover:bg-white/10 transition-all shadow-[0_0_15px_-5px_rgba(59,130,246,0.2)]">
-                            <Search className="w-5 h-5" />
-                        </button>
-                        <button className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-blue-400/15 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium">
-                            <List className="w-4 h-4" />
-                            <span>{t('knowledge.list')}</span>
-                        </button>
-                        <button className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-blue-400/15 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium">
-                            <span>{t('knowledge.order_by')}</span>
-                            <ChevronDown className="w-3.5 h-3.5" />
-                        </button>
-                        <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_-5px_rgba(37,99,235,0.5)] transition-all text-sm font-medium">
-                            <Plus className="w-4 h-4" />
-                            <span className="hidden md:inline">{t('knowledge.add_content')}</span>
-                            <span className="md:hidden">Add</span>
-                        </button>
-                    </div>
+                <div className="mt-6 md:mt-0 flex items-center gap-3">
+                    <button className="p-2.5 rounded-xl bg-white/5 border border-blue-400/15 text-blue-200 hover:text-white hover:bg-white/10 transition-all shadow-[0_0_15px_-5px_rgba(59,130,246,0.2)]">
+                        <Search className="w-5 h-5" />
+                    </button>
+                    <button className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-blue-400/15 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium">
+                        <List className="w-4 h-4" />
+                        <span>{t('knowledge.list')}</span>
+                    </button>
+                    <button className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-blue-400/15 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium">
+                        <span>{t('knowledge.order_by')}</span>
+                        <ChevronDown className="w-3.5 h-3.5" />
+                    </button>
+                    <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_-5px_rgba(37,99,235,0.5)] transition-all text-sm font-medium">
+                        <Plus className="w-4 h-4" />
+                        <span className="hidden md:inline">{t('knowledge.add_content')}</span>
+                        <span className="md:hidden">Add</span>
+                    </button>
                 </div>
+            </div>
 
-                {/* Content Area */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar px-4 md:px-6 pb-6">
+            {/* --- SPLIT VIEW CONTENT --- */}
+            <div className="flex flex-1 gap-0 md:gap-8 relative min-h-0">
+                {/* --- MOBILE BACKDROP --- */}
+                <AnimatePresence>
+                    {isMobile && isSidebarOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsSidebarOpen(false)}
+                            className="absolute inset-0 z-20 bg-black/60 backdrop-blur-sm md:hidden"
+                        />
+                    )}
+                </AnimatePresence>
 
-                    {/* Date Group */}
-                    <div className="mb-8">
-                        <h3 className="text-white/50 font-mono text-sm mb-4 pl-1">Fri Nov 28 2025</h3>
-                        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6">
-                            {/* First Item - Large Preview (Text) */}
-                            <KnowledgeCard item={KNOWLEDGE_ITEMS[0]} />
+                {/* --- LEFT SIDEBAR (Categories) --- */}
+                <motion.aside
+                    initial={false}
+                    animate={{
+                        width: isSidebarOpen ? 256 : 0,
+                        opacity: isSidebarOpen ? 1 : 0,
+                        marginRight: (isSidebarOpen || isMobile) ? 0 : -32,
+                        x: isMobile && !isSidebarOpen ? -256 : 0
+                    }}
+                    transition={{ duration: isMobile ? 0.3 : 0, ease: "easeInOut" }}
+                    className={`
+                        flex-shrink-0 flex flex-col gap-4 overflow-hidden
+                        ${isMobile ? 'absolute left-0 top-0 bottom-0 z-30 bg-[#0f0c29] border-r border-blue-400/20 shadow-2xl' : ''}
+                    `}
+                >
+                    <div className="flex items-center justify-between mb-2 px-2 min-w-[240px] pt-4 md:pt-0">
+                        <div className="flex gap-2">
+                            <button className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                                <List className="w-4 h-4" />
+                            </button>
+                            <button className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                                <ArrowUpDown className="w-4 h-4" />
+                            </button>
                         </div>
+                        <button
+                            onClick={() => setIsSidebarOpen(false)}
+                            className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors"
+                        >
+                            <ChevronsLeft className="w-4 h-4" />
+                        </button>
                     </div>
 
-                    {/* Date Group */}
-                    <div className="mb-12">
-                        <h3 className="text-white/50 font-mono text-sm mb-4 pl-1">Fri Nov 21 2025</h3>
-                        <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6">
-                            {KNOWLEDGE_ITEMS.slice(1).map(item => (
-                                <KnowledgeCard key={item.id} item={item} />
-                            ))}
-                        </div>
-                    </div>
+                    <div className="space-y-1 min-w-[240px]">
+                        {categories.map(category => (
+                            <div key={category.id} className="flex flex-col">
+                                <button
+                                    onClick={() => toggleCategory(category.id)}
+                                    className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/5 text-white/80 hover:text-white transition-colors group text-sm font-medium"
+                                >
+                                    {category.isOpen ? (
+                                        <ChevronDown className="w-3.5 h-3.5 text-white/40 group-hover:text-white/60" />
+                                    ) : (
+                                        <ChevronRight className="w-3.5 h-3.5 text-white/40 group-hover:text-white/60" />
+                                    )}
+                                    <span>{t(category.name)}</span>
+                                </button>
 
+                                {category.isOpen && category.children && (
+                                    <div className="ml-4 pl-2 border-l border-white/5 space-y-0.5 mt-1">
+                                        {category.children.map(child => (
+                                            <button
+                                                key={child.id}
+                                                className="flex items-center gap-2 w-full px-3 py-1.5 rounded-lg hover:bg-white/5 text-white/60 hover:text-white transition-colors text-sm text-left"
+                                            >
+                                                {/* Icon based on name or default */}
+                                                <Folder className="w-3.5 h-3.5 text-blue-400/60" />
+                                                <span className="truncate">{t(child.name)}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+
+                        <button className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/5 text-white/80 hover:text-white transition-colors group text-sm font-medium mt-4">
+                            <ChevronRight className="w-3.5 h-3.5 text-white/40 group-hover:text-white/60" />
+                            <span className="italic opacity-70">{t('knowledge.untagged')}</span>
+                        </button>
+                    </div>
+                </motion.aside>
+
+                {/* Expand Button (Visible when sidebar is closed) */}
+                <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{
+                        opacity: !isSidebarOpen ? 1 : 0,
+                        x: !isSidebarOpen ? 0 : -20,
+                        pointerEvents: !isSidebarOpen ? 'auto' : 'none'
+                    }}
+                    className="absolute left-0 top-0 z-10"
+                >
+                    <button
+                        onClick={() => setIsSidebarOpen(true)}
+                        className="p-2 rounded-xl text-white/50 hover:text-white hover:bg-white/10 transition-all"
+                    >
+                        <ChevronsRight className="w-4 h-4" />
+                    </button>
+                </motion.div>
+
+                {/* --- MAIN CONTENT --- */}
+                <div className="flex-1 flex flex-col min-w-0">
+                    {/* Content Area */}
+                    <div className="flex-1 overflow-y-auto custom-scrollbar px-4 md:px-6 pb-6">
+
+                        {/* Date Group */}
+                        <div className="mb-8">
+                            <h3 className="text-white/50 font-mono text-sm mb-4 pl-1">Fri Nov 28 2025</h3>
+                            <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6">
+                                {/* First Item - Large Preview (Text) */}
+                                <KnowledgeCard item={KNOWLEDGE_ITEMS[0]} />
+                            </div>
+                        </div>
+
+                        {/* Date Group */}
+                        <div className="mb-12">
+                            <h3 className="text-white/50 font-mono text-sm mb-4 pl-1">Fri Nov 21 2025</h3>
+                            <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-6">
+                                {KNOWLEDGE_ITEMS.slice(1).map(item => (
+                                    <KnowledgeCard key={item.id} item={item} />
+                                ))}
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
