@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
+import './index.css'
+import './src/i18n'; // Import i18n config;
 import App from './App';
 
 console.log('🚀 index.tsx loaded');

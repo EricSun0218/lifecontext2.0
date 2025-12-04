@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Mic, Sparkles, User, ArrowUp, Bot, Zap, AtSign, FileText, Hash } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -17,11 +18,11 @@ interface ChatFormData {
   message: string;
 }
 
-const SUGGESTIONS = [
-  { icon: Sparkles, text: "Summarize today's timeline" },
-  { icon: Bot, text: "Analyze my browsing habits" },
-  { icon: ArrowUp, text: "Draft a daily report" },
-  { icon: Zap, text: "Find connections in my reading" },
+const getSuggestions = (t: any) => [
+  { icon: Sparkles, text: t('chat.suggestions.summarize') },
+  { icon: Bot, text: t('chat.suggestions.analyze') },
+  { icon: ArrowUp, text: t('chat.suggestions.draft') },
+  { icon: Zap, text: t('chat.suggestions.connections') },
 ];
 
 // Flatten categories for mention list
@@ -36,9 +37,17 @@ const getAllTags = () => {
   return Array.from(new Set(tags)); // Unique
 };
 
+interface MentionItem {
+  id: string;
+  type: 'tag' | 'page';
+  label: string;
+}
+
 export const Chat: React.FC = () => {
+  const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [selectedMentions, setSelectedMentions] = useState<MentionItem[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { register, handleSubmit, setValue, watch, reset, getValues } = useForm<ChatFormData>();
@@ -55,16 +64,22 @@ export const Chat: React.FC = () => {
   }, [messages, isTyping]);
 
   const onSubmit = async (data: ChatFormData) => {
-    if (!data.message.trim()) return;
+    if (!data.message.trim() && selectedMentions.length === 0) return;
+
+    // Format content to include mentions if needed, or just send text
+    // For this demo, we'll prepend mentions to the content for the "AI" to see
+    const mentionText = selectedMentions.map(m => `[${m.type}: ${m.label}]`).join(' ');
+    const fullContent = mentionText ? `${mentionText} ${data.message}` : data.message;
 
     const userMsg: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: data.message
+      content: fullContent
     };
 
     setMessages(prev => [...prev, userMsg]);
     reset();
+    setSelectedMentions([]); // Clear mentions
     setIsTyping(true);
 
     // Mock AI Delay
@@ -88,11 +103,20 @@ export const Chat: React.FC = () => {
       e.preventDefault();
       handleSubmit(onSubmit)();
     }
+    // Remove last mention on backspace if input is empty
+    if (e.key === 'Backspace' && inputValue === '' && selectedMentions.length > 0) {
+      setSelectedMentions(prev => prev.slice(0, -1));
+    }
   };
 
-  const insertMention = (text: string) => {
-    const current = getValues('message') || '';
-    setValue('message', current + (current && !current.endsWith(' ') ? ' ' : '') + `@${text} `);
+  const addMention = (item: MentionItem) => {
+    if (!selectedMentions.find(m => m.id === item.id)) {
+      setSelectedMentions(prev => [...prev, item]);
+    }
+  };
+
+  const removeMention = (id: string) => {
+    setSelectedMentions(prev => prev.filter(m => m.id !== id));
   };
 
   return (
@@ -115,8 +139,8 @@ export const Chat: React.FC = () => {
               <div className="mb-6">
                 <Mascot className="w-24 h-24" />
               </div>
-              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight mb-3 text-white">Hello, Alex</h1>
-              <p className="text-slate-400 text-xl font-light">How can I help you analyze your digital footprint?</p>
+              <h1 className="text-4xl md:text-5xl font-semibold tracking-tight mb-3 text-white">{t('chat.greeting')}</h1>
+              <p className="text-slate-400 text-xl font-light">{t('chat.subtitle')}</p>
             </motion.div>
 
             {/* 2. THE INPUT BAR (Hero) */}
@@ -127,83 +151,114 @@ export const Chat: React.FC = () => {
               transition={{ delay: 0.1, duration: 0.5 }}
               className="w-full relative mb-12 group"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-indigo-500/20 rounded-3xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
               <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="relative bg-white/10 backdrop-blur-xl border border-blue-400/15 rounded-2xl p-2 pl-5 pr-3 flex items-center gap-4 shadow-2xl transition-all focus-within:bg-white/15 focus-within:border-blue-400/30 h-16"
+                className="relative bg-white/10 backdrop-blur-xl border border-blue-400/15 rounded-3xl p-2 flex flex-col shadow-2xl transition-all focus-within:bg-white/15 focus-within:border-blue-400/30 min-h-[4rem]"
               >
-                <DropdownMenu.Root>
-                  <DropdownMenu.Trigger asChild>
-                    <button
-                      type="button"
-                      className="p-1 rounded-lg transition-colors text-slate-400 hover:text-white data-[state=open]:text-blue-400 data-[state=open]:bg-blue-400/10 outline-none"
-                    >
-                      <AtSign className="w-6 h-6" />
+                {/* Mentions Area */}
+                {selectedMentions.length > 0 && (
+                  <div className="flex flex-wrap gap-2 px-3 pt-2 pb-1">
+                    {selectedMentions.map(mention => (
+                      <motion.span
+                        layout
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        key={mention.id}
+                        className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/10 border border-white/10 text-xs text-white/90 cursor-pointer hover:bg-white/20 transition-colors"
+                        onClick={() => removeMention(mention.id)}
+                      >
+                        {mention.type === 'tag' ? (
+                          <div className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center">
+                            <Hash className="w-2.5 h-2.5 text-blue-300" />
+                          </div>
+                        ) : (
+                          <div className="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                            <FileText className="w-2.5 h-2.5 text-emerald-300" />
+                          </div>
+                        )}
+                        <span>{mention.label}</span>
+                      </motion.span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex items-center gap-2 pl-2 pr-2">
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <button
+                        type="button"
+                        className="p-2 rounded-xl transition-colors text-slate-400 hover:text-white hover:bg-white/10 data-[state=open]:text-blue-400 data-[state=open]:bg-blue-400/10 outline-none shrink-0"
+                      >
+                        <AtSign className="w-5 h-5" />
+                      </button>
+                    </DropdownMenu.Trigger>
+
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content
+                        align="start"
+                        sideOffset={16}
+                        className="w-72 max-h-80 overflow-y-auto custom-scrollbar bg-[#0f0c29]/95 backdrop-blur-2xl border border-blue-400/20 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] p-2 z-50 animate-in fade-in zoom-in-95 duration-200"
+                      >
+                        <div className="px-3 py-2 text-xs font-bold text-blue-400 uppercase tracking-wider">{t('chat.tags')}</div>
+                        {getAllTags().map(tag => (
+                          <DropdownMenu.Item
+                            key={tag}
+                            onSelect={() => addMention({ id: `tag-${tag}`, type: 'tag', label: tag })}
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 text-white/80 hover:text-white transition-colors text-left cursor-pointer outline-none data-[highlighted]:bg-white/10"
+                          >
+                            <div className="p-1.5 rounded-lg bg-blue-500/20 text-blue-300">
+                              <Hash className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="text-sm font-medium">{tag}</span>
+                          </DropdownMenu.Item>
+                        ))}
+
+                        <div className="px-3 py-2 mt-2 text-xs font-bold text-blue-400 uppercase tracking-wider border-t border-white/5 pt-3">{t('chat.pages')}</div>
+                        {KNOWLEDGE_ITEMS.map(item => (
+                          <DropdownMenu.Item
+                            key={item.id}
+                            onSelect={() => addMention({ id: item.id, type: 'page', label: t(item.title) })}
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 text-white/80 hover:text-white transition-colors text-left cursor-pointer outline-none data-[highlighted]:bg-white/10"
+                          >
+                            <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-300">
+                              <FileText className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="text-sm font-medium truncate">{t(item.title)}</span>
+                          </DropdownMenu.Item>
+                        ))}
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
+
+                  <input
+                    type="text"
+                    {...register('message')}
+                    onKeyDown={handleKeyDown}
+                    placeholder={selectedMentions.length > 0 ? t('chat.placeholder_knowledge') : t('chat.placeholder')}
+                    className="flex-1 bg-transparent border-none outline-none text-lg text-white placeholder-slate-400 h-12 font-light min-w-0"
+                    autoFocus
+                    autoComplete="off"
+                  />
+
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button type="button" className="p-2 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white transition-colors">
+                      <Mic className="w-5 h-5" />
                     </button>
-                  </DropdownMenu.Trigger>
-
-                  <DropdownMenu.Portal>
-                    <DropdownMenu.Content
-                      align="start"
-                      sideOffset={16}
-                      className="w-72 max-h-80 overflow-y-auto custom-scrollbar bg-[#0f0c29]/95 backdrop-blur-2xl border border-blue-400/20 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] p-2 z-50 animate-in fade-in zoom-in-95 duration-200"
-                    >
-                      <div className="px-3 py-2 text-xs font-bold text-blue-400 uppercase tracking-wider">Tags</div>
-                      {getAllTags().map(tag => (
-                        <DropdownMenu.Item
-                          key={tag}
-                          onSelect={() => insertMention(tag)}
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 text-white/80 hover:text-white transition-colors text-left cursor-pointer outline-none data-[highlighted]:bg-white/10"
-                        >
-                          <div className="p-1.5 rounded-lg bg-blue-500/20 text-blue-300">
-                            <Hash className="w-3.5 h-3.5" />
-                          </div>
-                          <span className="text-sm font-medium">{tag}</span>
-                        </DropdownMenu.Item>
-                      ))}
-
-                      <div className="px-3 py-2 mt-2 text-xs font-bold text-blue-400 uppercase tracking-wider border-t border-white/5 pt-3">Pages</div>
-                      {KNOWLEDGE_ITEMS.map(item => (
-                        <DropdownMenu.Item
-                          key={item.id}
-                          onSelect={() => insertMention(item.title)}
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 text-white/80 hover:text-white transition-colors text-left cursor-pointer outline-none data-[highlighted]:bg-white/10"
-                        >
-                          <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-300">
-                            <FileText className="w-3.5 h-3.5" />
-                          </div>
-                          <span className="text-sm font-medium truncate">{item.title}</span>
-                        </DropdownMenu.Item>
-                      ))}
-                    </DropdownMenu.Content>
-                  </DropdownMenu.Portal>
-                </DropdownMenu.Root>
-
-                <input
-                  type="text"
-                  {...register('message')}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Ask anything..."
-                  className="flex-1 bg-transparent border-none outline-none text-lg text-white placeholder-slate-400 h-full font-light"
-                  autoFocus
-                />
-                <div className="flex items-center gap-2">
-                  <button type="button" className="p-2 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white transition-colors">
-                    <Mic className="w-5 h-5" />
-                  </button>
-                  {inputValue.trim() && (
-                    <motion.button
-                      type="submit"
-                      variants={HOVER_ACTION}
-                      initial="initial"
-                      whileHover="hover"
-                      whileTap="tap"
-                      className="p-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-lg"
-                    >
-                      <ArrowUp className="w-5 h-5" />
-                    </motion.button>
-                  )}
+                    {(inputValue.trim() || selectedMentions.length > 0) && (
+                      <motion.button
+                        type="submit"
+                        variants={HOVER_ACTION}
+                        initial="initial"
+                        whileHover="hover"
+                        whileTap="tap"
+                        className="p-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-lg"
+                      >
+                        <ArrowUp className="w-5 h-5" />
+                      </motion.button>
+                    )}
+                  </div>
                 </div>
               </form>
             </motion.div>
@@ -215,7 +270,7 @@ export const Chat: React.FC = () => {
               transition={{ delay: 0.2, duration: 0.5 }}
               className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full"
             >
-              {SUGGESTIONS.map((s, i) => (
+              {getSuggestions(t).map((s, i) => (
                 <motion.button
                   key={i}
                   onClick={() => handleSuggestionClick(s.text)}
@@ -302,87 +357,115 @@ export const Chat: React.FC = () => {
             <div className="relative">
               <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="relative flex items-center gap-2 p-2 rounded-[2rem] bg-white/5 backdrop-blur-2xl border border-blue-400/15 shadow-2xl focus-within:bg-white/10 focus-within:border-blue-400/30 transition-all"
+                className="relative bg-white/10 backdrop-blur-xl border border-blue-400/15 rounded-3xl p-2 flex flex-col shadow-2xl transition-all focus-within:bg-white/15 focus-within:border-blue-400/30 min-h-[4rem]"
               >
-
-                <DropdownMenu.Root>
-                  <DropdownMenu.Trigger asChild>
-                    <button
-                      type="button"
-                      className="p-3 rounded-full transition-colors hover:bg-white/10 text-white/50 hover:text-white data-[state=open]:bg-blue-500/20 data-[state=open]:text-blue-400 outline-none"
-                    >
-                      <AtSign className="w-5 h-5" />
-                    </button>
-                  </DropdownMenu.Trigger>
-
-                  <DropdownMenu.Portal>
-                    <DropdownMenu.Content
-                      align="start"
-                      sideOffset={16}
-                      className="w-72 max-h-80 overflow-y-auto custom-scrollbar bg-[#0f0c29]/95 backdrop-blur-2xl border border-blue-400/20 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] p-2 z-50 animate-in fade-in zoom-in-95 duration-200"
-                    >
-                      <div className="px-3 py-2 text-xs font-bold text-blue-400 uppercase tracking-wider">Tags</div>
-                      {getAllTags().map(tag => (
-                        <DropdownMenu.Item
-                          key={tag}
-                          onSelect={() => insertMention(tag)}
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 text-white/80 hover:text-white transition-colors text-left cursor-pointer outline-none data-[highlighted]:bg-white/10"
-                        >
-                          <div className="p-1.5 rounded-lg bg-blue-500/20 text-blue-300">
-                            <Hash className="w-3.5 h-3.5" />
+                {/* Mentions Area */}
+                {selectedMentions.length > 0 && (
+                  <div className="flex flex-wrap gap-2 px-3 pt-2 pb-1">
+                    {selectedMentions.map(mention => (
+                      <motion.span
+                        layout
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        key={mention.id}
+                        className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/10 border border-white/10 text-xs text-white/90 cursor-pointer hover:bg-white/20 transition-colors"
+                        onClick={() => removeMention(mention.id)}
+                      >
+                        {mention.type === 'tag' ? (
+                          <div className="w-4 h-4 rounded-full bg-blue-500/20 flex items-center justify-center">
+                            <Hash className="w-2.5 h-2.5 text-blue-300" />
                           </div>
-                          <span className="text-sm font-medium">{tag}</span>
-                        </DropdownMenu.Item>
-                      ))}
-
-                      <div className="px-3 py-2 mt-2 text-xs font-bold text-blue-400 uppercase tracking-wider border-t border-white/5 pt-3">Pages</div>
-                      {KNOWLEDGE_ITEMS.map(item => (
-                        <DropdownMenu.Item
-                          key={item.id}
-                          onSelect={() => insertMention(item.title)}
-                          className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 text-white/80 hover:text-white transition-colors text-left cursor-pointer outline-none data-[highlighted]:bg-white/10"
-                        >
-                          <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-300">
-                            <FileText className="w-3.5 h-3.5" />
+                        ) : (
+                          <div className="w-4 h-4 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                            <FileText className="w-2.5 h-2.5 text-emerald-300" />
                           </div>
-                          <span className="text-sm font-medium truncate">{item.title}</span>
-                        </DropdownMenu.Item>
-                      ))}
-                    </DropdownMenu.Content>
-                  </DropdownMenu.Portal>
-                </DropdownMenu.Root>
+                        )}
+                        <span>{mention.label}</span>
+                      </motion.span>
+                    ))}
+                  </div>
+                )}
 
-                <input
-                  {...register('message')}
-                  onKeyDown={handleKeyDown}
-                  placeholder="Ask anything..."
-                  className="flex-1 bg-transparent border-none outline-none text-white placeholder-white/30 text-lg px-2 font-light"
-                  autoFocus
-                />
+                <div className="flex items-center gap-2 pl-2 pr-2">
+                  <DropdownMenu.Root>
+                    <DropdownMenu.Trigger asChild>
+                      <button
+                        type="button"
+                        className="p-1 rounded-lg transition-colors text-slate-400 hover:text-white data-[state=open]:text-blue-400 data-[state=open]:bg-blue-400/10 outline-none shrink-0"
+                      >
+                        <AtSign className="w-6 h-6" />
+                      </button>
+                    </DropdownMenu.Trigger>
 
-                <div className="flex items-center gap-1 pr-2">
-                  {inputValue.length === 0 ? (
-                    <button type="button" className="p-3 rounded-full hover:bg-white/10 text-white/50 hover:text-white transition-colors">
+                    <DropdownMenu.Portal>
+                      <DropdownMenu.Content
+                        align="start"
+                        sideOffset={16}
+                        className="w-72 max-h-80 overflow-y-auto custom-scrollbar bg-[#0f0c29]/95 backdrop-blur-2xl border border-blue-400/20 rounded-2xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.5)] p-2 z-50 animate-in fade-in zoom-in-95 duration-200"
+                      >
+                        <div className="px-3 py-2 text-xs font-bold text-blue-400 uppercase tracking-wider">{t('chat.tags')}</div>
+                        {getAllTags().map(tag => (
+                          <DropdownMenu.Item
+                            key={tag}
+                            onSelect={() => addMention({ id: `tag-${tag}`, type: 'tag', label: tag })}
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 text-white/80 hover:text-white transition-colors text-left cursor-pointer outline-none data-[highlighted]:bg-white/10"
+                          >
+                            <div className="p-1.5 rounded-lg bg-blue-500/20 text-blue-300">
+                              <Hash className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="text-sm font-medium">{tag}</span>
+                          </DropdownMenu.Item>
+                        ))}
+
+                        <div className="px-3 py-2 mt-2 text-xs font-bold text-blue-400 uppercase tracking-wider border-t border-white/5 pt-3">{t('chat.pages')}</div>
+                        {KNOWLEDGE_ITEMS.map(item => (
+                          <DropdownMenu.Item
+                            key={item.id}
+                            onSelect={() => addMention({ id: item.id, type: 'page', label: t(item.title) })}
+                            className="w-full flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-white/10 text-white/80 hover:text-white transition-colors text-left cursor-pointer outline-none data-[highlighted]:bg-white/10"
+                          >
+                            <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-300">
+                              <FileText className="w-3.5 h-3.5" />
+                            </div>
+                            <span className="text-sm font-medium truncate">{t(item.title)}</span>
+                          </DropdownMenu.Item>
+                        ))}
+                      </DropdownMenu.Content>
+                    </DropdownMenu.Portal>
+                  </DropdownMenu.Root>
+
+                  <input
+                    type="text"
+                    {...register('message')}
+                    onKeyDown={handleKeyDown}
+                    placeholder={selectedMentions.length > 0 ? t('chat.placeholder_knowledge') : t('chat.placeholder')}
+                    className="flex-1 bg-transparent border-none outline-none text-lg text-white placeholder-slate-400 h-12 font-light min-w-0"
+                    autoFocus
+                    autoComplete="off"
+                  />
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button type="button" className="p-2 rounded-xl hover:bg-white/10 text-slate-400 hover:text-white transition-colors">
                       <Mic className="w-5 h-5" />
                     </button>
-                  ) : (
-                    <motion.button
-                      type="submit"
-                      variants={HOVER_ACTION}
-                      initial="initial"
-                      whileHover="hover"
-                      whileTap="tap"
-                      className="p-3 rounded-full bg-blue-600 text-white shadow-lg shadow-blue-500/20"
-                    >
-                      <ArrowUp className="w-5 h-5" />
-                    </motion.button>
-                  )}
+                    {(inputValue.trim() || selectedMentions.length > 0) && (
+                      <motion.button
+                        type="submit"
+                        variants={HOVER_ACTION}
+                        initial="initial"
+                        whileHover="hover"
+                        whileTap="tap"
+                        className="p-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-lg"
+                      >
+                        <ArrowUp className="w-5 h-5" />
+                      </motion.button>
+                    )}
+                  </div>
                 </div>
               </form>
             </div>
             <div className="text-center mt-2 mb-1">
               <p className="text-[10px] text-white/20">
-                AI can make mistakes. Check important info.
+                {t('chat.ai_mistakes')}
               </p>
             </div>
           </div>

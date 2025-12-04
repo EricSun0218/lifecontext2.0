@@ -29,41 +29,41 @@ export interface KnowledgeItem {
 export const INITIAL_CATEGORIES: Category[] = [
     {
         id: 'culture',
-        name: 'Culture',
+        name: 'categories.culture',
         isOpen: true,
         children: [
-            { id: 'food', name: 'Food' },
-            { id: 'art', name: 'Art' },
-            { id: 'music', name: 'Music' }
+            { id: 'food', name: 'categories.food' },
+            { id: 'art', name: 'categories.art' },
+            { id: 'music', name: 'categories.music' }
         ]
     },
     {
         id: 'finance',
-        name: 'Finance',
+        name: 'categories.finance',
         isOpen: true,
         children: [
-            { id: 'trading', name: 'Trading' },
-            { id: 'crypto', name: 'Crypto' },
-            { id: 'investing', name: 'Investing' }
+            { id: 'trading', name: 'categories.trading' },
+            { id: 'crypto', name: 'categories.crypto' },
+            { id: 'investing', name: 'categories.investing' }
         ]
     },
     {
         id: 'relationships',
-        name: 'Relationships',
+        name: 'categories.relationships',
         isOpen: true,
         children: [
-            { id: 'dating', name: 'Dating' },
-            { id: 'networking', name: 'Networking' }
+            { id: 'dating', name: 'categories.dating' },
+            { id: 'networking', name: 'categories.networking' }
         ]
     },
     {
         id: 'technology',
-        name: 'Technology',
+        name: 'categories.technology',
         isOpen: false,
         children: [
-            { id: 'ai', name: 'AI' },
-            { id: 'automotive', name: 'Automotive' },
-            { id: 'social_media', name: 'Social Media' }
+            { id: 'ai', name: 'categories.ai' },
+            { id: 'automotive', name: 'categories.automotive' },
+            { id: 'social_media', name: 'categories.social_media' }
         ]
     }
 ];
@@ -71,8 +71,8 @@ export const INITIAL_CATEGORIES: Category[] = [
 export const KNOWLEDGE_ITEMS: KnowledgeItem[] = [
     {
         id: '1',
-        title: 'MineContext/README_zh.md at main · ...',
-        description: 'We read every piece of feedback, and take your input very seriously.',
+        title: 'knowledge_items.item1.title',
+        description: 'knowledge_items.item1.description',
         type: 'text',
         date: 'Fri Nov 28 2025',
         source: 'Github',
@@ -80,8 +80,8 @@ export const KNOWLEDGE_ITEMS: KnowledgeItem[] = [
     },
     {
         id: '2',
-        title: 'lifecontext宣发 - 飞书云文档',
-        description: 'LifeContext launch strategy and marketing materials.',
+        title: 'knowledge_items.item2.title',
+        description: 'knowledge_items.item2.description',
         type: 'image',
         date: 'Fri Nov 21 2025',
         thumbnail: 'https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=600&q=80',
@@ -90,8 +90,8 @@ export const KNOWLEDGE_ITEMS: KnowledgeItem[] = [
     },
     {
         id: '3',
-        title: 'TicNote：你的随身AI思考伙伴',
-        description: 'TicNote是出门问问发布的新一代Agentic AI软硬件结合的产品，通过内置「Shadow AI」为用户构建“有记忆的AI记录+主动洞察+主...',
+        title: 'knowledge_items.item3.title',
+        description: 'knowledge_items.item3.description',
         type: 'text',
         date: 'Fri Nov 21 2025',
         source: 'TicNote',
@@ -99,8 +99,8 @@ export const KNOWLEDGE_ITEMS: KnowledgeItem[] = [
     },
     {
         id: '4',
-        title: 'Google Gemini',
-        description: '认识 Gemini：Google 旗下的 AI 助理，在写作、规划和开展头脑风暴等方面获得帮助。体验生成式 AI 的强大功能。',
+        title: 'knowledge_items.item4.title',
+        description: 'knowledge_items.item4.description',
         type: 'image',
         date: 'Fri Nov 21 2025',
         thumbnail: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=600&q=80',
@@ -109,8 +109,8 @@ export const KNOWLEDGE_ITEMS: KnowledgeItem[] = [
     },
     {
         id: '5',
-        title: 'SORA: the all Ai TikTok Clone. will slop end creativity?',
-        description: 'Sora is an AI-powered TikTok clone that generates videos using artificial intelligence, allowing users to create...',
+        title: 'knowledge_items.item5.title',
+        description: 'knowledge_items.item5.description',
         type: 'video',
         date: 'Fri Nov 21 2025',
         thumbnail: 'https://images.unsplash.com/photo-1611162616475-46b635cb6868?w=600&q=80',

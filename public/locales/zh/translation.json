@@ -1,0 +1,155 @@
+{
+    "sidebar": {
+        "insight": "洞察",
+        "daily_picks": "每日精选",
+        "chat": "对话",
+        "knowledge_base": "知识库",
+        "settings": "设置"
+    },
+    "chat": {
+        "greeting": "你好，Alex",
+        "subtitle": "我能帮你分析什么数字足迹？",
+        "placeholder": "问点什么...",
+        "placeholder_knowledge": "与你的知识库对话...",
+        "tags": "标签",
+        "pages": "页面",
+        "ai_mistakes": "AI 可能会犯错，请核对重要信息。",
+        "suggestions": {
+            "summarize": "总结今天的时间线",
+            "analyze": "分析我的浏览习惯",
+            "draft": "起草每日报告",
+            "connections": "发现阅读中的关联"
+        }
+    },
+    "knowledge": {
+        "search": "搜索",
+        "list": "列表",
+        "order_by": "排序",
+        "add_content": "添加内容",
+        "untagged": "未分类卡片"
+    },
+    "home": {
+        "overview": "概览",
+        "greeting": "早上好，Alex",
+        "subtitle": "这是今天你的网络动态。",
+        "customize_sources": "自定义来源",
+        "manage_sources": "管理来源",
+        "done": "完成",
+        "read_article": "阅读文章",
+        "news": {
+            "item1": {
+                "title": "生成式 AI 在医疗领域的未来",
+                "summary": "大型语言模型如何彻底改变各大医院网络的诊断流程和个性化治疗方案。"
+            },
+            "item2": {
+                "title": "Rust vs Go: 2025 性能基准测试",
+                "summary": "全面对比最新版本的内存管理、并发模型和编译速度。"
+            },
+            "item3": {
+                "title": "可持续建筑：垂直森林"
+            },
+            "item4": {
+                "title": "市场观察：加密货币波动加剧",
+                "summary": "随着监管新闻影响全球投资者情绪，比特币和以太坊出现两位数波动。"
+            },
+            "item5": {
+                "title": "CSS 容器查询终于来了"
+            },
+            "item6": {
+                "title": "深色模式 UX 心理学",
+                "summary": "为什么深色界面能减少疲劳，但需要仔细校准对比度以符合无障碍标准。"
+            },
+            "item7": {
+                "title": "SpaceX 星舰发射成功",
+                "summary": "这枚巨型火箭首次进入轨道，标志着星际旅行能力的新纪元。"
+            },
+            "item8": {
+                "title": "全球供应链恢复报告",
+                "summary": "随着亚洲和西海岸港口拥堵缓解，运输成本恢复正常。"
+            },
+            "item9": {
+                "title": "网络安全趋势：零信任架构"
+            },
+            "item10": {
+                "title": "2025 年的极简主义",
+                "summary": "少即是多。"
+            },
+            "item11": {
+                "title": "量子计算突破",
+                "summary": "研究人员在室温下将量子比特稳定了创纪录的时间。"
+            },
+            "item12": {
+                "title": "Next.js 15 发布：新特性？",
+                "summary": "部分预渲染、稳定的 Server Actions 和 Turbopack 改进引领变更日志。"
+            },
+            "item13": {
+                "title": "亲生物办公设计的兴起"
+            },
+            "item14": {
+                "title": "2025 年远程工作政策",
+                "summary": "随着主要科技公司强制执行 3 天办公室规定，混合模式趋于稳定。"
+            },
+            "item15": {
+                "title": "电动汽车电池创新",
+                "summary": "固态电池承诺到 2026 年实现 2 倍续航和 10 分钟充电时间。"
+            },
+            "item16": {
+                "title": "数字时代的心理健康",
+                "summary": "研究显示青少年通知频率与焦虑水平之间存在相关性。"
+            },
+            "item17": {
+                "title": "AI 艺术伦理辩论继续"
+            },
+            "item18": {
+                "title": "理解 TypeScript 6.0",
+                "summary": "新的类型推断规则使泛型约束更加强大。"
+            },
+            "item19": {
+                "title": "深海探索"
+            },
+            "item20": {
+                "title": "咖啡文化：第四次浪潮",
+                "summary": "不再仅仅关于豆子产地，而是冲泡水的精确分子化学。"
+            }
+        }
+    },
+    "categories": {
+        "culture": "文化",
+        "food": "美食",
+        "art": "艺术",
+        "music": "音乐",
+        "finance": "金融",
+        "trading": "交易",
+        "crypto": "加密货币",
+        "investing": "投资",
+        "relationships": "人际关系",
+        "dating": "约会",
+        "networking": "社交",
+        "technology": "科技",
+        "ai": "人工智能",
+        "automotive": "汽车",
+        "social_media": "社交媒体"
+    },
+    "knowledge_items": {
+        "item1": {
+            "title": "MineContext/README_zh.md at main · ...",
+            "description": "我们会阅读每一条反馈，并非常重视您的输入。"
+        },
+        "item2": {
+            "title": "lifecontext宣发 - 飞书云文档",
+            "description": "LifeContext 发布策略和营销材料。"
+        },
+        "item3": {
+            "title": "TicNote：你的随身AI思考伙伴",
+            "description": "TicNote是出门问问发布的新一代Agentic AI软硬件结合的产品，通过内置「Shadow AI」为用户构建“有记忆的AI记录+主动洞察+主..."
+        },
+        "item4": {
+            "title": "Google Gemini",
+            "description": "认识 Gemini：Google 旗下的 AI 助理..."
+        },
+        "item5": {
+            "title": "SORA: 全 AI TikTok 克隆",
+            "description": "Sora 是一个 AI 驱动的 TikTok 克隆..."
+        }
+    }
+}

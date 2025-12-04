@@ -1,6 +1,7 @@
 
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     Search, Plus, List, ArrowUpDown, ChevronRight, ChevronDown,
     Folder, FileText, Video, Image as ImageIcon, MoreHorizontal,
@@ -10,9 +11,31 @@ import { HOVER_ACTION, HOVER_CARD_GLOW, FADE_IN_UP_ITEM } from '../constants/ani
 import { INITIAL_CATEGORIES, KNOWLEDGE_ITEMS, Category, KnowledgeItem } from '../constants/mockData';
 
 export const KnowledgeBase: React.FC = () => {
+    const { t } = useTranslation();
     const [categories, setCategories] = useState(INITIAL_CATEGORIES);
     const [searchQuery, setSearchQuery] = useState('');
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    // Initialize based on screen width if available
+    const [isSidebarOpen, setIsSidebarOpen] = useState(() =>
+        typeof window !== 'undefined' ? window.innerWidth >= 768 : true
+    );
+    const [isMobile, setIsMobile] = useState(() =>
+        typeof window !== 'undefined' ? window.innerWidth < 768 : false
+    );
+
+    useEffect(() => {
+        const handleResize = () => {
+            const mobile = window.innerWidth < 768;
+            setIsMobile(mobile);
+            if (mobile) {
+                setIsSidebarOpen(false);
+            } else {
+                setIsSidebarOpen(true);
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const toggleCategory = (id: string) => {
         setCategories(prev => prev.map(cat => {
@@ -22,19 +45,36 @@ export const KnowledgeBase: React.FC = () => {
     };
 
     return (
-        <div className="flex h-[calc(100vh-6rem)] gap-8 relative">
+        <div className="flex h-[calc(100vh-6rem)] gap-0 md:gap-8 relative">
+            {/* --- MOBILE BACKDROP --- */}
+            <AnimatePresence>
+                {isMobile && isSidebarOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsSidebarOpen(false)}
+                        className="absolute inset-0 z-20 bg-black/60 backdrop-blur-sm md:hidden"
+                    />
+                )}
+            </AnimatePresence>
+
             {/* --- LEFT SIDEBAR (Categories) --- */}
             <motion.aside
-                initial={{ width: 256, opacity: 1 }}
+                initial={false}
                 animate={{
                     width: isSidebarOpen ? 256 : 0,
                     opacity: isSidebarOpen ? 1 : 0,
-                    marginRight: isSidebarOpen ? 0 : -32 // Negative margin to pull content closer
+                    marginRight: (isSidebarOpen || isMobile) ? 0 : -32,
+                    x: isMobile && !isSidebarOpen ? -256 : 0
                 }}
-                transition={{ duration: 0 }}
-                className="flex-shrink-0 flex flex-col gap-4 overflow-hidden"
+                transition={{ duration: isMobile ? 0.3 : 0, ease: "easeInOut" }}
+                className={`
+                    flex-shrink-0 flex flex-col gap-4 overflow-hidden
+                    ${isMobile ? 'absolute left-0 top-0 bottom-0 z-30 bg-[#0f0c29] border-r border-blue-400/20 shadow-2xl' : ''}
+                `}
             >
-                <div className="flex items-center justify-between mb-2 px-2 min-w-[240px]">
+                <div className="flex items-center justify-between mb-2 px-2 min-w-[240px] pt-4 md:pt-0">
                     <div className="flex gap-2">
                         <button className="p-1.5 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors">
                             <List className="w-4 h-4" />
@@ -63,7 +103,7 @@ export const KnowledgeBase: React.FC = () => {
                                 ) : (
                                     <ChevronRight className="w-3.5 h-3.5 text-white/40 group-hover:text-white/60" />
                                 )}
-                                <span>{category.name}</span>
+                                <span>{t(category.name)}</span>
                             </button>
 
                             {category.isOpen && category.children && (
@@ -75,7 +115,7 @@ export const KnowledgeBase: React.FC = () => {
                                         >
                                             {/* Icon based on name or default */}
                                             <Folder className="w-3.5 h-3.5 text-blue-400/60" />
-                                            <span className="truncate">{child.name}</span>
+                                            <span className="truncate">{t(child.name)}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -85,7 +125,7 @@ export const KnowledgeBase: React.FC = () => {
 
                     <button className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-white/5 text-white/80 hover:text-white transition-colors group text-sm font-medium mt-4">
                         <ChevronRight className="w-3.5 h-3.5 text-white/40 group-hover:text-white/60" />
-                        <span className="italic opacity-70">Untagged cards</span>
+                        <span className="italic opacity-70">{t('knowledge.untagged')}</span>
                     </button>
                 </div>
             </motion.aside>
@@ -118,23 +158,24 @@ export const KnowledgeBase: React.FC = () => {
                         <button className="p-2.5 rounded-xl bg-white/5 border border-blue-400/15 text-blue-200 hover:text-white hover:bg-white/10 transition-all shadow-[0_0_15px_-5px_rgba(59,130,246,0.2)]">
                             <Search className="w-5 h-5" />
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-blue-400/15 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium">
+                        <button className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-blue-400/15 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium">
                             <List className="w-4 h-4" />
-                            <span>List</span>
+                            <span>{t('knowledge.list')}</span>
                         </button>
-                        <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-blue-400/15 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium">
-                            <span>Order by</span>
+                        <button className="hidden md:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/5 border border-blue-400/15 text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-medium">
+                            <span>{t('knowledge.order_by')}</span>
                             <ChevronDown className="w-3.5 h-3.5" />
                         </button>
                         <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white shadow-[0_0_20px_-5px_rgba(37,99,235,0.5)] transition-all text-sm font-medium">
                             <Plus className="w-4 h-4" />
-                            <span>Add Content</span>
+                            <span className="hidden md:inline">{t('knowledge.add_content')}</span>
+                            <span className="md:hidden">Add</span>
                         </button>
                     </div>
                 </div>
 
                 {/* Content Area */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pb-6">
+                <div className="flex-1 overflow-y-auto custom-scrollbar px-4 md:px-6 pb-6">
 
                     {/* Date Group */}
                     <div className="mb-8">
@@ -163,6 +204,7 @@ export const KnowledgeBase: React.FC = () => {
 
 // --- Sub-Component: Knowledge Card ---
 const KnowledgeCard: React.FC<{ item: KnowledgeItem }> = ({ item }) => {
+    const { t } = useTranslation();
     return (
         <motion.div
             variants={HOVER_CARD_GLOW}
@@ -178,7 +220,7 @@ const KnowledgeCard: React.FC<{ item: KnowledgeItem }> = ({ item }) => {
                         <div className="absolute inset-0 bg-gradient-to-t from-[#0f0c29] via-transparent to-transparent opacity-60 z-10" />
                         <motion.img
                             src={item.thumbnail}
-                            alt={item.title}
+                            alt={t(item.title)}
                             className="w-full h-full object-cover"
                             whileHover={{ scale: 1.1 }}
                             transition={{ duration: 0.7 }}
@@ -203,10 +245,10 @@ const KnowledgeCard: React.FC<{ item: KnowledgeItem }> = ({ item }) => {
             {/* Content */}
             <div className="p-5 flex flex-col flex-1">
                 <h4 className="text-white font-medium leading-snug mb-2 line-clamp-2 group-hover:text-blue-200 transition-colors">
-                    {item.title}
+                    {t(item.title)}
                 </h4>
                 <p className="text-white/50 text-xs leading-relaxed line-clamp-3 mb-4 flex-1">
-                    {item.description}
+                    {t(item.description)}
                 </p>
 
                 {/* Footer */}

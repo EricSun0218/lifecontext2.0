@@ -1,0 +1,155 @@
+{
+    "sidebar": {
+        "insight": "Insight",
+        "daily_picks": "Daily Picks",
+        "chat": "Chat",
+        "knowledge_base": "Knowledge Base",
+        "settings": "Settings"
+    },
+    "chat": {
+        "greeting": "Hello, Alex",
+        "subtitle": "How can I help you analyze your digital footprint?",
+        "placeholder": "Ask anything...",
+        "placeholder_knowledge": "Chat with your knowledge base...",
+        "tags": "Tags",
+        "pages": "Pages",
+        "ai_mistakes": "AI can make mistakes. Check important info.",
+        "suggestions": {
+            "summarize": "Summarize today's timeline",
+            "analyze": "Analyze my browsing habits",
+            "draft": "Draft a daily report",
+            "connections": "Find connections in my reading"
+        }
+    },
+    "knowledge": {
+        "search": "Search",
+        "list": "List",
+        "order_by": "Order by",
+        "add_content": "Add Content",
+        "untagged": "Untagged cards"
+    },
+    "home": {
+        "overview": "Overview",
+        "greeting": "Good Morning, Alex",
+        "subtitle": "Here's what's happening in your network today.",
+        "customize_sources": "Customize Sources",
+        "manage_sources": "Manage Sources",
+        "done": "Done",
+        "read_article": "Read Article",
+        "news": {
+            "item1": {
+                "title": "The Future of Generative AI in Healthcare",
+                "summary": "How LLMs are revolutionizing diagnostic processes and personalized treatment plans across major hospital networks."
+            },
+            "item2": {
+                "title": "Rust vs Go: Performance Benchmarks 2025",
+                "summary": "A comprehensive look at memory management, concurrency models, and compilation speeds in the latest versions."
+            },
+            "item3": {
+                "title": "Sustainable Architecture: The Vertical Forest"
+            },
+            "item4": {
+                "title": "Market Watch: Crypto Volatility Spikes",
+                "summary": "Bitcoin and Ethereum see double-digit fluctuations as regulatory news impacts investor sentiment globally."
+            },
+            "item5": {
+                "title": "CSS Container Queries are finally here"
+            },
+            "item6": {
+                "title": "The Psychology of Dark Mode UX",
+                "summary": "Why dark interfaces reduce strain but require careful contrast calibration for accessibility compliance."
+            },
+            "item7": {
+                "title": "SpaceX Starship Launch Successful",
+                "summary": "The massive rocket achieved orbit for the first time, marking a new era in interplanetary travel capabilities."
+            },
+            "item8": {
+                "title": "Global Supply Chain Recovery Report",
+                "summary": "Shipping costs normalize as port congestion eases across Asia and the West Coast."
+            },
+            "item9": {
+                "title": "Cybersecurity Trends: Zero Trust Architecture"
+            },
+            "item10": {
+                "title": "Minimalism in 2025",
+                "summary": "Less is more."
+            },
+            "item11": {
+                "title": "Quantum Computing Breakthrough",
+                "summary": "Researchers stabilize qubits for record durations at room temperature."
+            },
+            "item12": {
+                "title": "Next.js 15 Released: What's New?",
+                "summary": "Partial Prerendering, stable Server Actions, and Turbopack improvements lead the changelog."
+            },
+            "item13": {
+                "title": "The Rise of Biophilic Office Design"
+            },
+            "item14": {
+                "title": "Remote Work Policies in 2025",
+                "summary": "Hybrid models stabilize as major tech firms enforce 3-day office mandates."
+            },
+            "item15": {
+                "title": "Electric Vehicle Battery Innovations",
+                "summary": "Solid-state batteries promise 2x range and 10-minute charging times by 2026."
+            },
+            "item16": {
+                "title": "Mental Health in the Digital Age",
+                "summary": "Studies show correlation between notification frequency and anxiety levels in teens."
+            },
+            "item17": {
+                "title": "AI Art Ethics Debate Continues"
+            },
+            "item18": {
+                "title": "Understanding TypeScript 6.0",
+                "summary": "New type inference rules make generic constraints even more powerful."
+            },
+            "item19": {
+                "title": "Deep Sea Exploration"
+            },
+            "item20": {
+                "title": "Coffee Culture: The Fourth Wave",
+                "summary": "It's no longer just about the bean origin, but the precise molecular chemistry of the brew water."
+            }
+        }
+    },
+    "categories": {
+        "culture": "Culture",
+        "food": "Food",
+        "art": "Art",
+        "music": "Music",
+        "finance": "Finance",
+        "trading": "Trading",
+        "crypto": "Crypto",
+        "investing": "Investing",
+        "relationships": "Relationships",
+        "dating": "Dating",
+        "networking": "Networking",
+        "technology": "Technology",
+        "ai": "AI",
+        "automotive": "Automotive",
+        "social_media": "Social Media"
+    },
+    "knowledge_items": {
+        "item1": {
+            "title": "MineContext/README_zh.md at main · ...",
+            "description": "We read every piece of feedback, and take your input very seriously."
+        },
+        "item2": {
+            "title": "lifecontext launch - Feishu",
+            "description": "LifeContext launch strategy and marketing materials."
+        },
+        "item3": {
+            "title": "TicNote: Your AI Thinking Partner",
+            "description": "TicNote is a new generation of Agentic AI product released by Mobvoi..."
+        },
+        "item4": {
+            "title": "Google Gemini",
+            "description": "Meet Gemini: Google's AI assistant..."
+        },
+        "item5": {
+            "title": "SORA: the all Ai TikTok Clone",
+            "description": "Sora is an AI-powered TikTok clone..."
+        }
+    }
+}

@@ -1,202 +1,203 @@
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SlidersHorizontal, X, Clock, ArrowUpRight, ChevronDown } from 'lucide-react';
 import * as Switch from '@radix-ui/react-switch';
 import { GlassTooltip } from './ui/GlassTooltip';
-import { 
-  HOVER_ACTION, 
-  HOVER_CARD_GLOW, 
-  MODAL_BACKDROP, 
+import {
+  HOVER_ACTION,
+  HOVER_CARD_GLOW,
+  MODAL_BACKDROP,
   MODAL_CONTENT,
-  SPRING_TIGHT 
+  SPRING_TIGHT
 } from '../constants/animations';
 
 // --- Data ---
-const newsItems = [
-  { 
-    id: 1, 
-    title: "The Future of Generative AI in Healthcare", 
-    source: "TechCrunch", 
-    time: "1h ago", 
-    type: "image", 
-    category: "Health", 
-    imgUrl: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80", 
-    summary: "How LLMs are revolutionizing diagnostic processes and personalized treatment plans across major hospital networks." 
+const getNewsItems = (t: any) => [
+  {
+    id: 1,
+    title: t('home.news.item1.title'),
+    source: "TechCrunch",
+    time: "1h ago",
+    type: "image",
+    category: "Health",
+    imgUrl: "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80",
+    summary: t('home.news.item1.summary')
   },
-  { 
-    id: 2, 
-    title: "Rust vs Go: Performance Benchmarks 2025", 
-    source: "Dev.to", 
-    time: "2h ago", 
-    type: "text", 
-    category: "Dev", 
-    summary: "A comprehensive look at memory management, concurrency models, and compilation speeds in the latest versions." 
+  {
+    id: 2,
+    title: t('home.news.item2.title'),
+    source: "Dev.to",
+    time: "2h ago",
+    type: "text",
+    category: "Dev",
+    summary: t('home.news.item2.summary')
   },
-  { 
-    id: 3, 
-    title: "Sustainable Architecture: The Vertical Forest", 
-    source: "ArchDaily", 
-    time: "3h ago", 
-    type: "image", 
-    category: "Design", 
-    imgUrl: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80" 
+  {
+    id: 3,
+    title: t('home.news.item3.title'),
+    source: "ArchDaily",
+    time: "3h ago",
+    type: "image",
+    category: "Design",
+    imgUrl: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=800&q=80"
   },
-  { 
-    id: 4, 
-    title: "Market Watch: Crypto Volatility Spikes", 
-    source: "Bloomberg", 
-    time: "4h ago", 
-    type: "text", 
-    category: "Finance", 
-    summary: "Bitcoin and Ethereum see double-digit fluctuations as regulatory news impacts investor sentiment globally." 
+  {
+    id: 4,
+    title: t('home.news.item4.title'),
+    source: "Bloomberg",
+    time: "4h ago",
+    type: "text",
+    category: "Finance",
+    summary: t('home.news.item4.summary')
   },
-  { 
-    id: 5, 
-    title: "CSS Container Queries are finally here", 
-    source: "Smashing Mag", 
-    time: "5h ago", 
-    type: "image", 
-    category: "Dev", 
-    imgUrl: "https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?w=800&q=80" 
+  {
+    id: 5,
+    title: t('home.news.item5.title'),
+    source: "Smashing Mag",
+    time: "5h ago",
+    type: "image",
+    category: "Dev",
+    imgUrl: "https://images.unsplash.com/photo-1507721999472-8ed4421c4af2?w=800&q=80"
   },
-  { 
-    id: 6, 
-    title: "The Psychology of Dark Mode UX", 
-    source: "UX Collective", 
-    time: "6h ago", 
-    type: "text", 
-    category: "Design", 
-    summary: "Why dark interfaces reduce strain but require careful contrast calibration for accessibility compliance." 
+  {
+    id: 6,
+    title: t('home.news.item6.title'),
+    source: "UX Collective",
+    time: "6h ago",
+    type: "text",
+    category: "Design",
+    summary: t('home.news.item6.summary')
   },
-  { 
-    id: 7, 
-    title: "SpaceX Starship Launch Successful", 
-    source: "BBC Science", 
-    time: "7h ago", 
-    type: "image", 
-    category: "Science", 
+  {
+    id: 7,
+    title: t('home.news.item7.title'),
+    source: "BBC Science",
+    time: "7h ago",
+    type: "image",
+    category: "Science",
     imgUrl: "https://images.unsplash.com/photo-1517976487492-5750f3195933?w=600&q=80",
-    summary: "The massive rocket achieved orbit for the first time, marking a new era in interplanetary travel capabilities."
+    summary: t('home.news.item7.summary')
   },
-  { 
-    id: 8, 
-    title: "Global Supply Chain Recovery Report", 
-    source: "Reuters", 
-    time: "8h ago", 
-    type: "text", 
-    category: "Business", 
-    summary: "Shipping costs normalize as port congestion eases across Asia and the West Coast." 
+  {
+    id: 8,
+    title: t('home.news.item8.title'),
+    source: "Reuters",
+    time: "8h ago",
+    type: "text",
+    category: "Business",
+    summary: t('home.news.item8.summary')
   },
-  { 
-    id: 9, 
-    title: "Cybersecurity Trends: Zero Trust Architecture", 
-    source: "Wired", 
-    time: "9h ago", 
-    type: "image", 
-    category: "Security", 
-    imgUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80" 
+  {
+    id: 9,
+    title: t('home.news.item9.title'),
+    source: "Wired",
+    time: "9h ago",
+    type: "image",
+    category: "Security",
+    imgUrl: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&q=80"
   },
-  { 
-    id: 10, 
-    title: "Minimalism in 2025", 
-    source: "Awwwards", 
-    time: "10h ago", 
-    type: "text", 
-    category: "Design", 
-    summary: "Less is more." 
+  {
+    id: 10,
+    title: t('home.news.item10.title'),
+    source: "Awwwards",
+    time: "10h ago",
+    type: "text",
+    category: "Design",
+    summary: t('home.news.item10.summary')
   },
-  { 
-    id: 11, 
-    title: "Quantum Computing Breakthrough", 
-    source: "Nature", 
-    time: "11h ago", 
-    type: "image", 
-    category: "Science", 
+  {
+    id: 11,
+    title: t('home.news.item11.title'),
+    source: "Nature",
+    time: "11h ago",
+    type: "image",
+    category: "Science",
     imgUrl: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=600&q=80",
-    summary: "Researchers stabilize qubits for record durations at room temperature."
+    summary: t('home.news.item11.summary')
   },
-  { 
-    id: 12, 
-    title: "Next.js 15 Released: What's New?", 
-    source: "Vercel Blog", 
-    time: "12h ago", 
-    type: "text", 
-    category: "Dev", 
-    summary: "Partial Prerendering, stable Server Actions, and Turbopack improvements lead the changelog." 
+  {
+    id: 12,
+    title: t('home.news.item12.title'),
+    source: "Vercel Blog",
+    time: "12h ago",
+    type: "text",
+    category: "Dev",
+    summary: t('home.news.item12.summary')
   },
-  { 
-    id: 13, 
-    title: "The Rise of Biophilic Office Design", 
-    source: "Architectural Digest", 
-    time: "13h ago", 
-    type: "image", 
-    category: "Architecture", 
-    imgUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80" 
+  {
+    id: 13,
+    title: t('home.news.item13.title'),
+    source: "Architectural Digest",
+    time: "13h ago",
+    type: "image",
+    category: "Architecture",
+    imgUrl: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80"
   },
-  { 
-    id: 14, 
-    title: "Remote Work Policies in 2025", 
-    source: "Forbes", 
-    time: "14h ago", 
-    type: "text", 
-    category: "Business", 
-    summary: "Hybrid models stabilize as major tech firms enforce 3-day office mandates." 
+  {
+    id: 14,
+    title: t('home.news.item14.title'),
+    source: "Forbes",
+    time: "14h ago",
+    type: "text",
+    category: "Business",
+    summary: t('home.news.item14.summary')
   },
-  { 
-    id: 15, 
-    title: "Electric Vehicle Battery Innovations", 
-    source: "Electrek", 
-    time: "15h ago", 
-    type: "image", 
-    category: "Tech", 
+  {
+    id: 15,
+    title: t('home.news.item15.title'),
+    source: "Electrek",
+    time: "15h ago",
+    type: "image",
+    category: "Tech",
     imgUrl: "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=600&q=80",
-    summary: "Solid-state batteries promise 2x range and 10-minute charging times by 2026."
+    summary: t('home.news.item15.summary')
   },
-  { 
-    id: 16, 
-    title: "Mental Health in the Digital Age", 
-    source: "Psychology Today", 
-    time: "16h ago", 
-    type: "text", 
-    category: "Health", 
-    summary: "Studies show correlation between notification frequency and anxiety levels in teens." 
+  {
+    id: 16,
+    title: t('home.news.item16.title'),
+    source: "Psychology Today",
+    time: "16h ago",
+    type: "text",
+    category: "Health",
+    summary: t('home.news.item16.summary')
   },
-  { 
-    id: 17, 
-    title: "AI Art Ethics Debate Continues", 
-    source: "The Verge", 
-    time: "17h ago", 
-    type: "image", 
-    category: "Tech", 
-    imgUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80" 
+  {
+    id: 17,
+    title: t('home.news.item17.title'),
+    source: "The Verge",
+    time: "17h ago",
+    type: "image",
+    category: "Tech",
+    imgUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&q=80"
   },
-  { 
-    id: 18, 
-    title: "Understanding TypeScript 6.0", 
-    source: "TS Blog", 
-    time: "18h ago", 
-    type: "text", 
-    category: "Dev", 
-    summary: "New type inference rules make generic constraints even more powerful." 
+  {
+    id: 18,
+    title: t('home.news.item18.title'),
+    source: "TS Blog",
+    time: "18h ago",
+    type: "text",
+    category: "Dev",
+    summary: t('home.news.item18.summary')
   },
-  { 
-    id: 19, 
-    title: "Deep Sea Exploration", 
-    source: "NatGeo", 
-    time: "19h ago", 
-    type: "image", 
-    category: "Science", 
-    imgUrl: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=800&q=80" 
+  {
+    id: 19,
+    title: t('home.news.item19.title'),
+    source: "NatGeo",
+    time: "19h ago",
+    type: "image",
+    category: "Science",
+    imgUrl: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?w=800&q=80"
   },
-  { 
-    id: 20, 
-    title: "Coffee Culture: The Fourth Wave", 
-    source: "Sprudge", 
-    time: "20h ago", 
-    type: "text", 
-    category: "Lifestyle", 
-    summary: "It's no longer just about the bean origin, but the precise molecular chemistry of the brew water." 
+  {
+    id: 20,
+    title: t('home.news.item20.title'),
+    source: "Sprudge",
+    time: "20h ago",
+    type: "text",
+    category: "Lifestyle",
+    summary: t('home.news.item20.summary')
   }
 ];
 
@@ -210,9 +211,10 @@ const initialSources = [
 ];
 
 export const Home: React.FC = () => {
+  const { t } = useTranslation();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [sources, setSources] = useState(initialSources);
-  
+
   // Responsive Masonry Logic
   const [columns, setColumns] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -228,7 +230,7 @@ export const Home: React.FC = () => {
       else if (window.innerWidth >= 768) setColumns(2);
       else setColumns(1);
     };
-    
+
     handleResize(); // Init
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
@@ -237,6 +239,8 @@ export const Home: React.FC = () => {
   const toggleSource = (id: string) => {
     setSources(prev => prev.map(s => s.id === id ? { ...s, active: !s.active } : s));
   };
+
+  const newsItems = React.useMemo(() => getNewsItems(t), [t]);
 
   // Distribute items into columns for Left-to-Right reading order
   const distributedItems = Array.from({ length: columns }, () => [] as typeof newsItems);
@@ -249,33 +253,33 @@ export const Home: React.FC = () => {
       {/* --- Header --- */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 border-b border-blue-400/10 pb-8">
         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
-          <h2 className="text-blue-400 font-mono text-xs tracking-widest uppercase mb-2">Overview</h2>
+          <h2 className="text-blue-400 font-mono text-xs tracking-widest uppercase mb-2">{t('home.overview')}</h2>
           <h1 className="text-5xl font-bold text-white tracking-tight">
-            Good Morning, Alex
+            {t('home.greeting')}
           </h1>
           <p className="text-white/50 text-lg font-light mt-2">
-            Here's what's happening in your network today.
+            {t('home.subtitle')}
           </p>
         </motion.div>
 
         {/* Controls Container */}
         <div className="mt-6 md:mt-0 flex items-center gap-3">
-          
+
           {/* Date Picker (Matching Insights Style) */}
-          <motion.button 
-             variants={HOVER_ACTION}
-             initial="initial"
-             whileHover="hover"
-             whileTap="tap"
-             className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white/5 backdrop-blur-xl border border-blue-400/15 hover:bg-white/10 hover:border-blue-400/30 transition-all cursor-pointer group"
+          <motion.button
+            variants={HOVER_ACTION}
+            initial="initial"
+            whileHover="hover"
+            whileTap="tap"
+            className="flex items-center gap-3 px-6 py-3 rounded-2xl bg-white/5 backdrop-blur-xl border border-blue-400/15 hover:bg-white/10 hover:border-blue-400/30 transition-all cursor-pointer group"
           >
-              <span className="text-white/80 font-medium group-hover:text-white">Today, Oct 24</span>
-              <ChevronDown className="w-4 h-4 text-white/50 group-hover:text-white transition-colors" />
+            <span className="text-white/80 font-medium group-hover:text-white">Today, Oct 24</span>
+            <ChevronDown className="w-4 h-4 text-white/50 group-hover:text-white transition-colors" />
           </motion.button>
 
           {/* Customize Sources - Icon Only */}
-          <GlassTooltip content="Customize Sources" side="bottom">
-            <motion.button 
+          <GlassTooltip content={t('home.customize_sources')} side="bottom">
+            <motion.button
               onClick={() => setIsSettingsOpen(true)}
               variants={HOVER_ACTION}
               initial="initial"
@@ -290,7 +294,7 @@ export const Home: React.FC = () => {
       </div>
 
       {/* --- JS Masonry Grid --- */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }} // Display all at once
@@ -325,56 +329,56 @@ export const Home: React.FC = () => {
               className="fixed inset-0 z-[70] flex items-center justify-center p-4 pointer-events-none"
             >
               <div className="bg-[#0f0c29]/90 backdrop-blur-2xl border border-blue-400/15 rounded-3xl p-8 w-full max-w-lg pointer-events-auto shadow-2xl">
-                 <div className="flex justify-between items-center mb-6">
-                   <h2 className="text-2xl font-bold text-white">Manage Sources</h2>
-                   <button onClick={() => setIsSettingsOpen(false)} className="p-2 bg-white/5 rounded-full hover:bg-white/10 text-white transition-colors">
-                     <X className="w-5 h-5" />
-                   </button>
-                 </div>
-                 
-                 <div className="space-y-4">
-                   {sources.map(source => (
-                     <motion.div 
-                       key={source.id} 
-                       layout
-                       className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5"
-                     >
-                        <span className="text-white font-medium">{source.name}</span>
-                        
-                        <Switch.Root
-                          checked={source.active}
-                          onCheckedChange={() => toggleSource(source.id)}
-                          className={`
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-2xl font-bold text-white">{t('home.manage_sources')}</h2>
+                  <button onClick={() => setIsSettingsOpen(false)} className="p-2 bg-white/5 rounded-full hover:bg-white/10 text-white transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+
+                <div className="space-y-4">
+                  {sources.map(source => (
+                    <motion.div
+                      key={source.id}
+                      layout
+                      className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5"
+                    >
+                      <span className="text-white font-medium">{source.name}</span>
+
+                      <Switch.Root
+                        checked={source.active}
+                        onCheckedChange={() => toggleSource(source.id)}
+                        className={`
                             w-12 h-7 rounded-full p-1 transition-colors duration-300
                             ${source.active ? 'bg-blue-600' : 'bg-white/10'}
                             border-none outline-none cursor-pointer relative
                           `}
-                        >
-                          <Switch.Thumb asChild>
-                             <motion.div 
-                               layout
-                               className="block w-5 h-5 bg-white rounded-full shadow-md"
-                               animate={{ x: source.active ? 20 : 0 }}
-                               transition={SPRING_TIGHT}
-                             />
-                          </Switch.Thumb>
-                        </Switch.Root>
-                     </motion.div>
-                   ))}
-                 </div>
-                 
-                 <div className="mt-8">
-                   <motion.button 
-                     variants={HOVER_ACTION}
-                     initial="initial"
-                     whileHover="hover"
-                     whileTap="tap"
-                     onClick={() => setIsSettingsOpen(false)} 
-                     className="w-full py-3 rounded-xl bg-blue-600 text-white font-medium"
-                   >
-                     Done
-                   </motion.button>
-                 </div>
+                      >
+                        <Switch.Thumb asChild>
+                          <motion.div
+                            layout
+                            className="block w-5 h-5 bg-white rounded-full shadow-md"
+                            animate={{ x: source.active ? 20 : 0 }}
+                            transition={SPRING_TIGHT}
+                          />
+                        </Switch.Thumb>
+                      </Switch.Root>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <div className="mt-8">
+                  <motion.button
+                    variants={HOVER_ACTION}
+                    initial="initial"
+                    whileHover="hover"
+                    whileTap="tap"
+                    onClick={() => setIsSettingsOpen(false)}
+                    className="w-full py-3 rounded-xl bg-blue-600 text-white font-medium"
+                  >
+                    {t('home.done')}
+                  </motion.button>
+                </div>
               </div>
             </motion.div>
           </>
@@ -385,43 +389,44 @@ export const Home: React.FC = () => {
 };
 
 const NewsCard: React.FC<{ item: any }> = ({ item }) => {
+  const { t } = useTranslation();
   return (
-    <motion.div 
+    <motion.div
       initial="initial"
       whileHover="hover"
       whileTap="tap"
       variants={HOVER_CARD_GLOW}
       className="group flex flex-col w-full relative overflow-hidden rounded-3xl backdrop-blur-md border cursor-pointer bg-white/[0.02]"
     >
-      
+
       {/* Image Section */}
       {item.type.includes('image') && (
         <div className="w-full overflow-hidden relative shrink-0">
-           <div className="absolute inset-0 bg-gradient-to-t from-[#0f0c29] via-transparent to-transparent opacity-60 z-10" />
-           <motion.img 
-             src={item.imgUrl} 
-             alt={item.title} 
-             className="w-full h-auto object-cover"
-             whileHover={{ scale: 1.1 }}
-             transition={{ duration: 0.7 }}
-           />
-           <div className="absolute top-4 left-4 z-20">
-             <span className="px-2 py-1 rounded-md bg-blue-500/20 border border-blue-400/20 backdrop-blur-md text-[10px] font-bold text-blue-200 uppercase tracking-wider">
-               {item.category}
-             </span>
-           </div>
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0f0c29] via-transparent to-transparent opacity-60 z-10" />
+          <motion.img
+            src={item.imgUrl}
+            alt={item.title}
+            className="w-full h-auto object-cover"
+            whileHover={{ scale: 1.1 }}
+            transition={{ duration: 0.7 }}
+          />
+          <div className="absolute top-4 left-4 z-20">
+            <span className="px-2 py-1 rounded-md bg-blue-500/20 border border-blue-400/20 backdrop-blur-md text-[10px] font-bold text-blue-200 uppercase tracking-wider">
+              {item.category}
+            </span>
+          </div>
         </div>
       )}
 
       {/* Content Section */}
       <div className="p-6 flex flex-col">
-        
+
         {!item.type.includes('image') && (
-           <div className="mb-4">
-             <span className="px-2 py-1 rounded-md bg-blue-500/10 border border-blue-400/20 text-[10px] font-bold text-blue-300 uppercase tracking-wider">
-               {item.category}
-             </span>
-           </div>
+          <div className="mb-4">
+            <span className="px-2 py-1 rounded-md bg-blue-500/10 border border-blue-400/20 text-[10px] font-bold text-blue-300 uppercase tracking-wider">
+              {item.category}
+            </span>
+          </div>
         )}
 
         <div>
@@ -447,8 +452,8 @@ const NewsCard: React.FC<{ item: any }> = ({ item }) => {
 
         {/* Footer / Action */}
         <div className="mt-6 pt-4 border-t border-white/5 flex items-center justify-between opacity-50 group-hover:opacity-100 transition-opacity">
-           <span className="text-xs font-medium text-blue-300">Read Article</span>
-           <ArrowUpRight className="w-4 h-4 text-blue-300 transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+          <span className="text-xs font-medium text-blue-300">{t('home.read_article')}</span>
+          <ArrowUpRight className="w-4 h-4 text-blue-300 transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
         </div>
       </div>
     </motion.div>
